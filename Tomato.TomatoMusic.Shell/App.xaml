@@ -1,0 +1,10 @@
+﻿<caliburn:CaliburnApplication
+    x:Class="Tomato.TomatoMusic.Shell.App"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:Tomato.TomatoMusic.Shell"
+    xmlns:caliburn="using:Caliburn.Micro" 
+    xmlns:callisto="using:Callisto.Controls"
+    RequestedTheme="Light">
+
+</caliburn:CaliburnApplication>
