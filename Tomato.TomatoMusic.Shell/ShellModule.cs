@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Caliburn.Micro;
-using Tomato.TomatoMusic.Core;
 using Tomato.TomatoMusic.Shell.ViewModels;
 
 namespace Tomato.TomatoMusic.Shell
@@ -13,7 +12,15 @@ namespace Tomato.TomatoMusic.Shell
     {
         public static void UseShell(this SimpleContainer container)
         {
-            container.PerRequest<IShell, MainViewModel>();
+            container.PerRequest<MainViewModel>();
+        }
+
+        private static void ModuleReferences()
+        {
+            var type = new[]
+            {
+                typeof(Caliburn.Micro.ViewModelBinder)
+            };
         }
     }
 }

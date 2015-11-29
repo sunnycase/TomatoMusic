@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using Caliburn.Micro;
-using Tomato.TomatoMusic.Core;
 using Windows.ApplicationModel.Activation;
 using Windows.UI.Xaml.Controls;
+using Tomato.TomatoMusic.Shell.Views;
 
 namespace Tomato.TomatoMusic.Shell
 {
@@ -66,7 +66,7 @@ namespace Tomato.TomatoMusic.Shell
                 this.DebugSettings.EnableFrameRateCounter = true;
             }
 #endif
-            DisplayRootViewFor<IShell>();
+            DisplayRootView<MainView>();
             if (args.PreviousExecutionState == ApplicationExecutionState.Terminated)
             {
                 //_eventAggregator.PublishOnUIThread(new ResumeStateMessage());

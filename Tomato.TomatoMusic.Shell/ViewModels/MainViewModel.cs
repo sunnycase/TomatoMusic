@@ -4,17 +4,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Caliburn.Micro;
-using Tomato.TomatoMusic.Core;
 using Windows.UI.Xaml.Controls;
 
 namespace Tomato.TomatoMusic.Shell.ViewModels
 {
-    class MainViewModel :Screen, IShell
+    class MainViewModel : Screen
     {
         private readonly WinRTContainer _container;
         private readonly IEventAggregator _eventAggregator;
-        private INavigationService _navigationService;
-        private bool _resume;
 
         public MainViewModel(WinRTContainer container, IEventAggregator eventAggregator)
         {
@@ -34,10 +31,16 @@ namespace Tomato.TomatoMusic.Shell.ViewModels
 
         public void SetupNavigationService(Frame frame)
         {
-            _navigationService = _container.RegisterNavigationService(frame);
+        //    _navigationService = _container.RegisterNavigationService(frame);
 
-            if (_resume)
-                _navigationService.ResumeState();
+        //    Template10.Services.NavigationService.FrameFacade
+        //    if (_resume)
+        //        _navigationService.ResumeState();
+        }
+
+        public void ExecuteHamburger()
+        {
+
         }
     }
 }

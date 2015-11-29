@@ -1,8 +1,10 @@
-﻿using System;
+﻿using Caliburn.Micro;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
+using Tomato.TomatoMusic.Shell.ViewModels;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.UI.Xaml;
@@ -22,6 +24,8 @@ namespace Tomato.TomatoMusic.Shell.Views
     /// </summary>
     public sealed partial class MainView : Page
     {
+        internal MainViewModel ViewModel { get; } = IoC.Get<MainViewModel>();
+
         public MainView()
         {
             this.InitializeComponent();

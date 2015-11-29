@@ -3,8 +3,13 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:Tomato.TomatoMusic.Shell"
-    xmlns:caliburn="using:Caliburn.Micro" 
-    xmlns:callisto="using:Callisto.Controls"
-    RequestedTheme="Light">
-
+    xmlns:caliburn="using:Caliburn.Micro"
+    RequestedTheme="Dark">
+    <caliburn:CaliburnApplication.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="Assets/CommonStyles.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </caliburn:CaliburnApplication.Resources>
 </caliburn:CaliburnApplication>
