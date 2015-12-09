@@ -1,11 +1,6 @@
 ﻿{
   "dependencies": {
-    "Caliburn.Micro": "3.0.0-beta1",
-    "Microsoft.ApplicationInsights": "1.2.3",
-    "Microsoft.ApplicationInsights.PersistenceChannel": "1.2.3",
-    "Microsoft.ApplicationInsights.WindowsApps": "1.1.0",
     "Microsoft.NETCore.UniversalWindowsPlatform": "5.0.0",
-    "System.Reflection.Emit": "4.0.0",
     "Tomato.Media": "0.0.1-alpha1-1"
   },
   "frameworks": {

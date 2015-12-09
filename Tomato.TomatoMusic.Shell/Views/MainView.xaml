@@ -18,7 +18,7 @@
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
         <controls:HamburgerMenu>
             <controls:HamburgerMenu.Pane>
-                <Grid>
+                <Grid Margin="5">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="*"/>
@@ -26,15 +26,45 @@
                     </Grid.RowDefinitions>
                     <StackPanel>
                         <StackPanel Orientation="Horizontal">
-                            <SymbolIcon Width="40" Height="40" Symbol="Admin"/>
-                            <TextBlock VerticalAlignment="Center">Admin</TextBlock>
+                            <SymbolIcon Width="40" Height="40" Symbol="Library"/>
+                            <TextBlock VerticalAlignment="Center">音乐库</TextBlock>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal">
+                            <SymbolIcon Width="40" Height="40" Symbol="MusicInfo"/>
+                            <TextBlock VerticalAlignment="Center">默认</TextBlock>
                         </StackPanel>
                         <Rectangle Margin="5" Fill="#eee" Height="1" HorizontalAlignment="Stretch"/>
+                    </StackPanel>
+                    <StackPanel Grid.Row="1">
+                        <StackPanel Orientation="Horizontal">
+                            <SymbolIcon Width="40" Height="40" Symbol="Add"/>
+                            <TextBlock VerticalAlignment="Center">添加播放列表</TextBlock>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal">
+                            <SymbolIcon Width="40" Height="40" Symbol="MusicInfo"/>
+                            <TextBlock VerticalAlignment="Center">我喜欢</TextBlock>
+                        </StackPanel>
+                    </StackPanel>
+                    <StackPanel Grid.Row="2">
+                        <Rectangle Margin="5" Fill="#eee" Height="1" HorizontalAlignment="Stretch"/>
+
+                        <StackPanel Orientation="Horizontal">
+                            <SymbolIcon Width="40" Height="40" Symbol="Setting"/>
+                            <TextBlock VerticalAlignment="Center">设置</TextBlock>
+                        </StackPanel>
                     </StackPanel>
                 </Grid>
             </controls:HamburgerMenu.Pane>
             <Grid>
-
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <Frame x:Name="ContentFrame"/>
+                <!-- 音乐控制面板 -->
+                <Grid>
+                    
+                </Grid>
             </Grid>
         </controls:HamburgerMenu>
     </Grid>

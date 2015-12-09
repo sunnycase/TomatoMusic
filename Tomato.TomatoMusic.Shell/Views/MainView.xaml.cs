@@ -14,6 +14,7 @@ using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
+using System.Reflection.Emit;
 
 //“空白页”项模板在 http://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409 上有介绍
 
@@ -29,6 +30,10 @@ namespace Tomato.TomatoMusic.Shell.Views
         public MainView()
         {
             this.InitializeComponent();
+            ViewModel.SetupNavigationService(ContentFrame);
+            var builder = AssemblyBuilder.DefineDynamicAssembly(new System.Reflection.AssemblyName("DynamicAssembly"), AssemblyBuilderAccess.Run);
+            var module = builder.DefineDynamicModule("DynamicModule");
+            var type = module.DefineType("DynamicType", System.Reflection.TypeAttributes.Class);
         }
     }
 }
