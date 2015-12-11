@@ -12,6 +12,7 @@
     cal:Bind.Model="{x:Bind ViewModel}">
     <Page.Resources>
         <ResourceDictionary>
+            <cal:BooleanToVisibilityConverter x:Name="BooleanToVisibilityConverter"/>
         </ResourceDictionary>
     </Page.Resources>
 
@@ -62,9 +63,31 @@
                 </Grid.RowDefinitions>
                 <Frame x:Name="ContentFrame"/>
                 <!-- 音乐控制面板 -->
-                <Grid>
-                    
-                </Grid>
+                <Border Grid.Row="1" Padding="5">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Button IsEnabled="{x:Bind ViewModel.PlaySession.CanPrevious, Mode=OneWay}">
+                            <SymbolIcon Symbol="Previous"/>
+                        </Button>
+                        <Button Grid.Column="1" IsEnabled="{x:Bind ViewModel.PlaySession.CanPlay, Mode=OneWay}"
+                            Visibility="{x:Bind ViewModel.PlaySession.ShowPlay, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
+                            <SymbolIcon Symbol="Play"/>
+                        </Button>
+                        <Button Grid.Column="1" IsEnabled="{x:Bind ViewModel.PlaySession.CanPause, Mode=OneWay}"
+                            Visibility="{x:Bind ViewModel.PlaySession.ShowPause, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
+                            <SymbolIcon Symbol="Pause"/>
+                        </Button>
+                        <Button Grid.Column="2" IsEnabled="{x:Bind ViewModel.PlaySession.CanNext, Mode=OneWay}">
+                            <SymbolIcon Symbol="Next"/>
+                        </Button>
+                        <ProgressBar Grid.Column="3" Margin="5,0"/>
+                    </Grid>
+                </Border>
             </Grid>
         </controls:HamburgerMenu>
     </Grid>

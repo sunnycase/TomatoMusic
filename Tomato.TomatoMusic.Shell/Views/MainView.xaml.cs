@@ -31,9 +31,6 @@ namespace Tomato.TomatoMusic.Shell.Views
         {
             this.InitializeComponent();
             ViewModel.SetupNavigationService(ContentFrame);
-            var builder = AssemblyBuilder.DefineDynamicAssembly(new System.Reflection.AssemblyName("DynamicAssembly"), AssemblyBuilderAccess.Run);
-            var module = builder.DefineDynamicModule("DynamicModule");
-            var type = module.DefineType("DynamicType", System.Reflection.TypeAttributes.Class);
         }
     }
 }

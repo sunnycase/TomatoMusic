@@ -6,7 +6,8 @@
     "Microsoft.ApplicationInsights.WindowsApps": "1.1.0",
     "Microsoft.NETCore.UniversalWindowsPlatform": "5.0.0",
     "System.Reflection.Emit": "4.0.0",
-    "Tomato.Media": "0.0.1-alpha1-1"
+    "Tomato.Media": "0.0.1-alpha1-2",
+    "Tomato.Rpc.Json": "0.0.1-alpha1-1"
   },
   "frameworks": {
     "uap10.0": {}

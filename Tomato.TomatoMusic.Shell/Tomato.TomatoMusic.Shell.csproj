@@ -99,6 +99,7 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Services\PlaySessionService.cs" />
     <Compile Include="ViewModels\ViewModelBase.cs" />
     <Compile Include="Views\MainView.xaml.cs">
       <DependentUpon>MainView.xaml</DependentUpon>
@@ -153,7 +154,7 @@
       <Name>Tomato.TomatoMusic.AudioTask</Name>
     </ProjectReference>
     <ProjectReference Include="..\Tomato.TomatoMusic.Core\Tomato.TomatoMusic.Core.csproj">
-      <Project>{65feac97-e4ab-4762-906a-de7ae88a3698}</Project>
+      <Project>{3dca3f42-22c9-4d8f-9f0c-3853d54b8b32}</Project>
       <Name>Tomato.TomatoMusic.Core</Name>
     </ProjectReference>
     <ProjectReference Include="..\Tomato.Uwp.Mvvm\Tomato.Uwp.Mvvm.csproj">

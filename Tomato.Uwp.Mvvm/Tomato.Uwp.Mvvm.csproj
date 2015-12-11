@@ -108,8 +108,10 @@
     <None Include="project.json" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BindableBase.cs" />
     <Compile Include="Controls\HamburgerMenu.cs" />
     <Compile Include="Controls\HamburgerMenuButton.cs" />
+    <Compile Include="Converters\BooleanNotConverter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup />

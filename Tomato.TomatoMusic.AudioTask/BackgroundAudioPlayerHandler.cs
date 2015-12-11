@@ -5,31 +5,37 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Tomato.Media;
-using Windows.Storage;
+using Tomato.Rpc.Json;
+using Tomato.TomatoMusic.Core;
 
 namespace Tomato.TomatoMusic.AudioTask
 {
     public sealed class BackgroundAudioPlayerHandler : IBackgroundMediaPlayerHandler
     {
-        private IMediaPlayer _player;
+        private AudioController _audioController;
 
-        public async void OnActivated(BackgroundMediaPlayer mediaPlayer)
+        public BackgroundAudioPlayerHandler()
         {
-            mediaPlayer.MediaOpened += MediaPlayer_MediaOpened;
-
-            var file = await StorageFile.GetFileFromApplicationUriAsync(new Uri("ms-appx:///Assets/04 - irony -TV Mix-.mp3"));
-            var stream = await file.OpenReadAsync();
-            var mediaSource = await MediaSource.CreateFromStream(stream);
-            Debug.WriteLine($"Title: {mediaSource.Title}");
-            Debug.WriteLine($"Album: {mediaSource.Album}");
-
-            mediaPlayer.SetMediaSource(mediaSource);
-            _player = mediaPlayer;
         }
 
-        private void MediaPlayer_MediaOpened(IMediaPlayer sender, object args)
+        public void OnActivated(BackgroundMediaPlayer mediaPlayer)
         {
-            sender.Play();
+            _audioController = new AudioController(mediaPlayer);
+        }
+
+        public void OnReceiveMessage(string message)
+        {
+            if (message.StartsWith(AudioRpcPacketBuilders.RpcMessagePrefix))
+                _audioController?.OnReceiveMessage(message.Substring(AudioRpcPacketBuilders.RpcMessagePrefix.Length));
+            else
+            {
+                Debug.WriteLine($"Client Message: {message}");
+            }
+        }
+
+        public void Play()
+        {
+
         }
     }
 }
