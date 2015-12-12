@@ -11,5 +11,6 @@ namespace Tomato.TomatoMusic.Core
         void SetupHandler();
         void Play();
         void SetMediaSource(Uri uri);
+        void Pause();
     }
 }

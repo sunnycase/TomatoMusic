@@ -4,8 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Caliburn.Micro;
-using Tomato.TomatoPlayer.Shell.Services;
 using Windows.UI.Xaml.Controls;
+using Tomato.TomatoMusic.Services;
 
 namespace Tomato.TomatoMusic.Shell.ViewModels
 {
@@ -15,12 +15,14 @@ namespace Tomato.TomatoMusic.Shell.ViewModels
         private readonly IEventAggregator _eventAggregator;
         private INavigationService _navigationService;
 
-        public PlaySessionService PlaySession { get; } = new PlaySessionService();
+        public IPlaySessionService PlaySession { get; }
 
-        public MainViewModel(WinRTContainer container, IEventAggregator eventAggregator)
+        public MainViewModel(WinRTContainer container, IEventAggregator eventAggregator,
+            IPlaySessionService playSessionService)
         {
             _container = container;
             _eventAggregator = eventAggregator;
+            PlaySession = playSessionService;
         }
 
         protected override void OnActivate()

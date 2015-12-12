@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Caliburn.Micro;
 using Tomato.TomatoMusic.Shell.ViewModels;
 
-namespace Tomato.TomatoMusic.Shell
+namespace Tomato.TomatoMusic
 {
     static class ShellModule
     {

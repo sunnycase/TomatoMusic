@@ -35,6 +35,8 @@ namespace Tomato.TomatoMusic.Shell
             _container.RegisterWinRTServices();
 
             _container.UseShell();
+            _container.UseAudio();
+            _container.UsePlaylist();
             _eventAggregator = _container.GetInstance<IEventAggregator>();
         }
 

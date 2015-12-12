@@ -25,6 +25,6 @@ namespace Tomato.TomatoMusic.Core
         });
         public static PacketBuilder AudioControllerHandler => _audioControllerHandler.Value;
 
-        public const string RpcMessagePrefix = "Tomato.TomatoMusic.RpcCall:";
+        public const string RpcMessageTag = "Tomato.TomatoMusic.RpcCall";
     }
 }

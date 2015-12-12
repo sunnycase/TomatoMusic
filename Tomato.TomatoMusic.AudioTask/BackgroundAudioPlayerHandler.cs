@@ -23,13 +23,13 @@ namespace Tomato.TomatoMusic.AudioTask
             _audioController = new AudioController(mediaPlayer);
         }
 
-        public void OnReceiveMessage(string message)
+        public void OnReceiveMessage(string tag, string message)
         {
-            if (message.StartsWith(AudioRpcPacketBuilders.RpcMessagePrefix))
-                _audioController?.OnReceiveMessage(message.Substring(AudioRpcPacketBuilders.RpcMessagePrefix.Length));
+            if (tag == AudioRpcPacketBuilders.RpcMessageTag)
+                _audioController?.OnReceiveMessage(message);
             else
             {
-                Debug.WriteLine($"Client Message: {message}");
+                Debug.WriteLine($"Client Message: {tag}, {message}");
             }
         }
 

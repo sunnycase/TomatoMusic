@@ -32,5 +32,10 @@ namespace Tomato.TomatoMusic.Shell.Views
             this.InitializeComponent();
             ViewModel.SetupNavigationService(ContentFrame);
         }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
     }
 }

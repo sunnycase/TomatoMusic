@@ -111,6 +111,8 @@
     <Compile Include="IAudioController.cs" />
     <Compile Include="IAudioControllerHandler.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Services\IMediaTransportService.cs" />
+    <Compile Include="Services\IPlaySessionService.cs" />
     <Content Include="Properties\Tomato.TomatoMusic.Core.rd.xml" />
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">

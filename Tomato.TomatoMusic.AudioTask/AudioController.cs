@@ -52,7 +52,7 @@ namespace Tomato.TomatoMusic.AudioTask
 
         public void SetupHandler()
         {
-            _controllerHandlerClient.OnSendMessage = m => _mediaPlayer.SendMessage(AudioRpcPacketBuilders.RpcMessagePrefix + m);
+            _controllerHandlerClient.OnSendMessage = m => _mediaPlayer.SendMessage(AudioRpcPacketBuilders.RpcMessageTag, m);
             _controllerHandler.NotifyControllerReady();
         }
 
@@ -64,6 +64,11 @@ namespace Tomato.TomatoMusic.AudioTask
             Debug.WriteLine($"Title: {mediaSource.Title}");
             Debug.WriteLine($"Album: {mediaSource.Album}");
             _mediaPlayer.SetMediaSource(mediaSource);
+        }
+
+        public void Pause()
+        {
+            _mediaPlayer.Pause();
         }
     }
 }
