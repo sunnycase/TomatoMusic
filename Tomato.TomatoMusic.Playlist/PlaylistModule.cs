@@ -11,6 +11,7 @@ namespace Tomato.TomatoMusic
     {
         public static void UsePlaylist(this SimpleContainer container)
         {
+            new Playlist.Providers.PlaylistProvider();
         }
     }
 }

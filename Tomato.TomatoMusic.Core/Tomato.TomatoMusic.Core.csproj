@@ -107,6 +107,7 @@
     <None Include="project.json" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AudioConstants.cs" />
     <Compile Include="AudioRpcPacketBuilders.cs" />
     <Compile Include="IAudioController.cs" />
     <Compile Include="IAudioControllerHandler.cs" />
