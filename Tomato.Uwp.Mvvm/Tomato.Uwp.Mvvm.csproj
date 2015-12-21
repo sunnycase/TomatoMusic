@@ -109,10 +109,15 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BindableBase.cs" />
+    <Compile Include="Caliburn\CaliburnExtensions.cs" />
     <Compile Include="Controls\HamburgerMenu.cs" />
     <Compile Include="Controls\HamburgerMenuButton.cs" />
     <Compile Include="Converters\BooleanNotConverter.cs" />
+    <Compile Include="ExceptionExtensions.cs" />
+    <Compile Include="ObjectExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Threading\LimitedConcurrencyLevelTaskScheduler.cs" />
+    <Compile Include="Threading\OperationQueue.cs" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>

@@ -9,20 +9,23 @@ using Tomato.TomatoMusic.Services;
 
 namespace Tomato.TomatoMusic.Shell.ViewModels
 {
-    class MainViewModel : Screen
+    partial class MainViewModel : Screen
     {
         private readonly WinRTContainer _container;
         private readonly IEventAggregator _eventAggregator;
-        private INavigationService _navigationService;
+        private Frame _navigationService;
 
         public IPlaySessionService PlaySession { get; }
+        public IPlaylistManager PlaylistManager { get; }
 
         public MainViewModel(WinRTContainer container, IEventAggregator eventAggregator,
-            IPlaySessionService playSessionService)
+            IPlaySessionService playSessionService, IPlaylistManager playlistManager)
         {
             _container = container;
             _eventAggregator = eventAggregator;
             PlaySession = playSessionService;
+            PlaylistManager = playlistManager;
+            PlaylistManager.PropertyChanged += PlaylistManager_PropertyChanged;
         }
 
         protected override void OnActivate()
@@ -35,12 +38,21 @@ namespace Tomato.TomatoMusic.Shell.ViewModels
             _eventAggregator.Unsubscribe(this);
         }
 
-        public void SetupNavigationService(Frame frame)
+        public void SetupNavigationService(object sender, object e)
         {
-            _navigationService = _container.RegisterNavigationService(frame);
-            
-            //if (_resume)
-            //    _navigationService.ResumeState();
+            _navigationService = (Frame)sender;
+        }
+
+        private void PlaylistManager_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        {
+            switch (e.PropertyName)
+            {
+                case nameof(IPlaylistManager.SelectedPlaylist):
+                    OnSelectedPlaylistChanged();
+                    break;
+                default:
+                    break;
+            }
         }
     }
 }

@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Caliburn.Micro;
 using Tomato.Media;
 using Tomato.TomatoMusic.Primitives;
 using Tomato.Uwp.Mvvm;
@@ -42,11 +43,10 @@ namespace Tomato.TomatoMusic.Playlist.Providers
             private set { SetProperty(ref _isRefreshing, value); }
         }
 
-        private readonly CoreDispatcher _uiDispatcher;
+        private volatile bool _refreshSuspended = false;
 
         public WatchedFolderDispatcher()
         {
-            _uiDispatcher = CoreWindow.GetForCurrentThread().Dispatcher;
             _updateWorker = new PreallocatedWorkItem(UpdateWorkerMain, WorkItemPriority.Low, WorkItemOptions.TimeSliced);
         }
 
@@ -54,7 +54,23 @@ namespace Tomato.TomatoMusic.Playlist.Providers
         {
             lock (_wantUpdateFolders)
             _wantUpdateFolders.Add(folder);
-            RestartCountdown();
+            if (!_refreshSuspended)
+                RestartCountdown();
+        }
+
+        public void SuspendRefresh()
+        {
+            _refreshSuspended = true;
+        }
+
+        public void ResumeRefresh()
+        {
+            _refreshSuspended = false;
+            lock (_wantUpdateFolders)
+            {
+                if(_wantUpdateFolders.Any())
+                    RestartCountdown();
+            }
         }
 
         private void RestartCountdown()
@@ -91,7 +107,7 @@ namespace Tomato.TomatoMusic.Playlist.Providers
             var myCancelSource = _updateWorkerCancelSource;
             try
             {
-                _uiDispatcher.RunAsync(CoreDispatcherPriority.Normal, () => IsRefreshing = true);
+                Execute.OnUIThread(() => IsRefreshing = true);
 
                 if (myCancelSource == null)
                     throw new OperationCanceledException();
@@ -110,7 +126,7 @@ namespace Tomato.TomatoMusic.Playlist.Providers
             }
             finally
             {
-                _uiDispatcher.RunAsync(CoreDispatcherPriority.Normal, () => IsRefreshing = false);
+                Execute.OnUIThread(() => IsRefreshing = false);
                 operation.Close();
             }
         }
@@ -118,7 +134,7 @@ namespace Tomato.TomatoMusic.Playlist.Providers
         private void UpdateFolderContents(Dictionary<WatchedFolder, IReadOnlyCollection<TrackInfo>> folderContents)
         {
             var readOnly = new ReadOnlyDictionary<WatchedFolder, IReadOnlyCollection<TrackInfo>>(folderContents);
-            _uiDispatcher.RunAsync(CoreDispatcherPriority.Normal, ()=> FolderContents = readOnly);
+            Execute.OnUIThread(() => FolderContents = readOnly);
         }
 
         private WatchedFolder[] ConsumeAllWantUpdateFolders()

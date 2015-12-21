@@ -57,8 +57,8 @@
                         BorderBrush="{TemplateBinding BorderBrush}"
                         BorderThickness="{TemplateBinding BorderThickness}">
                         <Grid>
-                            <SplitView x:Name="PART_SplitView" OpenPaneLength="200" DisplayMode="CompactInline"
-                                       IsPaneOpen="True" PaneBackground="Transparent"
+                            <SplitView x:Name="PART_SplitView" DisplayMode="CompactInline" IsPaneOpen="{TemplateBinding IsPaneOpen}"
+                                       PaneBackground="Transparent" CompactPaneLength="48"
                                        Content="{TemplateBinding Content}">
                                 <SplitView.Pane>
                                     <Border Margin="0,48,0,0" Child="{TemplateBinding Pane}"/>

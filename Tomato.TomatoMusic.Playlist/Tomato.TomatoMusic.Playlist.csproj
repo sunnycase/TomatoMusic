@@ -107,11 +107,14 @@
     <None Include="project.json" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Cache\FolderCacheProvider.cs" />
+    <Compile Include="Models\PlaylistIndexFile.cs" />
     <Compile Include="PlaylistModule.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Providers\PlaylistProvider.cs" />
+    <Compile Include="Providers\WatchedPlaylistProvider.cs" />
     <Compile Include="Providers\WatchedFolder.cs" />
     <Compile Include="Providers\WatchedFolderDispatcher.cs" />
+    <Compile Include="Services\PlaylistManager.cs" />
     <Content Include="Properties\Tomato.TomatoMusic.Playlist.rd.xml" />
   </ItemGroup>
   <ItemGroup>

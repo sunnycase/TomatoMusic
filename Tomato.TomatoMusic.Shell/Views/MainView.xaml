@@ -4,6 +4,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:Tomato.TomatoMusic.Shell.Views"
     xmlns:localViewModels="using:Tomato.TomatoMusic.Shell.ViewModels"
+    xmlns:primitives="using:Tomato.TomatoMusic.Primitives"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:controls="using:Tomato.Uwp.Mvvm.Controls"
@@ -19,38 +20,82 @@
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
         <controls:HamburgerMenu>
             <controls:HamburgerMenu.Pane>
-                <Grid Margin="5">
+                <Grid Margin="0,5">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="*"/>
                         <RowDefinition Height="Auto"/>
                     </Grid.RowDefinitions>
+                    <Grid.Resources>
+                        <DataTemplate x:Key="PlaylistLabelTemplate" x:DataType="primitives:IPlaylistAnchor">
+                            <RadioButton Background="Transparent" GroupName="Playlist" Style="{StaticResource PlaylistLabelStyle}"
+                                         IsChecked="{x:Bind IsSelected, Mode=TwoWay}">
+                                <StackPanel Orientation="Horizontal">
+                                    <SymbolIcon Width="48" Height="48" Symbol="MusicInfo"/>
+                                    <TextBlock VerticalAlignment="Center" Text="{x:Bind Placeholder.Name}"/>
+                                </StackPanel>
+                            </RadioButton>
+                        </DataTemplate>
+                    </Grid.Resources>
                     <StackPanel>
-                        <StackPanel Orientation="Horizontal">
-                            <SymbolIcon Width="40" Height="40" Symbol="Library"/>
-                            <TextBlock VerticalAlignment="Center">音乐库</TextBlock>
-                        </StackPanel>
-                        <StackPanel Orientation="Horizontal">
-                            <SymbolIcon Width="40" Height="40" Symbol="MusicInfo"/>
-                            <TextBlock VerticalAlignment="Center">默认</TextBlock>
-                        </StackPanel>
+                        <ContentPresenter Content="{x:Bind ViewModel.PlaylistManager.MusicLibrary}"
+                                          ContentTemplate="{StaticResource PlaylistLabelTemplate}"/>
+                        <ContentPresenter Content="{x:Bind ViewModel.PlaylistManager.Default}"
+                                          ContentTemplate="{StaticResource PlaylistLabelTemplate}"/>
                         <Rectangle Margin="5" Fill="#eee" Height="1" HorizontalAlignment="Stretch"/>
                     </StackPanel>
                     <StackPanel Grid.Row="1">
-                        <StackPanel Orientation="Horizontal">
-                            <SymbolIcon Width="40" Height="40" Symbol="Add"/>
-                            <TextBlock VerticalAlignment="Center">添加播放列表</TextBlock>
-                        </StackPanel>
-                        <StackPanel Orientation="Horizontal">
-                            <SymbolIcon Width="40" Height="40" Symbol="MusicInfo"/>
-                            <TextBlock VerticalAlignment="Center">我喜欢</TextBlock>
-                        </StackPanel>
+                        <Button Loaded="{x:Bind ViewModel.SetupAddPlaylistButton}" Style="{StaticResource HamburgerButtonStyle}">
+                            <StackPanel Orientation="Horizontal">
+                                <SymbolIcon Width="48" Height="48" Symbol="Add"/>
+                                <TextBlock VerticalAlignment="Center">添加播放列表</TextBlock>
+                            </StackPanel>
+                            <Button.Flyout>
+                                <Flyout Placement="Right">
+                                    <Grid>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="Auto"/>
+                                        </Grid.RowDefinitions>
+                                        <TextBlock>请输入播放列表名称</TextBlock>
+                                        <TextBox Margin="0,5" Grid.Row="1" Width="200" Text="{x:Bind ViewModel.NewPlaylistName, Mode=TwoWay}"/>
+                                        <StackPanel Grid.Row="2" HorizontalAlignment="Right" Orientation="Horizontal"
+                                                    Margin="0,5,0,0">
+                                            <StackPanel.Resources>
+                                                <Style TargetType="Button">
+                                                    <Setter Property="Padding" Value="10,3"/>
+                                                </Style>
+                                            </StackPanel.Resources>
+                                            <Button Click="{x:Bind ViewModel.OnSubmitNewPlaylist}" 
+                                                    IsEnabled="{x:Bind ViewModel.CanSubmitNewPlaylist, Mode=OneWay}">确定</Button>
+                                            <Button Click="{x:Bind ViewModel.OnCancelNewPlaylist}" Margin="5,0,0,0">取消</Button>
+                                        </StackPanel>
+                                    </Grid>
+                                </Flyout>
+                            </Button.Flyout>
+                        </Button>
+                        <ListBox ItemsSource="{x:Bind ViewModel.PlaylistManager.CustomPlaylists}"
+                                 ItemTemplate="{StaticResource PlaylistLabelTemplate}"
+                                 Background="Transparent" BorderThickness="0">
+                            <ListBox.ItemContainerStyle>
+                                <Style TargetType="ListBoxItem">
+                                    <Setter Property="Template">
+                                        <Setter.Value>
+                                            <ControlTemplate>
+                                                <ContentPresenter/>
+                                            </ControlTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+                                </Style>
+                            </ListBox.ItemContainerStyle>
+                        </ListBox>
                     </StackPanel>
                     <StackPanel Grid.Row="2">
                         <Rectangle Margin="5" Fill="#eee" Height="1" HorizontalAlignment="Stretch"/>
 
                         <StackPanel Orientation="Horizontal">
-                            <SymbolIcon Width="40" Height="40" Symbol="Setting"/>
+                            <SymbolIcon Width="48" Height="48" Symbol="Setting"/>
                             <TextBlock VerticalAlignment="Center">设置</TextBlock>
                         </StackPanel>
                     </StackPanel>
@@ -61,7 +106,7 @@
                     <RowDefinition Height="*"/>
                     <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
-                <Frame x:Name="ContentFrame"/>
+                <Frame x:Name="ContentFrame" Loaded="{x:Bind ViewModel.SetupNavigationService}" Padding="10"/>
                 <!-- 音乐控制面板 -->
                 <Border Grid.Row="1" Padding="5">
                     <Grid>

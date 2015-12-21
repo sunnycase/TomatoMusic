@@ -7,8 +7,8 @@
     <ProjectGuid>{D9F0542F-8CF5-4D9D-BF85-783531B98F54}</ProjectGuid>
     <OutputType>AppContainerExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Tomato.TomatoPlayer.Shell</RootNamespace>
-    <AssemblyName>Tomato.TomatoPlayer.Shell</AssemblyName>
+    <RootNamespace>Tomato.TomatoMusic.Shell</RootNamespace>
+    <AssemblyName>Tomato.TomatoMusic.Shell</AssemblyName>
     <DefaultLanguage>zh-CN</DefaultLanguage>
     <TargetPlatformIdentifier>UAP</TargetPlatformIdentifier>
     <TargetPlatformVersion>10.0.10240.0</TargetPlatformVersion>
@@ -17,7 +17,8 @@
     <EnableDotNetNativeCompatibleProfile>true</EnableDotNetNativeCompatibleProfile>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{A5A43C5B-DE2A-4C0C-9213-0A381AF9435A};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
-    <PackageCertificateKeyFile>Tomato.TomatoPlayer.Shell_TemporaryKey.pfx</PackageCertificateKeyFile>
+    <PackageCertificateKeyFile>Tomato.TomatoMusic.Shell_TemporaryKey.pfx</PackageCertificateKeyFile>
+    <PackageCertificateThumbprint>0EE2AB513E000DF27962DA6EC8F09477C1D8B12F</PackageCertificateThumbprint>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|ARM'">
     <DebugSymbols>true</DebugSymbols>
@@ -99,6 +100,8 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
+    <Compile Include="ViewModels\MainViewModel.Playlist.cs" />
+    <Compile Include="ViewModels\PlaylistViewModel.cs" />
     <Compile Include="ViewModels\ViewModelBase.cs" />
     <Compile Include="Views\MainView.xaml.cs">
       <DependentUpon>MainView.xaml</DependentUpon>
@@ -106,11 +109,16 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ShellModule.cs" />
     <Compile Include="ViewModels\MainViewModel.cs" />
+    <Compile Include="Views\PlaylistView.xaml.cs">
+      <DependentUpon>PlaylistView.xaml</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <AppxManifest Include="Package.appxmanifest">
       <SubType>Designer</SubType>
     </AppxManifest>
+    <PRIResource Include="Strings\zh-Hans\Resources.resw" />
+    <PRIResource Include="Strings\en-US\Resources.resw" />
     <None Include="Tomato.TomatoMusic.Shell_TemporaryKey.pfx" />
   </ItemGroup>
   <ItemGroup>
@@ -137,6 +145,10 @@
     <Page Include="Views\MainView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\PlaylistView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>
   <ItemGroup>

@@ -23,6 +23,8 @@ namespace Tomato.Uwp.Mvvm.Controls
             typeof(HamburgerMenu), new PropertyMetadata(DependencyProperty.UnsetValue));
         public static DependencyProperty ContentProperty { get; } = DependencyProperty.Register(nameof(Content), typeof(UIElement),
             typeof(HamburgerMenu), new PropertyMetadata(DependencyProperty.UnsetValue));
+        public static DependencyProperty IsPaneOpenProperty { get; } = DependencyProperty.Register(nameof(IsPaneOpen), typeof(bool),
+            typeof(HamburgerMenu), new PropertyMetadata(true));
 
         public UIElement Pane
         {
@@ -34,6 +36,12 @@ namespace Tomato.Uwp.Mvvm.Controls
         {
             get { return (UIElement)GetValue(ContentProperty); }
             set { SetValue(ContentProperty, value); }
+        }
+
+        public bool IsPaneOpen
+        {
+            get { return (bool)GetValue(IsPaneOpenProperty); }
+            set { SetValue(IsPaneOpenProperty, value); }
         }
 
         public HamburgerMenu()
@@ -51,6 +59,7 @@ namespace Tomato.Uwp.Mvvm.Controls
 
         private void HamburgerButton_Click(object sender, RoutedEventArgs e)
         {
+            IsPaneOpen = !IsPaneOpen;
         }
     }
 }
