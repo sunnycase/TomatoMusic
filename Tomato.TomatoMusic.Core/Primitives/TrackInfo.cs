@@ -16,6 +16,12 @@ namespace Tomato.TomatoMusic.Primitives
 
         public Uri CoverThumbnail { get; set; }
 
+        public string AlbumArtist { get; set; }
+
+        public string Artist { get; set; }
+
+        public TimeSpan? Duration { get; set; }
+
         public class ExistenceEqualityComparer : EqualityComparer<TrackInfo>
         {
             public ExistenceEqualityComparer()
@@ -25,7 +31,7 @@ namespace Tomato.TomatoMusic.Primitives
 
             public override bool Equals(TrackInfo x, TrackInfo y)
             {
-                return x?.Source == y?.Source;
+                return (x?.Source == y?.Source);
             }
 
             public override int GetHashCode(TrackInfo obj)

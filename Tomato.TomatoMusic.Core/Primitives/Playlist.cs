@@ -9,6 +9,7 @@ namespace Tomato.TomatoMusic.Primitives
     public static class PlaylistVersions
     {
         public const string V1_0 = "1.0";
+        public const string Current = V1_0;
     }
 
     public class Playlist : IHasKey
@@ -30,7 +31,8 @@ namespace Tomato.TomatoMusic.Primitives
         {
             var playlist = new Playlist()
             {
-                Key = MusicLibraryPlaylistKey
+                Key = MusicLibraryPlaylistKey,
+                Version = PlaylistVersions.Current
             };
             playlist.KnownFolders.Add(nameof(Windows.Storage.KnownFolders.MusicLibrary));
             return playlist;

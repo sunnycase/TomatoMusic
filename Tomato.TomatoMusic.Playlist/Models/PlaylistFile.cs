@@ -57,7 +57,8 @@ namespace Tomato.TomatoMusic.Playlist.Models
                 else
                     model = new Primitives.Playlist
                     {
-                        Key = placeholder.Key
+                        Key = placeholder.Key,
+                        Version = PlaylistVersions.Current
                     };
             }
         }

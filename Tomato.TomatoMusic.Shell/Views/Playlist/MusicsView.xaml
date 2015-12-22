@@ -7,26 +7,47 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:cal="using:Caliburn.Micro"
     xmlns:primitives="using:Tomato.TomatoMusic.Primitives"
+    xmlns:localViewModels="using:Tomato.TomatoMusic.Shell.ViewModels.Playlist"
+    xmlns:converters="using:Tomato.Uwp.Mvvm.Converters"
     cal:Bind.Model="{x:Bind ViewModel, Mode=OneWay}"
     mc:Ignorable="d" x:Uid="Musics" Header="Musics">
+    <PivotItem.Resources>
+        <converters:TimeSpanToStringConverter x:Key="TimeSpanToStringConverter" Format="hh\:mm\:ss"/>
+    </PivotItem.Resources>
     <Grid>
         <ProgressRing IsActive="{x:Bind ViewModel.IsRefreshing, Mode=OneWay}"/>
         <ListView ItemsSource="{x:Bind ViewModel.Tracks, Mode=OneWay}">
             <ListView.ItemTemplate>
-                <DataTemplate x:DataType="primitives:TrackInfo">
+                <DataTemplate x:DataType="localViewModels:MusicsTrackViewModel">
                     <Grid>
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="4*"/>
-                            <ColumnDefinition Width="1*"/>
-                            <ColumnDefinition Width="1*"/>
-                            <ColumnDefinition Width="50"/>
-                            <ColumnDefinition Width="50"/>
+                            <ColumnDefinition Width="1.5*"/>
+                            <ColumnDefinition Width="80"/>
+                            <ColumnDefinition Width="2*"/>
+                            <ColumnDefinition Width="1.5*"/>
+                            <ColumnDefinition Width="80"/>
                         </Grid.ColumnDefinitions>
-                        <TextBlock Text="{x:Bind Title}"/>
-                        <TextBlock Grid.Column="1" Margin="5,0" Text="{x:Bind Album}"/>
+                        <TextBlock Text="{x:Bind Track.Title}"/>
+                        <StackPanel Grid.Column="1" Orientation="Horizontal">
+                            <Button Click="{x:Bind OnRequestPlay}">
+                                <SymbolIcon Symbol="Play"/>
+                            </Button>
+                            <Button>
+                                <SymbolIcon Symbol="More"/>
+                            </Button>
+                        </StackPanel>
+                        <TextBlock Grid.Column="2" Margin="15,0,0,0" Text="{x:Bind Track.Album}"/>
+                        <TextBlock Grid.Column="3" Margin="15,0,0,0" Text="{x:Bind Track.Artist}"/>
+                        <TextBlock Grid.Column="4" Margin="15,0,0,0" Text="{x:Bind Track.Duration, Converter={StaticResource TimeSpanToStringConverter}}"/>
                     </Grid>
                 </DataTemplate>
             </ListView.ItemTemplate>
+            <ListView.ItemContainerStyle>
+                <Style TargetType="ListViewItem">
+                    <Setter Property="HorizontalAlignment" Value="Stretch"/>
+                    <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                </Style>
+            </ListView.ItemContainerStyle>
         </ListView>
     </Grid>
 </PivotItem>

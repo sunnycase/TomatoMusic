@@ -126,7 +126,7 @@ namespace Tomato.TomatoMusic.Playlist.Services
             {
                 IPlaylistContentProvider target;
                 WeakReference<IPlaylistContentProvider> weak;
-                if(_playlistContentProviders.TryGetValue(anchor, out weak))
+                if (_playlistContentProviders.TryGetValue(anchor, out weak))
                 {
                     if (weak.TryGetTarget(out target) && target != null)
                         return target;
@@ -178,8 +178,10 @@ namespace Tomato.TomatoMusic.Playlist.Services
 
                 Execute.BeginOnUIThread(() =>
                 {
-                    _tracks.AddRange(toAdd);
-                    _tracks.RemoveRange(toRemove);
+                    if (toAdd.Any())
+                        _tracks.AddRange(toAdd);
+                    if (toRemove.Any())
+                        _tracks.RemoveRange(toRemove);
                 });
             }
         }

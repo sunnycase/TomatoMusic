@@ -163,7 +163,11 @@ namespace Tomato.TomatoMusic.Playlist.Providers
                     tracks.Add(new TrackInfo
                     {
                         Source = new Uri(file.Path),
-                        Title = mediaSource.Title
+                        Title = mediaSource.Title,
+                        Album = mediaSource.Album,
+                        Artist = mediaSource.Artist,
+                        AlbumArtist = mediaSource.AlbumArtist,
+                        Duration = mediaSource.Duration
                     });
                 }
                 folderContents.Add(folder, tracks);
