@@ -117,10 +117,19 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="Albums.Header" xml:space="preserve">
+    <value>专辑</value>
+  </data>
+  <data name="Artists.Header" xml:space="preserve">
+    <value>艺术家</value>
+  </data>
   <data name="Default" xml:space="preserve">
     <value>默认</value>
   </data>
   <data name="MusicLibrary" xml:space="preserve">
     <value>音乐库</value>
+  </data>
+  <data name="Musics.Header" xml:space="preserve">
+    <value>音乐</value>
   </data>
 </root>

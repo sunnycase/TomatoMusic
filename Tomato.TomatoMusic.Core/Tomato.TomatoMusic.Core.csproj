@@ -113,6 +113,7 @@
     <Compile Include="IAudioControllerHandler.cs" />
     <Compile Include="Primitives\IHasKey.cs" />
     <Compile Include="Primitives\IPlaylistAnchor.cs" />
+    <Compile Include="Primitives\IPlaylistContentProvider.cs" />
     <Compile Include="Primitives\Playlist.cs" />
     <Compile Include="Primitives\PlaylistPlaceholder.cs" />
     <Compile Include="Primitives\TrackInfo.cs" />

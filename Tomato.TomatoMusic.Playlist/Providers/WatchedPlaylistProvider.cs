@@ -55,8 +55,25 @@ namespace Tomato.TomatoMusic.Playlist.Providers
             }
             finally
             {
-                Execute.BeginOnUIThread(() => Updated?.Invoke(this, EventArgs.Empty));
+                NotifyUpdated();
             }
+        }
+
+        public IEnumerable<TrackInfo> GetTrackInfos()
+        {
+            foreach (var track in _individualTracks)
+                yield return track;
+            foreach (var folder in _knownFolderCaches)
+                foreach (var track in folder.Value.Tracks)
+                    yield return track;
+            foreach (var folder in _folderCaches)
+                foreach (var track in folder.Value.Tracks)
+                    yield return track;
+        }
+
+        private void NotifyUpdated()
+        {
+            Execute.BeginOnUIThread(() => Updated?.Invoke(this, EventArgs.Empty));
         }
 
         private void UpdateAll()
@@ -118,7 +135,7 @@ namespace Tomato.TomatoMusic.Playlist.Providers
                 if (_knownFolderCaches.TryGetValue(folder.Key, out cache))
                     await cache.Update(folder.Value);
             }
-            Execute.BeginOnUIThread(() => Updated?.Invoke(this, EventArgs.Empty));
+            NotifyUpdated();
         }
     }
 }

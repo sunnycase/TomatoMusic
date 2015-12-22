@@ -108,6 +108,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Cache\FolderCacheProvider.cs" />
+    <Compile Include="Models\PlaylistFile.cs" />
     <Compile Include="Models\PlaylistIndexFile.cs" />
     <Compile Include="PlaylistModule.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

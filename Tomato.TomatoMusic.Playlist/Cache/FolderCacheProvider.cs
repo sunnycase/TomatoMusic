@@ -19,7 +19,6 @@ namespace Tomato.TomatoMusic.Playlist.Cache
     {
         private readonly Guid _playlistKey;
         private readonly string _folderName;
-        private readonly string _cacheFilePath;
         private readonly Task<StorageFile> _cacheFile;
         private readonly List<TrackInfo> _tracks = new List<TrackInfo>();
         private readonly OperationQueue _operationQueue = new OperationQueue(1);
@@ -30,11 +29,11 @@ namespace Tomato.TomatoMusic.Playlist.Cache
         {
             get
             {
-                lock(_cachedTracksLocker)
+                lock (_cachedTracksLocker)
                 {
-                    if(_cachedTracks == null)
+                    if (_cachedTracks == null)
                     {
-                        lock(_tracks)
+                        lock (_tracks)
                             _cachedTracks = new ReadOnlyCollection<TrackInfo>(_tracks.ToList());
                     }
                     return _cachedTracks;
@@ -59,7 +58,9 @@ namespace Tomato.TomatoMusic.Playlist.Cache
                 lock (_tracks)
                 {
                     _tracks.Clear();
-                    _tracks.AddRange(JsonConvert.DeserializeObject<FolderCache>(content).Tracks);
+                    var toAdd = JsonConvert.DeserializeObject<FolderCache>(content)?.Tracks;
+                    if (toAdd != null)
+                        _tracks.AddRange(toAdd);
                 }
                 OnTracksUpdated();
             });
@@ -112,7 +113,7 @@ namespace Tomato.TomatoMusic.Playlist.Cache
 
         private void OnTracksUpdated()
         {
-            lock(_cachedTracksLocker)
+            lock (_cachedTracksLocker)
                 _cachedTracks = null;
             TracksUpdated?.Invoke(this, EventArgs.Empty);
         }

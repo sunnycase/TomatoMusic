@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Caliburn.Micro;
 using Tomato.TomatoMusic.Primitives;
+using Tomato.TomatoMusic.Shell.ViewModels.Playlist;
 using Tomato.Uwp.Mvvm;
 
 namespace Tomato.TomatoMusic.Shell.ViewModels
@@ -21,6 +23,13 @@ namespace Tomato.TomatoMusic.Shell.ViewModels
             }
         }
 
+        private MusicsViewModel _musicsViewModel;
+        public MusicsViewModel MusicsViewModel
+        {
+            get { return _musicsViewModel; }
+            private set { SetProperty(ref _musicsViewModel, value); }
+        }
+
         public PlaylistViewModel()
         {
 
@@ -28,7 +37,7 @@ namespace Tomato.TomatoMusic.Shell.ViewModels
 
         private void OnPlaylistAnchorChanged(IPlaylistAnchor anchor)
         {
-
+            MusicsViewModel = new MusicsViewModel(anchor);
         }
     }
 }

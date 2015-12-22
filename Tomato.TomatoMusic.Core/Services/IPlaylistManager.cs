@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Caliburn.Micro;
 using Tomato.TomatoMusic.Primitives;
 
 namespace Tomato.TomatoMusic.Services
@@ -16,6 +17,9 @@ namespace Tomato.TomatoMusic.Services
 
         IPlaylistAnchor MusicLibrary { get; }
         IPlaylistAnchor Default { get; }
+
+        IPlaylistContentProvider GetPlaylistContentProvider(IPlaylistAnchor anchor);
+
         IPlaylistAnchor SelectedPlaylist { get; }
     }
 }

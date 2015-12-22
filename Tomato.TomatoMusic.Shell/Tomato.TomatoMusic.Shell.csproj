@@ -102,6 +102,7 @@
     </Compile>
     <Compile Include="ViewModels\MainViewModel.Playlist.cs" />
     <Compile Include="ViewModels\PlaylistViewModel.cs" />
+    <Compile Include="ViewModels\Playlist\MusicsViewModel.cs" />
     <Compile Include="ViewModels\ViewModelBase.cs" />
     <Compile Include="Views\MainView.xaml.cs">
       <DependentUpon>MainView.xaml</DependentUpon>
@@ -111,6 +112,15 @@
     <Compile Include="ViewModels\MainViewModel.cs" />
     <Compile Include="Views\PlaylistView.xaml.cs">
       <DependentUpon>PlaylistView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Playlist\ArtistsView.xaml.cs">
+      <DependentUpon>ArtistsView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Playlist\AlbumsView.xaml.cs">
+      <DependentUpon>AlbumsView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Playlist\MusicsView.xaml.cs">
+      <DependentUpon>MusicsView.xaml</DependentUpon>
     </Compile>
   </ItemGroup>
   <ItemGroup>
@@ -147,6 +157,18 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\PlaylistView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\Playlist\ArtistsView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\Playlist\AlbumsView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\Playlist\MusicsView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

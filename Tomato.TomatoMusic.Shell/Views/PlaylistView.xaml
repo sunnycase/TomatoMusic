@@ -6,6 +6,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:cal="using:Caliburn.Micro"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:playlistViews="using:Tomato.TomatoMusic.Shell.Views.Playlist"
     mc:Ignorable="d"
     cal:Bind.Model="{x:Bind ViewModel}">
 
@@ -20,5 +21,10 @@
                 <SymbolIcon Symbol="Edit"/>
             </Button>
         </StackPanel>
+        <Pivot Grid.Row="1">
+            <playlistViews:MusicsView ViewModel="{x:Bind ViewModel.MusicsViewModel, Mode=OneWay}"/>
+            <playlistViews:AlbumsView/>
+            <playlistViews:ArtistsView/>
+        </Pivot>
     </Grid>
 </Page>

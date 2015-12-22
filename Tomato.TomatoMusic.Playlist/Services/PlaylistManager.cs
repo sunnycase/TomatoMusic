@@ -10,6 +10,7 @@ using Tomato.TomatoMusic.Playlist.Models;
 using Tomato.TomatoMusic.Services;
 using Tomato.Uwp.Mvvm;
 using Windows.Storage;
+using Tomato.TomatoMusic.Playlist.Providers;
 
 namespace Tomato.TomatoMusic.Playlist.Services
 {
@@ -73,6 +74,8 @@ namespace Tomato.TomatoMusic.Playlist.Services
 
         private PlaylistIndexFile _playlistIndexFile;
 
+        private readonly Dictionary<IPlaylistAnchor, WeakReference<IPlaylistContentProvider>> _playlistContentProviders = new Dictionary<IPlaylistAnchor, WeakReference<IPlaylistContentProvider>>();
+
         public PlaylistManager()
         {
             Initialize();
@@ -115,6 +118,70 @@ namespace Tomato.TomatoMusic.Playlist.Services
                 SelectedPlaylist = anchor;
             else if (anchor == SelectedPlaylist)
                 SelectedPlaylist = null;
+        }
+
+        public IPlaylistContentProvider GetPlaylistContentProvider(IPlaylistAnchor anchor)
+        {
+            lock (_playlistContentProviders)
+            {
+                IPlaylistContentProvider target;
+                WeakReference<IPlaylistContentProvider> weak;
+                if(_playlistContentProviders.TryGetValue(anchor, out weak))
+                {
+                    if (weak.TryGetTarget(out target) && target != null)
+                        return target;
+                    else
+                        _playlistContentProviders.Remove(anchor);
+                }
+                target = new PlaylistContentProvider(anchor);
+                _playlistContentProviders.Add(anchor, new WeakReference<IPlaylistContentProvider>(target));
+                return target;
+            }
+        }
+
+        class PlaylistContentProvider : IPlaylistContentProvider
+        {
+            public Task<IObservableCollection<TrackInfo>> Result { get; }
+            private WatchedPlaylistProvider _watchedProvider;
+            private PlaylistFile _playlistFile;
+            private BindableCollection<TrackInfo> _tracks;
+
+            public PlaylistContentProvider(IPlaylistAnchor anchor)
+            {
+                Result = LoadContent(anchor);
+            }
+
+            private async Task<IObservableCollection<TrackInfo>> LoadContent(IPlaylistAnchor anchor)
+            {
+                _playlistFile = await PlaylistFile.OpenAsync(anchor.Placeholder);
+                _watchedProvider = new WatchedPlaylistProvider(_playlistFile.Playlist);
+                var completion = new TaskCompletionSource<IObservableCollection<TrackInfo>>();
+                EventHandler firstUpdate = null;
+                firstUpdate = (s, e) =>
+                {
+                    _watchedProvider.Updated -= firstUpdate;
+                    _tracks = new BindableCollection<TrackInfo>(_watchedProvider.GetTrackInfos());
+                    _watchedProvider.Updated += _watchedProvider_Updated;
+                    completion.SetResult(_tracks);
+                };
+                _watchedProvider.Updated += firstUpdate;
+                _watchedProvider.LoadPlaylist();
+                return await completion.Task;
+            }
+
+            private void _watchedProvider_Updated(object sender, EventArgs e)
+            {
+                var newTracks = _watchedProvider.GetTrackInfos().ToList();
+                var comparer = new TrackInfo.ExistenceEqualityComparer();
+                var toAdd = newTracks.Except(_tracks, comparer).ToList();
+                var toRemove = _tracks.Except(_tracks, comparer).ToList();
+
+                Execute.BeginOnUIThread(() =>
+                {
+                    _tracks.AddRange(toAdd);
+                    _tracks.RemoveRange(toRemove);
+                });
+            }
         }
     }
 }

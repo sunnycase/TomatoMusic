@@ -25,6 +25,16 @@ namespace Tomato.TomatoMusic.Primitives
 
         public static readonly Guid MusicLibraryPlaylistKey = new Guid("670B986E-8B0C-45B0-8A2E-BCAF019013D8");
         public static readonly Guid DefaultPlaylistKey = new Guid("3826B0E5-1A43-42AB-8C6B-AB8C89ADA77F");
+
+        public static Playlist CreateMusicLibrary()
+        {
+            var playlist = new Playlist()
+            {
+                Key = MusicLibraryPlaylistKey
+            };
+            playlist.KnownFolders.Add(nameof(Windows.Storage.KnownFolders.MusicLibrary));
+            return playlist;
+        }
     }
 
     public class PlaylistCache : IHasKey
