@@ -11,6 +11,7 @@ using Tomato.TomatoMusic.Services;
 using Tomato.Uwp.Mvvm;
 using Windows.Storage;
 using Tomato.TomatoMusic.Playlist.Providers;
+using Windows.Storage.AccessCache;
 
 namespace Tomato.TomatoMusic.Playlist.Services
 {
@@ -146,15 +147,33 @@ namespace Tomato.TomatoMusic.Playlist.Services
             private PlaylistFile _playlistFile;
             private BindableCollection<TrackInfo> _tracks;
 
+            private readonly Task _openPlaylistTask;
+
             public PlaylistContentProvider(IPlaylistAnchor anchor)
             {
+                _openPlaylistTask = OpenPlaylist(anchor);
                 Result = LoadContent(anchor);
+            }
+
+            public async void AddFolder(StorageFolder folder)
+            {
+                var futureAccessList = StorageApplicationPermissions.FutureAccessList;
+                if (!futureAccessList.CheckAccess(folder))
+                    futureAccessList.Add(folder);
+                await _openPlaylistTask;
+                _playlistFile.AddFolder(folder);
+                _watchedProvider.AddFolder(folder);
+            }
+
+            private async Task OpenPlaylist(IPlaylistAnchor anchor)
+            {
+                _playlistFile = await PlaylistFile.OpenAsync(anchor.Placeholder);
+                _watchedProvider = new WatchedPlaylistProvider(_playlistFile.Playlist);
             }
 
             private async Task<IObservableCollection<TrackInfo>> LoadContent(IPlaylistAnchor anchor)
             {
-                _playlistFile = await PlaylistFile.OpenAsync(anchor.Placeholder);
-                _watchedProvider = new WatchedPlaylistProvider(_playlistFile.Playlist);
+                await _openPlaylistTask;
                 var completion = new TaskCompletionSource<IObservableCollection<TrackInfo>>();
                 EventHandler firstUpdate = null;
                 firstUpdate = (s, e) =>

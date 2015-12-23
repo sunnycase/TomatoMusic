@@ -32,10 +32,5 @@ namespace Tomato.TomatoMusic.AudioTask
                 Debug.WriteLine($"Client Message: {tag}, {message}");
             }
         }
-
-        public void Play()
-        {
-
-        }
     }
 }

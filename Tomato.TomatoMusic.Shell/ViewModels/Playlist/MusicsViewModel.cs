@@ -6,12 +6,20 @@ using System.Threading.Tasks;
 using Caliburn.Micro;
 using Tomato.TomatoMusic.Primitives;
 using Tomato.TomatoMusic.Services;
+using Tomato.Uwp.Mvvm;
 
 namespace Tomato.TomatoMusic.Shell.ViewModels.Playlist
 {
-    class MusicsTrackViewModel
+    class MusicsTrackViewModel : BindableBase
     {
         public TrackInfo Track { get; set; }
+
+        private bool _isSelected;
+        public bool IsSelected
+        {
+            get { return _isSelected; }
+            set { SetProperty(ref _isSelected, value); }
+        }
 
         public event EventHandler PlayRequested;
 
@@ -104,7 +112,7 @@ namespace Tomato.TomatoMusic.Shell.ViewModels.Playlist
                     break;
                 case System.Collections.Specialized.NotifyCollectionChangedAction.Reset:
                     Tracks.Clear();
-                    Tracks.AddRange(e.NewItems.Cast<TrackInfo>().Select(WrapTrackInfo));
+                    Tracks.AddRange(_tracksSource.Select(WrapTrackInfo));
                     break;
                 default:
                     break;

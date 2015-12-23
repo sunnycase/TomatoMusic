@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -10,7 +11,9 @@ using Caliburn.Micro;
 using Tomato.Media;
 using Tomato.TomatoMusic.Primitives;
 using Tomato.Uwp.Mvvm;
+using Tomato.Uwp.Mvvm.Threading;
 using Windows.Foundation;
+using Windows.Storage;
 using Windows.System.Threading;
 using Windows.System.Threading.Core;
 using Windows.UI.Core;
@@ -20,13 +23,13 @@ namespace Tomato.TomatoMusic.Playlist.Providers
     class WatchedFolderDispatcher : BindableBase
     {
         private readonly HashSet<WatchedFolder> _wantUpdateFolders = new HashSet<WatchedFolder>();
-
-        private readonly PreallocatedWorkItem _updateWorker;
+        
         private readonly object _countdownLocker = new object();
         private ThreadPoolTimer _countdown;
         private static readonly TimeSpan CountdownTime = new TimeSpan(0, 0, 15);
         private CancellationTokenSource _updateWorkerCancelSource;
         private readonly object _updateWorkerCancelSourceLocker = new object();
+        private readonly TaskFactory _updateWorkerFactory;
 
         private IReadOnlyDictionary<WatchedFolder, IReadOnlyCollection<TrackInfo>> _folderContents =
             new ReadOnlyDictionary<WatchedFolder, IReadOnlyCollection<TrackInfo>>(new Dictionary<WatchedFolder, IReadOnlyCollection<TrackInfo>>());
@@ -47,7 +50,7 @@ namespace Tomato.TomatoMusic.Playlist.Providers
 
         public WatchedFolderDispatcher()
         {
-            _updateWorker = new PreallocatedWorkItem(UpdateWorkerMain, WorkItemPriority.Low, WorkItemOptions.TimeSliced);
+            _updateWorkerFactory = new TaskFactory(new CancellationToken(), TaskCreationOptions.LongRunning, TaskContinuationOptions.LongRunning, new LimitedConcurrencyLevelTaskScheduler(1));
         }
 
         public void RequestFileUpdate(WatchedFolder folder)
@@ -95,29 +98,30 @@ namespace Tomato.TomatoMusic.Playlist.Providers
 
         private async void OnStartUpdateWorker(ThreadPoolTimer timer)
         {
+            CancellationToken token;
             lock (_updateWorkerCancelSourceLocker)
             {
                 _updateWorkerCancelSource = new CancellationTokenSource();
+                token = _updateWorkerCancelSource.Token;
             }
-            await _updateWorker.RunAsync();
+            await _updateWorkerFactory.StartNew(UpdateWorkerMain, token, token);
         }
 
-        private async void UpdateWorkerMain(IAsyncAction operation)
+        private async Task UpdateWorkerMain(object state)
         {
-            var myCancelSource = _updateWorkerCancelSource;
+            var token = (CancellationToken)state;
             try
             {
                 Execute.OnUIThread(() => IsRefreshing = true);
 
-                if (myCancelSource == null)
-                    throw new OperationCanceledException();
                 var folders = ConsumeAllWantUpdateFolders();
-                var folderContents = await FindTrackInfos(folders, myCancelSource);
+                var folderContents = await FindTrackInfos(folders, token);
 
-                if (myCancelSource.IsCancellationRequested)
-                    throw new OperationCanceledException();
+                token.ThrowIfCancellationRequested();
                 UpdateFolderContents(folderContents);
-
+                lock (_wantUpdateFolders)
+                    _wantUpdateFolders.Clear();
+                GC.Collect();
                 Debug.WriteLine($"WatchedFolderDispatcher: Update Completed.");
             }
             catch (OperationCanceledException)
@@ -127,7 +131,6 @@ namespace Tomato.TomatoMusic.Playlist.Providers
             finally
             {
                 Execute.OnUIThread(() => IsRefreshing = false);
-                operation.Close();
             }
         }
 
@@ -139,16 +142,13 @@ namespace Tomato.TomatoMusic.Playlist.Providers
 
         private WatchedFolder[] ConsumeAllWantUpdateFolders()
         {
-            WatchedFolder[] folders;
             lock (_wantUpdateFolders)
             {
-                folders = _wantUpdateFolders.ToArray();
-                _wantUpdateFolders.Clear();
+                return _wantUpdateFolders.ToArray();
             }
-            return folders;
         }
 
-        private async Task<Dictionary<WatchedFolder, IReadOnlyCollection<TrackInfo>>> FindTrackInfos(IEnumerable<WatchedFolder> folders, CancellationTokenSource cancelSource)
+        private async Task<Dictionary<WatchedFolder, IReadOnlyCollection<TrackInfo>>> FindTrackInfos(IEnumerable<WatchedFolder> folders, CancellationToken cancelToken)
         {
             var folderContents = new Dictionary<WatchedFolder, IReadOnlyCollection<TrackInfo>>();
             foreach (var folder in folders)
@@ -157,22 +157,35 @@ namespace Tomato.TomatoMusic.Playlist.Providers
                 var files = await folder.GetFilesAsync().ConfigureAwait(false);
                 foreach (var file in files)
                 {
-                    if (cancelSource.IsCancellationRequested)
-                        throw new OperationCanceledException();
-                    var mediaSource = await MediaSource.CreateFromStream(await file.OpenReadAsync().AsTask().ConfigureAwait(false)).AsTask().ConfigureAwait(false);
-                    tracks.Add(new TrackInfo
-                    {
-                        Source = new Uri(file.Path),
-                        Title = mediaSource.Title,
-                        Album = mediaSource.Album,
-                        Artist = mediaSource.Artist,
-                        AlbumArtist = mediaSource.AlbumArtist,
-                        Duration = mediaSource.Duration
-                    });
+                    cancelToken.ThrowIfCancellationRequested();
+                    await TryAddTrackInfo(file, tracks);
                 }
                 folderContents.Add(folder, tracks);
             }
             return folderContents;
+        }
+
+        private async Task TryAddTrackInfo(StorageFile file, List<TrackInfo> tracks)
+        {
+            try
+            {
+                var mediaSource = await MediaSource.CreateFromStream(await file.OpenReadAsync().AsTask().ConfigureAwait(false)).AsTask().ConfigureAwait(false);
+                var title = mediaSource.Title;
+                var trackInfo = new TrackInfo
+                {
+                    Source = new Uri(file.Path),
+                    Title = string.IsNullOrWhiteSpace(title) ? Path.GetFileNameWithoutExtension(file.Path) : title,
+                    Album = mediaSource.Album,
+                    Artist = mediaSource.Artist,
+                    AlbumArtist = mediaSource.AlbumArtist,
+                    Duration = mediaSource.Duration
+                };
+                tracks.Add(trackInfo);
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Falied to acquire track info ({file.Path}): {ex.Flatten()}");
+            }
         }
     }
 }

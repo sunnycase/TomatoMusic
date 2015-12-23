@@ -84,7 +84,7 @@ namespace Tomato.TomatoMusic.Playlist.Providers
                 watcher.Refresh();
         }
 
-        private async Task TryAddKnownFolder(string name, ICollection<WatchedFolder> folders)
+        private async Task<WatchedFolder> TryAddKnownFolder(string name, ICollection<WatchedFolder> folders)
         {
             try
             {
@@ -93,14 +93,16 @@ namespace Tomato.TomatoMusic.Playlist.Providers
                 var cache = new FolderCacheProvider(_playlist.Key, name);
                 _knownFolderCaches.Add(folder, cache);
                 await cache.LoadCache();
+                return folder;
             }
             catch (Exception)
             {
                 Debug.WriteLine($"Error in adding knwon folder: {name}.");
+                return null;
             }
         }
 
-        private async Task TryAddFolder(string path, ICollection<WatchedFolder> folders)
+        private async Task<WatchedFolder> TryAddFolder(string path, ICollection<WatchedFolder> folders)
         {
             try
             {
@@ -109,10 +111,12 @@ namespace Tomato.TomatoMusic.Playlist.Providers
                 var cache = new FolderCacheProvider(_playlist.Key, path);
                 _folderCaches.Add(folder, cache);
                 await cache.LoadCache();
+                return folder;
             }
             catch (Exception)
             {
                 Debug.WriteLine($"Error in adding folder: {path}.");
+                return null;
             }
         }
 
@@ -134,8 +138,22 @@ namespace Tomato.TomatoMusic.Playlist.Providers
                 FolderCacheProvider cache;
                 if (_knownFolderCaches.TryGetValue(folder.Key, out cache))
                     await cache.Update(folder.Value);
+                if (_folderCaches.TryGetValue(folder.Key, out cache))
+                    await cache.Update(folder.Value);
             }
             NotifyUpdated();
+        }
+
+        public async void AddFolder(StorageFolder folder)
+        {
+            if (_folders.All(o => o.Folder != folder))
+            {
+                _folderDispatcher.SuspendRefresh();
+                var watcher = await TryAddFolder(folder.Path, _folders);
+                _folderDispatcher.ResumeRefresh();
+                watcher.Refresh();
+                NotifyUpdated();
+            }
         }
     }
 }

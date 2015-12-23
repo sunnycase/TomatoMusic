@@ -9,14 +9,20 @@
     xmlns:primitives="using:Tomato.TomatoMusic.Primitives"
     xmlns:localViewModels="using:Tomato.TomatoMusic.Shell.ViewModels.Playlist"
     xmlns:converters="using:Tomato.Uwp.Mvvm.Converters"
+    xmlns:i="using:Microsoft.Xaml.Interactivity"
+    xmlns:behaviors="using:Tomato.Uwp.Mvvm.Behaviors"
     cal:Bind.Model="{x:Bind ViewModel, Mode=OneWay}"
     mc:Ignorable="d" x:Uid="Musics" Header="Musics">
     <PivotItem.Resources>
         <converters:TimeSpanToStringConverter x:Key="TimeSpanToStringConverter" Format="hh\:mm\:ss"/>
+        <cal:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
     </PivotItem.Resources>
     <Grid>
         <ProgressRing IsActive="{x:Bind ViewModel.IsRefreshing, Mode=OneWay}"/>
         <ListView ItemsSource="{x:Bind ViewModel.Tracks, Mode=OneWay}">
+            <i:Interaction.Behaviors>
+                <behaviors:SelectorIsSelectedToSourceBindingBehavior Setter="{x:Bind TrackViewModelIsSelectedSetter}"/>
+            </i:Interaction.Behaviors>
             <ListView.ItemTemplate>
                 <DataTemplate x:DataType="localViewModels:MusicsTrackViewModel">
                     <Grid>
@@ -27,24 +33,23 @@
                             <ColumnDefinition Width="1.5*"/>
                             <ColumnDefinition Width="80"/>
                         </Grid.ColumnDefinitions>
-                        <TextBlock Text="{x:Bind Track.Title}"/>
-                        <StackPanel Grid.Column="1" Orientation="Horizontal">
-                            <Button Click="{x:Bind OnRequestPlay}">
+                        <TextBlock Text="{x:Bind Track.Title}" Style="{StaticResource TrackInfoTextStyle}"/>
+                        <StackPanel Grid.Column="1" Orientation="Horizontal" Visibility="{x:Bind IsSelected, Converter={StaticResource BooleanToVisibilityConverter}, Mode=OneWay}">
+                            <Button Click="{x:Bind OnRequestPlay}" Style="{StaticResource TrackFunctionalButtonStyle}">
                                 <SymbolIcon Symbol="Play"/>
                             </Button>
-                            <Button>
+                            <Button Style="{StaticResource TrackFunctionalButtonStyle}">
                                 <SymbolIcon Symbol="More"/>
                             </Button>
                         </StackPanel>
-                        <TextBlock Grid.Column="2" Margin="15,0,0,0" Text="{x:Bind Track.Album}"/>
-                        <TextBlock Grid.Column="3" Margin="15,0,0,0" Text="{x:Bind Track.Artist}"/>
-                        <TextBlock Grid.Column="4" Margin="15,0,0,0" Text="{x:Bind Track.Duration, Converter={StaticResource TimeSpanToStringConverter}}"/>
+                        <TextBlock Grid.Column="2" Margin="15,0,0,0" Text="{x:Bind Track.Album}" Style="{StaticResource TrackInfoTextStyle}"/>
+                        <TextBlock Grid.Column="3" Margin="15,0,0,0" Text="{x:Bind Track.Artist}" Style="{StaticResource TrackInfoTextStyle}"/>
+                        <TextBlock Grid.Column="4" Margin="15,0,0,0" Text="{x:Bind Track.Duration, Converter={StaticResource TimeSpanToStringConverter}}" Style="{StaticResource TrackInfoTextStyle}"/>
                     </Grid>
                 </DataTemplate>
             </ListView.ItemTemplate>
             <ListView.ItemContainerStyle>
                 <Style TargetType="ListViewItem">
-                    <Setter Property="HorizontalAlignment" Value="Stretch"/>
                     <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
                 </Style>
             </ListView.ItemContainerStyle>

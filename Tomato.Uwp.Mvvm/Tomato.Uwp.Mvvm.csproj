@@ -108,6 +108,7 @@
     <None Include="project.json" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Behaviors\SelectorIsSelectedToSourceBindingBehavior.cs" />
     <Compile Include="BindableBase.cs" />
     <Compile Include="Caliburn\CaliburnExtensions.cs" />
     <Compile Include="Controls\HamburgerMenu.cs" />

@@ -15,6 +15,8 @@ namespace Tomato.TomatoMusic.Playlist.Providers
         private readonly StorageFileQueryResult _fileQueryResult;
         private readonly WatchedFolderDispatcher _dispatcher;
 
+        public StorageFolder Folder => _folder;
+
         public WatchedFolder(WatchedFolderDispatcher dispatcher, StorageFolder folder)
         {
             _dispatcher = dispatcher;

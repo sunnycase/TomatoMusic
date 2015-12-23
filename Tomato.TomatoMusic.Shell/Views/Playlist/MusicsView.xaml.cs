@@ -33,5 +33,10 @@ namespace Tomato.TomatoMusic.Shell.Views.Playlist
         {
             this.InitializeComponent();
         }
+
+        public void TrackViewModelIsSelectedSetter(object model, bool value)
+        {
+            ((MusicsTrackViewModel)model).IsSelected = value;
+        }
     }
 }

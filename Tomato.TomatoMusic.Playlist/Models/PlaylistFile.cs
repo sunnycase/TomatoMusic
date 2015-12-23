@@ -6,7 +6,9 @@ using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Tomato.TomatoMusic.Primitives;
+using Tomato.Uwp.Mvvm.Threading;
 using Windows.Storage;
+using Windows.Storage.Streams;
 
 namespace Tomato.TomatoMusic.Playlist.Models
 {
@@ -18,6 +20,8 @@ namespace Tomato.TomatoMusic.Playlist.Models
         {
             get { return _playlist; }
         }
+
+        private readonly OperationQueue _operationQueue = new OperationQueue(1);
 
         public PlaylistFile(Primitives.Playlist value)
         {
@@ -61,6 +65,40 @@ namespace Tomato.TomatoMusic.Playlist.Models
                         Version = PlaylistVersions.Current
                     };
             }
+        }
+
+        public async void AddFolder(StorageFolder folder)
+        {
+            var path = folder.Path;
+            if (!_playlist.Folders.Contains(path))
+                _playlist.Folders.Add(path);
+            await Save();
+        }
+
+        private async Task<StorageFile> OpenFile()
+        {
+            var folder = await ApplicationData.Current.RoamingFolder.CreateFolderAsync(PlaylistFolder, CreationCollisionOption.OpenIfExists);
+            return await folder.CreateFileAsync($"{_playlist.Key.ToString("N")}.json", CreationCollisionOption.OpenIfExists);
+        }
+
+        private async Task Save()
+        {
+            await _operationQueue.Queue(async() =>
+            {
+                string content = JsonConvert.SerializeObject(_playlist);
+                using (var writer = await (await OpenFile()).OpenTransactedWriteAsync())
+                {
+                    var stream = writer.Stream;
+                    stream.Size = 0;
+                    stream.Seek(0);
+                    var dw = new DataWriter(stream);
+                    dw.WriteString(content);
+                    await dw.StoreAsync();
+                    await dw.FlushAsync();
+                    dw.DetachStream();
+                    await writer.CommitAsync();
+                }
+            });
         }
     }
 }

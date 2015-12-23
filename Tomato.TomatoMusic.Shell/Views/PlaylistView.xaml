@@ -9,19 +9,34 @@
     xmlns:playlistViews="using:Tomato.TomatoMusic.Shell.Views.Playlist"
     mc:Ignorable="d"
     cal:Bind.Model="{x:Bind ViewModel}">
+    <Page.Resources>
+        <cal:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
+    </Page.Resources>
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
         <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         <StackPanel Orientation="Horizontal">
             <TextBlock Text="{x:Bind ViewModel.Anchor.Placeholder.Name}" FontSize="25" Padding="0,5"/>
-            <Button>
+            <Button Style="{StaticResource TrackFunctionalButtonStyle}"
+                    Visibility="{x:Bind ViewModel.CanEditName, Converter={StaticResource BooleanToVisibilityConverter}, Mode=OneWay}">
                 <SymbolIcon Symbol="Edit"/>
             </Button>
         </StackPanel>
-        <Pivot Grid.Row="1">
+        <Border Grid.Row="1" BorderBrush="#eee" BorderThickness="0,1,0,1" Margin="5">
+            <StackPanel Orientation="Horizontal">
+                <HyperlinkButton x:Uid="AddFolder" Content="Add Folder" Style="{StaticResource PlaylistHyperlinkButtonStyle}"
+                                 Click="{x:Bind ViewModel.OnRequestAddFolder}"
+                                 Visibility="{x:Bind ViewModel.CanEditContent, Converter={StaticResource BooleanToVisibilityConverter}, Mode=OneWay}"/>
+                <HyperlinkButton x:Uid="AddFiles" Content="Add Files" Style="{StaticResource PlaylistHyperlinkButtonStyle}"
+                                 Click="{x:Bind ViewModel.OnRequestAddFiles}"
+                                 Visibility="{x:Bind ViewModel.CanEditContent, Converter={StaticResource BooleanToVisibilityConverter}, Mode=OneWay}"/>
+            </StackPanel>
+        </Border>
+        <Pivot Grid.Row="2">
             <playlistViews:MusicsView ViewModel="{x:Bind ViewModel.MusicsViewModel, Mode=OneWay}"/>
             <playlistViews:AlbumsView/>
             <playlistViews:ArtistsView/>

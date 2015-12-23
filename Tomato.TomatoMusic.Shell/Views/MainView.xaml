@@ -45,7 +45,8 @@
                         <Rectangle Margin="5" Fill="#eee" Height="1" HorizontalAlignment="Stretch"/>
                     </StackPanel>
                     <StackPanel Grid.Row="1">
-                        <Button Loaded="{x:Bind ViewModel.SetupAddPlaylistButton}" Style="{StaticResource HamburgerButtonStyle}">
+                        <Button Loaded="{x:Bind ViewModel.SetupAddPlaylistButton}" Style="{StaticResource HamburgerButtonStyle}"
+                                Visibility="Collapsed">
                             <StackPanel Orientation="Horizontal">
                                 <SymbolIcon Width="48" Height="48" Symbol="Add"/>
                                 <TextBlock VerticalAlignment="Center">添加播放列表</TextBlock>
@@ -116,20 +117,24 @@
                             <ColumnDefinition Width="Auto"/>
                             <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
-                        <Button IsEnabled="{x:Bind ViewModel.PlaySession.CanPrevious, Mode=OneWay}">
+                        <Button IsEnabled="{x:Bind ViewModel.PlaySession.CanPrevious, Mode=OneWay}"
+                                Style="{StaticResource TrackFunctionalButtonStyle}">
                             <SymbolIcon Symbol="Previous"/>
                         </Button>
                         <Button Grid.Column="1" IsEnabled="{x:Bind ViewModel.PlaySession.CanPlay, Mode=OneWay}"
+                                Style="{StaticResource TrackFunctionalButtonStyle}"
                                 Click="{x:Bind ViewModel.PlaySession.RequestPlay}"
                                 Visibility="{x:Bind ViewModel.PlaySession.ShowPlay, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
                             <SymbolIcon Symbol="Play"/>
                         </Button>
                         <Button Grid.Column="1" IsEnabled="{x:Bind ViewModel.PlaySession.CanPause, Mode=OneWay}"
+                                Style="{StaticResource TrackFunctionalButtonStyle}"
                                 Click="{x:Bind ViewModel.PlaySession.RequestPause}"
                                 Visibility="{x:Bind ViewModel.PlaySession.ShowPause, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
                             <SymbolIcon Symbol="Pause"/>
                         </Button>
-                        <Button Grid.Column="2" IsEnabled="{x:Bind ViewModel.PlaySession.CanNext, Mode=OneWay}">
+                        <Button Grid.Column="2" IsEnabled="{x:Bind ViewModel.PlaySession.CanNext, Mode=OneWay}"
+                                Style="{StaticResource TrackFunctionalButtonStyle}">
                             <SymbolIcon Symbol="Next"/>
                         </Button>
                         <ProgressBar Grid.Column="3" Margin="5,0"/>
