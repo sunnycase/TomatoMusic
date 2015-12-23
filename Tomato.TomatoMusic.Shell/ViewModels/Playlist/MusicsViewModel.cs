@@ -13,9 +13,11 @@ namespace Tomato.TomatoMusic.Shell.ViewModels.Playlist
     {
         public TrackInfo Track { get; set; }
 
+        public event EventHandler PlayRequested;
+
         public void OnRequestPlay()
         {
-
+            PlayRequested?.Invoke(this, EventArgs.Empty);
         }
     }
 
@@ -24,6 +26,7 @@ namespace Tomato.TomatoMusic.Shell.ViewModels.Playlist
         private readonly IPlaylistAnchor _anchor;
         private IPlaylistContentProvider _playlistContentProvider;
         private IObservableCollection<TrackInfo> _tracksSource;
+        private readonly IPlaySessionService _playSession;
 
         public BindableCollection<MusicsTrackViewModel> Tracks { get; private set; }
 
@@ -39,6 +42,7 @@ namespace Tomato.TomatoMusic.Shell.ViewModels.Playlist
         public MusicsViewModel(IPlaylistAnchor anchor)
         {
             _anchor = anchor;
+            _playSession = IoC.Get<IPlaySessionService>();
         }
 
         protected override void OnViewLoaded(object view)
@@ -69,10 +73,19 @@ namespace Tomato.TomatoMusic.Shell.ViewModels.Playlist
 
         private MusicsTrackViewModel WrapTrackInfo(TrackInfo track)
         {
-            return new MusicsTrackViewModel
+            var trackViewModel = new MusicsTrackViewModel
             {
                 Track = track
             };
+            trackViewModel.PlayRequested += TrackViewModel_PlayRequested;
+            return trackViewModel;
+        }
+
+        private void TrackViewModel_PlayRequested(object sender, EventArgs e)
+        {
+            var trackVM = (MusicsTrackViewModel)sender;
+            _playSession.SetPlaylist(_tracksSource.ToList(), trackVM.Track);
+            _playSession.PlayWhenOpened();
         }
 
         private void tracksSource_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)

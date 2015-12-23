@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Tomato.Media;
 using Tomato.Rpc.Json;
 using Tomato.TomatoMusic.Core;
+using Tomato.TomatoMusic.Primitives;
 using Windows.Storage;
 
 namespace Tomato.TomatoMusic.AudioTask
@@ -18,6 +19,9 @@ namespace Tomato.TomatoMusic.AudioTask
 
         private readonly JsonClient<IAudioControllerHandler> _controllerHandlerClient;
         private readonly IAudioControllerHandler _controllerHandler;
+
+        private IList<TrackInfo> _playlist;
+        private TrackInfo _currentTrack;
 
         public AudioController(BackgroundMediaPlayer mediaPlayer)
         {
@@ -56,9 +60,15 @@ namespace Tomato.TomatoMusic.AudioTask
             _controllerHandler.NotifyControllerReady();
         }
 
-        public async void SetMediaSource(Uri uri)
+        private async void SetMediaSource(Uri uri)
         {
-            var file = await StorageFile.GetFileFromApplicationUriAsync(uri);
+            StorageFile file;
+            if (uri.Scheme == "ms-appx")
+                file = await StorageFile.GetFileFromApplicationUriAsync(uri);
+            else if (uri.IsFile)
+                file = await StorageFile.GetFileFromPathAsync(uri.LocalPath);
+            else
+                throw new NotSupportedException("Not supported uri.");
             var stream = await file.OpenReadAsync();
             var mediaSource = await MediaSource.CreateFromStream(stream);
             Debug.WriteLine($"Title: {mediaSource.Title}");
@@ -69,6 +79,18 @@ namespace Tomato.TomatoMusic.AudioTask
         public void Pause()
         {
             _mediaPlayer.Pause();
+        }
+
+        public void SetPlaylist(IList<TrackInfo> tracks)
+        {
+            _playlist = tracks;
+        }
+
+        public void SetCurrentTrack(TrackInfo track)
+        {
+            _currentTrack = track;
+            if (_currentTrack != null)
+                SetMediaSource(track.Source);
         }
     }
 }

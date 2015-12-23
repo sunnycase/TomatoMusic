@@ -13,6 +13,7 @@ using Tomato.TomatoMusic.Services;
 using Tomato.Uwp.Mvvm;
 using Windows.Media;
 using Windows.Media.Playback;
+using Tomato.TomatoMusic.Primitives;
 
 namespace Tomato.TomatoMusic.Audio.Services
 {
@@ -72,6 +73,35 @@ namespace Tomato.TomatoMusic.Audio.Services
             }
         }
 
+        private IList<TrackInfo> _playlist;
+        public IList<TrackInfo> Playlist
+        {
+            get { return _playlist; }
+            private set
+            {
+                if (SetProperty(ref _playlist, value))
+                {
+                    _audioController.SetPlaylist(value);
+                }
+            }
+        }
+
+        private TrackInfo _currentTrack;
+        public TrackInfo CurrentTrack
+        {
+            get { return _currentTrack; }
+            private set
+            {
+                if (SetProperty(ref _currentTrack, value))
+                {
+                    _audioController.SetCurrentTrack(value);
+                    _mtService.SetCurrentTrack(value);
+                }
+            }
+        }
+
+        private bool _autoPlay = false;
+
         private readonly BackgroundMediaPlayerClient _client;
         private readonly JsonClient<IAudioController> _audioControllerClient = new JsonClient<IAudioController>(AudioRpcPacketBuilders.AudioController);
         private readonly IAudioController _audioController;
@@ -101,6 +131,12 @@ namespace Tomato.TomatoMusic.Audio.Services
         {
             if (CanPause)
                 Pause();
+        }
+
+        public void SetPlaylist(IList<TrackInfo> tracks, TrackInfo current)
+        {
+            Playlist = tracks;
+            CurrentTrack = current;
         }
 
         private void Play()
@@ -169,12 +205,15 @@ namespace Tomato.TomatoMusic.Audio.Services
         void IAudioControllerHandler.NotifyControllerReady()
         {
             Debug.WriteLine($"Player Received: Controller Ready.");
-            _audioController.SetMediaSource(new Uri("ms-appx:///Assets/04 - irony -TV Mix-.mp3"));
         }
 
         void IAudioControllerHandler.NotifyMediaOpened()
         {
-
+            if(_autoPlay)
+            {
+                Play();
+                _autoPlay = false;
+            }
         }
 
         void IAudioControllerHandler.NotifyControllerStateChanged(MediaPlayerState state)
@@ -223,6 +262,13 @@ namespace Tomato.TomatoMusic.Audio.Services
                 }
             });
             Debug.WriteLine($"Player State Changed To: {state}.");
+        }
+
+        public void PlayWhenOpened()
+        {
+            _autoPlay = true;
+            if (CanPlay)
+                Play();
         }
     }
 }

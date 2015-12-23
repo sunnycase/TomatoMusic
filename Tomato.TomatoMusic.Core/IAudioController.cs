@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Tomato.TomatoMusic.Primitives;
 
 namespace Tomato.TomatoMusic.Core
 {
@@ -10,7 +11,8 @@ namespace Tomato.TomatoMusic.Core
     {
         void SetupHandler();
         void Play();
-        void SetMediaSource(Uri uri);
         void Pause();
+        void SetPlaylist(IList<TrackInfo> tracks);
+        void SetCurrentTrack(TrackInfo track);
     }
 }

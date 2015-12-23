@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Tomato.TomatoMusic.Primitives;
 using Tomato.TomatoMusic.Services;
 using Tomato.Uwp.Mvvm;
 using Windows.Media;
@@ -51,6 +52,24 @@ namespace Tomato.TomatoMusic.Audio.Services
         private void _smtc_ButtonPressed(SystemMediaTransportControls sender, SystemMediaTransportControlsButtonPressedEventArgs args)
         {
             ButtonPressed?.Invoke(this, args);
+        }
+
+        public void SetCurrentTrack(TrackInfo value)
+        {
+            var updater = _smtc.DisplayUpdater;
+            var musicProp = updater.MusicProperties;
+            if (value != null)
+            {
+                musicProp.Title = value.Title;
+                musicProp.Artist = value.Artist;
+                musicProp.AlbumTitle = value.Album;
+                musicProp.AlbumArtist = value.AlbumArtist;
+            }
+            else
+            {
+                updater.ClearAll();
+            }
+            updater.Update();
         }
     }
 }

@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Tomato.TomatoMusic.Primitives;
 using Windows.Media;
 
 namespace Tomato.TomatoMusic.Services
@@ -20,5 +21,7 @@ namespace Tomato.TomatoMusic.Services
 
         void RequestPlay();
         void RequestPause();
+        void SetPlaylist(IList<TrackInfo> tracks, TrackInfo current);
+        void PlayWhenOpened();
     }
 }
