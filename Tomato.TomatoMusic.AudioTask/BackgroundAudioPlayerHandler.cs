@@ -16,6 +16,7 @@ namespace Tomato.TomatoMusic.AudioTask
 
         public BackgroundAudioPlayerHandler()
         {
+            App.Startup();
         }
 
         public void OnActivated(BackgroundMediaPlayer mediaPlayer)

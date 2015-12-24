@@ -47,10 +47,13 @@ namespace Tomato.TomatoMusic.Shell.ViewModels.Playlist
 
         private bool _loadStarted;
 
+        public event Action<MusicsTrackViewModel> RequestViewSelect;
+
         public MusicsViewModel(IPlaylistAnchor anchor)
         {
             _anchor = anchor;
             _playSession = IoC.Get<IPlaySessionService>();
+            _playSession.PropertyChanged += _playSession_PropertyChanged;
         }
 
         protected override void OnViewLoaded(object view)
@@ -77,6 +80,26 @@ namespace Tomato.TomatoMusic.Shell.ViewModels.Playlist
             {
                 IsRefreshing = false;
             }
+        }
+
+        private void _playSession_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        {
+            switch (e.PropertyName)
+            {
+                case nameof(IPlaySessionService.CurrentTrack):
+                    Execute.BeginOnUIThread(OnPlaySessionCurrentTrackChanged);
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        private void OnPlaySessionCurrentTrackChanged()
+        {
+            var track = _playSession.CurrentTrack;
+            var trackVM = Tracks.SingleOrDefault(o => o.Track == track);
+            if (trackVM != null)
+                RequestViewSelect?.Invoke(trackVM);
         }
 
         private MusicsTrackViewModel WrapTrackInfo(TrackInfo track)

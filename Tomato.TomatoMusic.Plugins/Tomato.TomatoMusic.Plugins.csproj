@@ -4,11 +4,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{0B7BEE46-AD1B-4DD4-9BA2-7698BD30ED87}</ProjectGuid>
+    <ProjectGuid>{9168235F-9D85-4053-8386-535114C68355}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Tomato.TomatoMusic.Audio</RootNamespace>
-    <AssemblyName>Tomato.TomatoMusic.Audio</AssemblyName>
+    <RootNamespace>Tomato.TomatoMusic.Plugins</RootNamespace>
+    <AssemblyName>Tomato.TomatoMusic.Plugins</AssemblyName>
     <DefaultLanguage>zh-CN</DefaultLanguage>
     <TargetPlatformIdentifier>UAP</TargetPlatformIdentifier>
     <TargetPlatformVersion>10.0.10240.0</TargetPlatformVersion>
@@ -107,28 +107,18 @@
     <None Include="project.json" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AudioModule.cs" />
-    <Compile Include="Services\MediaTransportService.cs" />
-    <Compile Include="Services\PlaySessionService.cs" />
+    <Compile Include="IPlayModeManager.cs" />
+    <Compile Include="PlayModes\ListMode.cs" />
+    <Compile Include="PluginsModule.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Content Include="Properties\Tomato.TomatoMusic.AudioServices.rd.xml" />
+    <Compile Include="Services\PlayModeManager.cs" />
+    <Content Include="Properties\Tomato.TomatoMusic.Plugins.rd.xml" />
   </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
-    <ProjectReference Include="..\Tomato.TomatoMusic.AudioTask\Tomato.TomatoMusic.AudioTask.csproj">
-      <Project>{c64a2cdb-dcbe-4f90-95e8-73d59d16ee21}</Project>
-      <Name>Tomato.TomatoMusic.AudioTask</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Tomato.TomatoMusic.Core\Tomato.TomatoMusic.Core.csproj">
       <Project>{3dca3f42-22c9-4d8f-9f0c-3853d54b8b32}</Project>
       <Name>Tomato.TomatoMusic.Core</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Tomato.TomatoMusic.Plugins\Tomato.TomatoMusic.Plugins.csproj">
-      <Project>{9168235f-9d85-4053-8386-535114c68355}</Project>
-      <Name>Tomato.TomatoMusic.Plugins</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Tomato.Uwp.Mvvm\Tomato.Uwp.Mvvm.csproj">
-      <Project>{e10050ce-4def-4627-baf2-c396c2cee6ae}</Project>
-      <Name>Tomato.Uwp.Mvvm</Name>
     </ProjectReference>
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">

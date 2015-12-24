@@ -14,5 +14,8 @@ namespace Tomato.TomatoMusic.Core
         void Pause();
         void SetPlaylist(IList<TrackInfo> tracks);
         void SetCurrentTrack(TrackInfo track);
+        void MoveNext();
+        void MovePrevious();
+        void SetPlayMode(Guid id);
     }
 }

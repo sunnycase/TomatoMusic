@@ -31,7 +31,18 @@ namespace Tomato.TomatoMusic.Shell.Views.Playlist
 
         public MusicsView()
         {
+            RegisterPropertyChangedCallback(ViewModelProperty, OnViewModelPropertyChanged);
             this.InitializeComponent();
+        }
+
+        private void OnViewModelPropertyChanged(DependencyObject sender, DependencyProperty dp)
+        {
+            ViewModel.RequestViewSelect += ViewModel_RequestViewSelect;
+        }
+
+        private void ViewModel_RequestViewSelect(MusicsTrackViewModel obj)
+        {
+            lv_Tracks.SelectedItem = obj;
         }
 
         public void TrackViewModelIsSelectedSetter(object model, bool value)

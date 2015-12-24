@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Tomato.TomatoMusic.Primitives;
 using Windows.Media.Playback;
 
 namespace Tomato.TomatoMusic.Core
@@ -12,5 +13,6 @@ namespace Tomato.TomatoMusic.Core
         void NotifyControllerReady();
         void NotifyMediaOpened();
         void NotifyControllerStateChanged(MediaPlayerState state);
+        void NotifyCurrentTrackChanged(TrackInfo track);
     }
 }

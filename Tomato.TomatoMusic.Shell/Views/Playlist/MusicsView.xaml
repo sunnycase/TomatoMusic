@@ -19,7 +19,7 @@
     </PivotItem.Resources>
     <Grid>
         <ProgressRing IsActive="{x:Bind ViewModel.IsRefreshing, Mode=OneWay}"/>
-        <ListView ItemsSource="{x:Bind ViewModel.Tracks, Mode=OneWay}">
+        <ListView x:Name="lv_Tracks" ItemsSource="{x:Bind ViewModel.Tracks, Mode=OneWay}">
             <i:Interaction.Behaviors>
                 <behaviors:SelectorIsSelectedToSourceBindingBehavior Setter="{x:Bind TrackViewModelIsSelectedSetter}"/>
             </i:Interaction.Behaviors>

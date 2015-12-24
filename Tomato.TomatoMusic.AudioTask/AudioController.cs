@@ -4,10 +4,13 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Caliburn.Micro;
 using Tomato.Media;
 using Tomato.Rpc.Json;
 using Tomato.TomatoMusic.Core;
+using Tomato.TomatoMusic.Plugins;
 using Tomato.TomatoMusic.Primitives;
+using Tomato.TomatoMusic.Services;
 using Windows.Storage;
 
 namespace Tomato.TomatoMusic.AudioTask
@@ -19,9 +22,13 @@ namespace Tomato.TomatoMusic.AudioTask
 
         private readonly JsonClient<IAudioControllerHandler> _controllerHandlerClient;
         private readonly IAudioControllerHandler _controllerHandler;
+        private readonly IPlayModeManager _playModeManager;
+        private IPlayModeProvider _currentPlayMode;
 
         private IList<TrackInfo> _playlist;
         private TrackInfo _currentTrack;
+
+        private bool _autoPlay;
 
         public AudioController(BackgroundMediaPlayer mediaPlayer)
         {
@@ -29,9 +36,27 @@ namespace Tomato.TomatoMusic.AudioTask
             _audioControllerServer = new JsonServer<IAudioController>(this, AudioRpcPacketBuilders.AudioController);
             _controllerHandlerClient = new JsonClient<IAudioControllerHandler>(AudioRpcPacketBuilders.AudioControllerHandler);
             _controllerHandler = _controllerHandlerClient.Proxy;
+            _playModeManager = IoC.Get<IPlayModeManager>();
 
             mediaPlayer.MediaOpened += MediaPlayer_MediaOpened;
+            mediaPlayer.MediaEnded += MediaPlayer_MediaEnded;
             mediaPlayer.CurrentStateChanged += MediaPlayer_CurrentStateChanged;
+        }
+
+        private void MediaPlayer_MediaEnded(IMediaPlayer sender, object args)
+        {
+            var playlist = _playlist;
+            var currentTrack = _currentTrack;
+            var playMode = _currentPlayMode;
+            if(playMode != null && playlist != null && currentTrack != null)
+            {
+                var nextTrack = playMode.SelectNextTrack(playlist, currentTrack);
+                if(nextTrack != null)
+                {
+                    _autoPlay = true;
+                    SetCurrentTrack(nextTrack);
+                }
+            }
         }
 
         private void MediaPlayer_CurrentStateChanged(IMediaPlayer sender, object args)
@@ -41,6 +66,11 @@ namespace Tomato.TomatoMusic.AudioTask
 
         private void MediaPlayer_MediaOpened(IMediaPlayer sender, object args)
         {
+            if(_autoPlay)
+            {
+                _autoPlay = false;
+                Play();
+            }
             _controllerHandler.NotifyMediaOpened();
         }
 
@@ -88,9 +118,51 @@ namespace Tomato.TomatoMusic.AudioTask
 
         public void SetCurrentTrack(TrackInfo track)
         {
-            _currentTrack = track;
-            if (_currentTrack != null)
-                SetMediaSource(track.Source);
+            if(_currentTrack != track)
+            {
+                _currentTrack = track;
+                if (_currentTrack != null)
+                {
+                    SetMediaSource(track.Source);
+                    _controllerHandler.NotifyCurrentTrackChanged(track);
+                }
+            }
+        }
+
+        public void MoveNext()
+        {
+            var cntIdx = GetCurrentTrackIndex();
+            if (cntIdx != -1)
+            {
+                var nextIdx = cntIdx + 1;
+                if (nextIdx >= 0 && nextIdx < _playlist.Count)
+                    SetCurrentTrack(_playlist[nextIdx]);
+            }
+        }
+
+        public void MovePrevious()
+        {
+            var cntIdx = GetCurrentTrackIndex();
+            if (cntIdx != -1)
+            {
+                var prevIdx = cntIdx - 1;
+                if (prevIdx >= 0 && prevIdx < _playlist.Count)
+                    SetCurrentTrack(_playlist[prevIdx]);
+            }
+        }
+
+        private int GetCurrentTrackIndex()
+        {
+            if (_playlist != null && _currentTrack != null)
+            {
+                return _playlist.IndexOf(_currentTrack);
+            }
+            return -1;
+        }
+
+        public void SetPlayMode(Guid id)
+        {
+            _currentPlayMode = _playModeManager.GetProvider(id);
         }
     }
 }

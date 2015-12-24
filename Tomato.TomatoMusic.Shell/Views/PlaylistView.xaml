@@ -31,9 +31,9 @@
                 <HyperlinkButton x:Uid="AddFolder" Content="Add Folder" Style="{StaticResource PlaylistHyperlinkButtonStyle}"
                                  Click="{x:Bind ViewModel.OnRequestAddFolder}"
                                  Visibility="{x:Bind ViewModel.CanEditContent, Converter={StaticResource BooleanToVisibilityConverter}, Mode=OneWay}"/>
-                <HyperlinkButton x:Uid="AddFiles" Content="Add Files" Style="{StaticResource PlaylistHyperlinkButtonStyle}"
+                <!--<HyperlinkButton x:Uid="AddFiles" Content="Add Files" Style="{StaticResource PlaylistHyperlinkButtonStyle}"
                                  Click="{x:Bind ViewModel.OnRequestAddFiles}"
-                                 Visibility="{x:Bind ViewModel.CanEditContent, Converter={StaticResource BooleanToVisibilityConverter}, Mode=OneWay}"/>
+                                 Visibility="{x:Bind ViewModel.CanEditContent, Converter={StaticResource BooleanToVisibilityConverter}, Mode=OneWay}"/>-->
             </StackPanel>
         </Border>
         <Pivot Grid.Row="2">

@@ -14,6 +14,8 @@ namespace Tomato.TomatoMusic.Services
         bool IsPlayEnabled { get; set; }
         bool IsPauseEnabled { get; set; }
         MediaPlaybackStatus PlaybackStatus { get; set; }
+        bool CanNext { get; set; }
+        bool CanPrevious { get; set; }
 
         event EventHandler<SystemMediaTransportControlsButtonPressedEventArgs> ButtonPressed;
 

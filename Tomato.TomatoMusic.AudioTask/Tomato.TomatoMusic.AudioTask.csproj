@@ -108,14 +108,22 @@
     <None Include="project.json" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="App.cs" />
     <Compile Include="AudioController.cs" />
+    <Compile Include="AudioTaskModule.cs" />
     <Compile Include="BackgroundAudioPlayerHandler.cs" />
+    <Compile Include="MinimalApplication.cs" />
+    <Compile Include="MinimalPlatformProvider.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Tomato.TomatoMusic.Core\Tomato.TomatoMusic.Core.csproj">
       <Project>{3dca3f42-22c9-4d8f-9f0c-3853d54b8b32}</Project>
       <Name>Tomato.TomatoMusic.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Tomato.TomatoMusic.Plugins\Tomato.TomatoMusic.Plugins.csproj">
+      <Project>{9168235f-9d85-4053-8386-535114c68355}</Project>
+      <Name>Tomato.TomatoMusic.Plugins</Name>
     </ProjectReference>
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">

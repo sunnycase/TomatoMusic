@@ -17,10 +17,13 @@ namespace Tomato.TomatoMusic.Services
         bool ShowPause { get; }
         bool ShowPlay { get; }
         bool CanNext { get; }
+        TrackInfo CurrentTrack { get; }
         MediaPlaybackStatus PlaybackStatus { get; }
 
         void RequestPlay();
         void RequestPause();
+        void RequestPrevious();
+        void RequestNext();
         void SetPlaylist(IList<TrackInfo> tracks, TrackInfo current);
         void PlayWhenOpened();
     }

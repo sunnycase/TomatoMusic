@@ -38,6 +38,18 @@ namespace Tomato.TomatoMusic.Audio.Services
             set { _smtc.PlaybackStatus = value; }
         }
 
+        public bool CanNext
+        {
+            get { return _smtc.IsNextEnabled; }
+            set { _smtc.IsNextEnabled = value; }
+        }
+
+        public bool CanPrevious
+        {
+            get { return _smtc.IsPreviousEnabled; }
+            set { _smtc.IsPreviousEnabled = value; }
+        }
+
         public event EventHandler<SystemMediaTransportControlsButtonPressedEventArgs> ButtonPressed;
 
         public MediaTransportService()

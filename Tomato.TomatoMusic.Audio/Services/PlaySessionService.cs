@@ -14,6 +14,7 @@ using Tomato.Uwp.Mvvm;
 using Windows.Media;
 using Windows.Media.Playback;
 using Tomato.TomatoMusic.Primitives;
+using Tomato.TomatoMusic.Plugins;
 
 namespace Tomato.TomatoMusic.Audio.Services
 {
@@ -23,7 +24,11 @@ namespace Tomato.TomatoMusic.Audio.Services
         public bool CanPrevious
         {
             get { return _canPrevious; }
-            private set { SetProperty(ref _canPrevious, value); }
+            private set
+            {
+                if (SetProperty(ref _canPrevious, value))
+                    _mtService.CanPrevious = value;
+            }
         }
 
         private bool _canPause;
@@ -57,7 +62,11 @@ namespace Tomato.TomatoMusic.Audio.Services
         public bool CanNext
         {
             get { return _canNext; }
-            private set { SetProperty(ref _canNext, value); }
+            private set
+            {
+                if (SetProperty(ref _canNext, value))
+                    _mtService.CanNext = value;
+            }
         }
 
         private MediaPlaybackStatus _playbackStatus = MediaPlaybackStatus.Closed;
@@ -69,6 +78,7 @@ namespace Tomato.TomatoMusic.Audio.Services
                 if (SetProperty(ref _playbackStatus, value))
                 {
                     _mtService.PlaybackStatus = value;
+                    Execute.BeginOnUIThread(OnCurrentTrackChanged);
                 }
             }
         }
@@ -96,6 +106,7 @@ namespace Tomato.TomatoMusic.Audio.Services
                 {
                     _audioController.SetCurrentTrack(value);
                     _mtService.SetCurrentTrack(value);
+                    OnCurrentTrackChanged();
                 }
             }
         }
@@ -107,11 +118,15 @@ namespace Tomato.TomatoMusic.Audio.Services
         private readonly IAudioController _audioController;
         private readonly JsonServer<IAudioControllerHandler> _audioControllerHandlerServer;
         private readonly IMediaTransportService _mtService;
+        private readonly IPlayModeManager _playModeManager;
+        private IPlayModeProvider _currentPlayMode;
 
         public PlaySessionService(IMediaTransportService mtService)
         {
             _audioControllerHandlerServer = new JsonServer<IAudioControllerHandler>(this, AudioRpcPacketBuilders.AudioControllerHandler);
-            _client = new BackgroundMediaPlayerClient(typeof(BackgroundAudioPlayerHandler).FullName);
+            _client = new BackgroundMediaPlayerClient(typeof(BackgroundAudioPlayerHandler));
+            _playModeManager = IoC.Get<IPlayModeManager>();
+
             _client.MessageReceived += _client_MessageReceived; ;
             _audioControllerClient.OnSendMessage = m => _client.SendMessage(AudioRpcPacketBuilders.RpcMessageTag, m);
             _audioController = _audioControllerClient.Proxy;
@@ -119,6 +134,13 @@ namespace Tomato.TomatoMusic.Audio.Services
             _mtService = mtService;
             _mtService.IsEnabled = _mtService.IsPauseEnabled = _mtService.IsPlayEnabled = true;
             _mtService.ButtonPressed += _mtService_ButtonPressed;
+
+            LoadState();
+        }
+
+        private void LoadState()
+        {
+            _currentPlayMode = _playModeManager.Providers[0];
         }
 
         public void RequestPlay()
@@ -131,6 +153,18 @@ namespace Tomato.TomatoMusic.Audio.Services
         {
             if (CanPause)
                 Pause();
+        }
+
+        public void RequestNext()
+        {
+            if (CanNext)
+                MoveNext();
+        }
+
+        public void RequestPrevious()
+        {
+            if (CanPrevious)
+                MovePrevious();
         }
 
         public void SetPlaylist(IList<TrackInfo> tracks, TrackInfo current)
@@ -149,6 +183,37 @@ namespace Tomato.TomatoMusic.Audio.Services
         {
             PlaybackStatus = MediaPlaybackStatus.Changing;
             _audioController.Pause();
+        }
+
+        private void MoveNext()
+        {
+            PlaybackStatus = MediaPlaybackStatus.Changing;
+            _autoPlay = true;
+            _audioController.MoveNext();
+        }
+
+        private void MovePrevious()
+        {
+            PlaybackStatus = MediaPlaybackStatus.Changing;
+            _autoPlay = true;
+            _audioController.MovePrevious();
+        }
+
+        private void OnCurrentTrackChanged()
+        {
+            if (CurrentTrack != null)
+            {
+                var idx = Playlist.IndexOf(CurrentTrack);
+                if (idx != -1)
+                {
+                    CanPrevious = idx > 0 && PlaybackStatus != MediaPlaybackStatus.Changing;
+                    CanNext = idx < Playlist.Count - 1 && PlaybackStatus != MediaPlaybackStatus.Changing;
+                }
+                else
+                    CanPrevious = CanNext = false;
+            }
+            else
+                CanPlay = CanPause = CanPrevious = CanNext = false;
         }
 
         private void _mtService_ButtonPressed(object sender, Windows.Media.SystemMediaTransportControlsButtonPressedEventArgs e)
@@ -170,8 +235,10 @@ namespace Tomato.TomatoMusic.Audio.Services
                 case Windows.Media.SystemMediaTransportControlsButton.Rewind:
                     break;
                 case Windows.Media.SystemMediaTransportControlsButton.Next:
+                    RequestNext();
                     break;
                 case Windows.Media.SystemMediaTransportControlsButton.Previous:
+                    RequestPrevious();
                     break;
                 case Windows.Media.SystemMediaTransportControlsButton.ChannelUp:
                     break;
@@ -205,11 +272,12 @@ namespace Tomato.TomatoMusic.Audio.Services
         void IAudioControllerHandler.NotifyControllerReady()
         {
             Debug.WriteLine($"Player Received: Controller Ready.");
+            _audioController.SetPlayMode(_currentPlayMode.Id);
         }
 
         void IAudioControllerHandler.NotifyMediaOpened()
         {
-            if(_autoPlay)
+            if (_autoPlay)
             {
                 Play();
                 _autoPlay = false;
@@ -269,6 +337,15 @@ namespace Tomato.TomatoMusic.Audio.Services
             _autoPlay = true;
             if (CanPlay)
                 Play();
+        }
+
+        void IAudioControllerHandler.NotifyCurrentTrackChanged(TrackInfo track)
+        {
+            if (_playlist != null)
+            {
+                var currentTrack = _playlist.SingleOrDefault(o => o == track);
+                Execute.BeginOnUIThread(() => CurrentTrack = currentTrack);
+            }
         }
     }
 }
