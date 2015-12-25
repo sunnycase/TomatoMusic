@@ -17,11 +17,7 @@ namespace Tomato.TomatoMusic.AudioTask
 {
     class AudioController : IAudioController
     {
-        private readonly JsonServer<IAudioController> _audioControllerServer;
         private readonly BackgroundMediaPlayer _mediaPlayer;
-
-        private readonly JsonClient<IAudioControllerHandler> _controllerHandlerClient;
-        private readonly IAudioControllerHandler _controllerHandler;
         private readonly IPlayModeManager _playModeManager;
         private IPlayModeProvider _currentPlayMode;
 
@@ -30,12 +26,21 @@ namespace Tomato.TomatoMusic.AudioTask
 
         private bool _autoPlay;
 
+        #region Rpc
+        private readonly JsonServer<IAudioController> _audioControllerServer;
+        private readonly JsonClient<IAudioControllerHandler> _controllerHandlerClient;
+        private readonly IAudioControllerHandler _controllerHandler;
+        #endregion
+
         public AudioController(BackgroundMediaPlayer mediaPlayer)
         {
-            _mediaPlayer = mediaPlayer;
-            _audioControllerServer = new JsonServer<IAudioController>(this, AudioRpcPacketBuilders.AudioController);
-            _controllerHandlerClient = new JsonClient<IAudioControllerHandler>(AudioRpcPacketBuilders.AudioControllerHandler);
+            #region Rpc
+            _audioControllerServer = new JsonServer<IAudioController>(s => new RpcCalledProxies.IAudioControllerRpcCalledProxy(s), this);
+            _controllerHandlerClient = new JsonClient<IAudioControllerHandler>(s => new RpcCallingProxies.IAudioControllerHandlerRpcCallingProxy(s));
             _controllerHandler = _controllerHandlerClient.Proxy;
+            #endregion
+
+            _mediaPlayer = mediaPlayer;
             _playModeManager = IoC.Get<IPlayModeManager>();
 
             mediaPlayer.MediaOpened += MediaPlayer_MediaOpened;
@@ -48,10 +53,10 @@ namespace Tomato.TomatoMusic.AudioTask
             var playlist = _playlist;
             var currentTrack = _currentTrack;
             var playMode = _currentPlayMode;
-            if(playMode != null && playlist != null && currentTrack != null)
+            if (playMode != null && playlist != null && currentTrack != null)
             {
                 var nextTrack = playMode.SelectNextTrack(playlist, currentTrack);
-                if(nextTrack != null)
+                if (nextTrack != null)
                 {
                     _autoPlay = true;
                     SetCurrentTrack(nextTrack);
@@ -66,7 +71,7 @@ namespace Tomato.TomatoMusic.AudioTask
 
         private void MediaPlayer_MediaOpened(IMediaPlayer sender, object args)
         {
-            if(_autoPlay)
+            if (_autoPlay)
             {
                 _autoPlay = false;
                 Play();
@@ -74,20 +79,9 @@ namespace Tomato.TomatoMusic.AudioTask
             _controllerHandler.NotifyMediaOpened();
         }
 
-        public void OnReceiveMessage(string message)
-        {
-            _audioControllerServer.OnReceive(message);
-        }
-
         public void Play()
         {
             _mediaPlayer.Play();
-        }
-
-        public void SetupHandler()
-        {
-            _controllerHandlerClient.OnSendMessage = m => _mediaPlayer.SendMessage(AudioRpcPacketBuilders.RpcMessageTag, m);
-            _controllerHandler.NotifyControllerReady();
         }
 
         private async void SetMediaSource(Uri uri)
@@ -118,7 +112,7 @@ namespace Tomato.TomatoMusic.AudioTask
 
         public void SetCurrentTrack(TrackInfo track)
         {
-            if(_currentTrack != track)
+            if (_currentTrack != track)
             {
                 _currentTrack = track;
                 if (_currentTrack != null)
@@ -164,5 +158,18 @@ namespace Tomato.TomatoMusic.AudioTask
         {
             _currentPlayMode = _playModeManager.GetProvider(id);
         }
+
+        #region Rpc
+        public void OnReceiveMessage(string message)
+        {
+            _audioControllerServer.OnReceive(message);
+        }
+
+        public void SetupHandler()
+        {
+            _controllerHandlerClient.OnSendMessage = m => _mediaPlayer.SendMessage(AudioRpc.RpcMessageTag, m);
+            _controllerHandler.NotifyControllerReady();
+        }
+        #endregion
     }
 }

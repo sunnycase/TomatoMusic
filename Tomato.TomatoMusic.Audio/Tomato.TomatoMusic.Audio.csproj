@@ -108,10 +108,28 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AudioModule.cs" />
+    <Compile Include="RpcProxies\IAudioControllerCallingProxy.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>IAudioControllerCallingProxy.tt</DependentUpon>
+    </Compile>
+    <Compile Include="RpcProxies\IAudioControllerHandlerCalledProxy.cs">
+      <DependentUpon>IAudioControllerHandlerCalledProxy.tt</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
     <Compile Include="Services\MediaTransportService.cs" />
     <Compile Include="Services\PlaySessionService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Content Include="Properties\Tomato.TomatoMusic.AudioServices.rd.xml" />
+    <Content Include="RpcProxies\IAudioControllerCallingProxy.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>IAudioControllerCallingProxy.cs</LastGenOutput>
+    </Content>
+    <Content Include="RpcProxies\IAudioControllerHandlerCalledProxy.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>IAudioControllerHandlerCalledProxy.cs</LastGenOutput>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Tomato.TomatoMusic.AudioTask\Tomato.TomatoMusic.AudioTask.csproj">
@@ -130,6 +148,9 @@
       <Project>{e10050ce-4def-4627-baf2-c396c2cee6ae}</Project>
       <Name>Tomato.Uwp.Mvvm</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>

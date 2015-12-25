@@ -108,9 +108,19 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AudioConstants.cs" />
-    <Compile Include="AudioRpcPacketBuilders.cs" />
+    <Compile Include="AudioRpc.cs" />
     <Compile Include="IAudioController.cs" />
     <Compile Include="IAudioControllerHandler.cs" />
+    <Compile Include="RpcPackets\IAudioControllerHandler.cs">
+      <DependentUpon>IAudioControllerHandler.tt</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="RpcPackets\IAudioController.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>IAudioController.tt</DependentUpon>
+    </Compile>
     <Compile Include="Primitives\IHasKey.cs" />
     <Compile Include="Primitives\IPlaylistAnchor.cs" />
     <Compile Include="Primitives\IPlaylistContentProvider.cs" />
@@ -122,6 +132,14 @@
     <Compile Include="Services\IPlaylistManager.cs" />
     <Compile Include="Services\IPlayModeProvider.cs" />
     <Compile Include="Services\IPlaySessionService.cs" />
+    <Content Include="RpcPackets\IAudioControllerHandler.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>IAudioControllerHandler.cs</LastGenOutput>
+    </Content>
+    <Content Include="RpcPackets\IAudioController.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>IAudioController.cs</LastGenOutput>
+    </Content>
     <Content Include="Properties\Tomato.TomatoMusic.Core.rd.xml" />
   </ItemGroup>
   <ItemGroup>
@@ -129,6 +147,9 @@
       <Project>{e10050ce-4def-4627-baf2-c396c2cee6ae}</Project>
       <Name>Tomato.Uwp.Mvvm</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>

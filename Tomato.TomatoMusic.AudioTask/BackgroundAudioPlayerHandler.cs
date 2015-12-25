@@ -26,7 +26,7 @@ namespace Tomato.TomatoMusic.AudioTask
 
         public void OnReceiveMessage(string tag, string message)
         {
-            if (tag == AudioRpcPacketBuilders.RpcMessageTag)
+            if (tag == AudioRpc.RpcMessageTag)
                 _audioController?.OnReceiveMessage(message);
             else
             {

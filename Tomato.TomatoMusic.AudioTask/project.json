@@ -3,7 +3,8 @@
     "Caliburn.Micro": "3.0.0-beta2",
     "Microsoft.NETCore.UniversalWindowsPlatform": "5.0.0",
     "Tomato.Media": "0.0.1-alpha1-6",
-    "Tomato.Rpc.Json": "0.0.1-alpha1-1"
+    "Tomato.Rpc.Core": "0.0.1-alpha1-2",
+    "Tomato.Rpc.Json": "0.0.1-alpha1-2"
   },
   "frameworks": {
     "uap10.0": {}
