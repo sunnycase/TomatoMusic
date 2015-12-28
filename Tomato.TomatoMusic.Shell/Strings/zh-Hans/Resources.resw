@@ -126,6 +126,9 @@
   <data name="Albums.Header" xml:space="preserve">
     <value>专辑</value>
   </data>
+  <data name="AppName" xml:space="preserve">
+    <value>番茄音乐</value>
+  </data>
   <data name="Artists.Header" xml:space="preserve">
     <value>艺术家</value>
   </data>

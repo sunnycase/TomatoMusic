@@ -92,6 +92,23 @@ namespace Tomato.TomatoMusic.RpcCallingProxies
 			_packetSender.Send(packet);
 		}
 
+		public void AskPosition()
+		{
+			var packet = new Void_20AskPosition_28_29
+			{
+			};
+			_packetSender.Send(packet);
+		}
+
+		public void SetPosition(System.TimeSpan position)
+		{
+			var packet = new Void_20SetPosition_28System_TimeSpan_29
+			{
+				Arg0 = position,
+			};
+			_packetSender.Send(packet);
+		}
+
 	}
 }
 

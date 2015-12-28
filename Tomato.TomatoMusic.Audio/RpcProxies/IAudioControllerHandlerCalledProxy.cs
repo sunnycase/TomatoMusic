@@ -26,6 +26,9 @@ namespace Tomato.TomatoMusic.RpcCalledProxies
 				{ typeof(Void_20NotifyMediaOpened_28_29), ProcessVoid_20NotifyMediaOpened_28_29 },
 				{ typeof(Void_20NotifyControllerStateChanged_28Windows_Media_Playback_MediaPlayerState_29), ProcessVoid_20NotifyControllerStateChanged_28Windows_Media_Playback_MediaPlayerState_29 },
 				{ typeof(Void_20NotifyCurrentTrackChanged_28Tomato_TomatoMusic_Primitives_TrackInfo_29), ProcessVoid_20NotifyCurrentTrackChanged_28Tomato_TomatoMusic_Primitives_TrackInfo_29 },
+				{ typeof(Void_20NotifyDuration_28System_Nullable_601_5BSystem_TimeSpan_5D_29), ProcessVoid_20NotifyDuration_28System_Nullable_601_5BSystem_TimeSpan_5D_29 },
+				{ typeof(Void_20NotifyPosition_28System_TimeSpan_29), ProcessVoid_20NotifyPosition_28System_TimeSpan_29 },
+				{ typeof(Void_20NotifySeekCompleted_28_29), ProcessVoid_20NotifySeekCompleted_28_29 },
 			};
 		}
 
@@ -58,6 +61,24 @@ namespace Tomato.TomatoMusic.RpcCalledProxies
 		{
 			var packet = (Void_20NotifyCurrentTrackChanged_28Tomato_TomatoMusic_Primitives_TrackInfo_29)packetObj;
 			_impl.NotifyCurrentTrackChanged(packet.Arg0);
+		}
+
+		void ProcessVoid_20NotifyDuration_28System_Nullable_601_5BSystem_TimeSpan_5D_29(object packetObj)
+		{
+			var packet = (Void_20NotifyDuration_28System_Nullable_601_5BSystem_TimeSpan_5D_29)packetObj;
+			_impl.NotifyDuration(packet.Arg0);
+		}
+
+		void ProcessVoid_20NotifyPosition_28System_TimeSpan_29(object packetObj)
+		{
+			var packet = (Void_20NotifyPosition_28System_TimeSpan_29)packetObj;
+			_impl.NotifyPosition(packet.Arg0);
+		}
+
+		void ProcessVoid_20NotifySeekCompleted_28_29(object packetObj)
+		{
+			var packet = (Void_20NotifySeekCompleted_28_29)packetObj;
+			_impl.NotifySeekCompleted();
 		}
 
 	}

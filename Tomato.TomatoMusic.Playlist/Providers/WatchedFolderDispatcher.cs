@@ -26,7 +26,7 @@ namespace Tomato.TomatoMusic.Playlist.Providers
         
         private readonly object _countdownLocker = new object();
         private ThreadPoolTimer _countdown;
-        private static readonly TimeSpan CountdownTime = new TimeSpan(0, 0, 15);
+        private static readonly TimeSpan CountdownTime = new TimeSpan(0, 0, 3);
         private CancellationTokenSource _updateWorkerCancelSource;
         private readonly object _updateWorkerCancelSourceLocker = new object();
         private readonly TaskFactory _updateWorkerFactory;

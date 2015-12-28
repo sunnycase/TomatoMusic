@@ -46,6 +46,12 @@ namespace Tomato.TomatoMusic.AudioTask
             mediaPlayer.MediaOpened += MediaPlayer_MediaOpened;
             mediaPlayer.MediaEnded += MediaPlayer_MediaEnded;
             mediaPlayer.CurrentStateChanged += MediaPlayer_CurrentStateChanged;
+            mediaPlayer.SeekCompleted += MediaPlayer_SeekCompleted;
+        }
+
+        private void MediaPlayer_SeekCompleted(IMediaPlayer sender, object args)
+        {
+            _controllerHandler.NotifySeekCompleted();
         }
 
         private void MediaPlayer_MediaEnded(IMediaPlayer sender, object args)
@@ -58,8 +64,13 @@ namespace Tomato.TomatoMusic.AudioTask
                 var nextTrack = playMode.SelectNextTrack(playlist, currentTrack);
                 if (nextTrack != null)
                 {
-                    _autoPlay = true;
-                    SetCurrentTrack(nextTrack);
+                    if (nextTrack != currentTrack)
+                    {
+                        _autoPlay = true;
+                        SetCurrentTrack(nextTrack);
+                    }
+                    else
+                        Play();
                 }
             }
         }
@@ -95,6 +106,7 @@ namespace Tomato.TomatoMusic.AudioTask
                 throw new NotSupportedException("Not supported uri.");
             var stream = await file.OpenReadAsync();
             var mediaSource = await MediaSource.CreateFromStream(stream);
+            _controllerHandler.NotifyDuration(mediaSource.Duration);
             Debug.WriteLine($"Title: {mediaSource.Title}");
             Debug.WriteLine($"Album: {mediaSource.Album}");
             _mediaPlayer.SetMediaSource(mediaSource);
@@ -157,6 +169,16 @@ namespace Tomato.TomatoMusic.AudioTask
         public void SetPlayMode(Guid id)
         {
             _currentPlayMode = _playModeManager.GetProvider(id);
+        }
+
+        public void AskPosition()
+        {
+            _controllerHandler.NotifyPosition(_mediaPlayer.Position);
+        }
+
+        public void SetPosition(TimeSpan position)
+        {
+            _mediaPlayer.Position = position;
         }
 
         #region Rpc

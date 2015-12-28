@@ -17,5 +17,7 @@ namespace Tomato.TomatoMusic.Core
         void MoveNext();
         void MovePrevious();
         void SetPlayMode(Guid id);
+        void AskPosition();
+        void SetPosition(TimeSpan position);
     }
 }

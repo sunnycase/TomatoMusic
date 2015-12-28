@@ -38,8 +38,8 @@
         </Border>
         <Pivot Grid.Row="2">
             <playlistViews:MusicsView ViewModel="{x:Bind ViewModel.MusicsViewModel, Mode=OneWay}"/>
-            <playlistViews:AlbumsView/>
-            <playlistViews:ArtistsView/>
+            <!--<playlistViews:AlbumsView/>
+            <playlistViews:ArtistsView/>-->
         </Pivot>
     </Grid>
 </Page>

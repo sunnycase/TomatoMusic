@@ -132,14 +132,14 @@
     <Compile Include="Services\IPlaylistManager.cs" />
     <Compile Include="Services\IPlayModeProvider.cs" />
     <Compile Include="Services\IPlaySessionService.cs" />
-    <Content Include="RpcPackets\IAudioControllerHandler.tt">
+    <None Include="RpcPackets\IAudioControllerHandler.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>IAudioControllerHandler.cs</LastGenOutput>
-    </Content>
-    <Content Include="RpcPackets\IAudioController.tt">
+    </None>
+    <None Include="RpcPackets\IAudioController.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>IAudioController.cs</LastGenOutput>
-    </Content>
+    </None>
     <Content Include="Properties\Tomato.TomatoMusic.Core.rd.xml" />
   </ItemGroup>
   <ItemGroup>

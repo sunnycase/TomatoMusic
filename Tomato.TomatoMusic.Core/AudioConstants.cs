@@ -10,7 +10,9 @@ namespace Tomato.TomatoMusic.Core
     {
         public static readonly string[] SupportedFileExtensions = new[]
         {
-            ".mp3"
+            ".mp3",
+            ".wav",
+            ".wma"
         };
     }
 }

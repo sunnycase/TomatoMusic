@@ -26,5 +26,19 @@ namespace Tomato.TomatoMusic.RpcPackets.IAudioControllerHandler
 		public Tomato.TomatoMusic.Primitives.TrackInfo Arg0;
 	}
 
+	public sealed class Void_20NotifyDuration_28System_Nullable_601_5BSystem_TimeSpan_5D_29
+	{
+		public System.Nullable<System.TimeSpan> Arg0;
+	}
+
+	public sealed class Void_20NotifyPosition_28System_TimeSpan_29
+	{
+		public System.TimeSpan Arg0;
+	}
+
+	public sealed class Void_20NotifySeekCompleted_28_29
+	{
+	}
+
 }
 

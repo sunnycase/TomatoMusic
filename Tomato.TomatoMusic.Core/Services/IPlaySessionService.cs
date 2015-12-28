@@ -19,6 +19,8 @@ namespace Tomato.TomatoMusic.Services
         bool CanNext { get; }
         TrackInfo CurrentTrack { get; }
         MediaPlaybackStatus PlaybackStatus { get; }
+        TimeSpan? Duration { get; }
+        TimeSpan Position { get; set; }
 
         void RequestPlay();
         void RequestPause();

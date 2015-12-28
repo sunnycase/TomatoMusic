@@ -15,6 +15,7 @@ using Windows.Media;
 using Windows.Media.Playback;
 using Tomato.TomatoMusic.Primitives;
 using Tomato.TomatoMusic.Plugins;
+using System.Threading;
 
 namespace Tomato.TomatoMusic.Audio.Services
 {
@@ -111,12 +112,33 @@ namespace Tomato.TomatoMusic.Audio.Services
             }
         }
 
+        private TimeSpan? _duration;
+        public TimeSpan? Duration
+        {
+            get { return _duration; }
+            private set { SetProperty(ref _duration, value); }
+        }
+
+        private TimeSpan _position;
+        public TimeSpan Position
+        {
+            get { return _position; }
+            set
+            {
+                var oldValue = _position;
+                if (SetProperty(ref _position, value))
+                    OnPositionChanged(oldValue, value);
+            }
+        }
+
         private bool _autoPlay = false;
 
         private readonly BackgroundMediaPlayerClient _client;
         private readonly IMediaTransportService _mtService;
         private readonly IPlayModeManager _playModeManager;
         private IPlayModeProvider _currentPlayMode;
+        private readonly Timer _askPositionTimer;
+        private static readonly TimeSpan _askPositionPeriod = TimeSpan.FromSeconds(0.25);
 
         #region Rpc
         private readonly JsonServer<IAudioControllerHandler> _audioControllerHandlerServer;
@@ -141,8 +163,14 @@ namespace Tomato.TomatoMusic.Audio.Services
             _mtService = mtService;
             _mtService.IsEnabled = _mtService.IsPauseEnabled = _mtService.IsPlayEnabled = true;
             _mtService.ButtonPressed += _mtService_ButtonPressed;
+            _askPositionTimer = new Timer(OnAskPosition, null, Timeout.InfiniteTimeSpan, _askPositionPeriod);
 
             LoadState();
+        }
+
+        private void OnAskPosition(object state)
+        {
+            _audioController.AskPosition();
         }
 
         private void LoadState()
@@ -287,6 +315,7 @@ namespace Tomato.TomatoMusic.Audio.Services
                         ShowPause = false;
                         ShowPlay = true;
                         PlaybackStatus = MediaPlaybackStatus.Closed;
+                        SuspendAskPosition();
                         break;
                     case MediaPlayerState.Opening:
                         CanPlay = CanPause = false;
@@ -306,6 +335,7 @@ namespace Tomato.TomatoMusic.Audio.Services
                         ShowPause = true;
                         ShowPlay = false;
                         PlaybackStatus = MediaPlaybackStatus.Playing;
+                        ResumeAskPosition();
                         break;
                     case MediaPlayerState.Paused:
                         CanPause = false;
@@ -313,9 +343,11 @@ namespace Tomato.TomatoMusic.Audio.Services
                         ShowPause = false;
                         ShowPlay = true;
                         PlaybackStatus = MediaPlaybackStatus.Paused;
+                        SuspendAskPosition();
                         break;
                     case MediaPlayerState.Stopped:
                         PlaybackStatus = MediaPlaybackStatus.Stopped;
+                        SuspendAskPosition();
                         break;
                     default:
                         break;
@@ -338,6 +370,44 @@ namespace Tomato.TomatoMusic.Audio.Services
                 var currentTrack = _playlist.SingleOrDefault(o => o == track);
                 Execute.BeginOnUIThread(() => CurrentTrack = currentTrack);
             }
+        }
+
+        void IAudioControllerHandler.NotifyDuration(TimeSpan? duration)
+        {
+            Execute.BeginOnUIThread(() => Duration = duration);
+        }
+
+        void IAudioControllerHandler.NotifyPosition(TimeSpan position)
+        {
+            Execute.BeginOnUIThread(() =>
+            {
+                _position = position;
+                OnPropertyChanged(nameof(Position));
+            });
+        }
+
+        private void OnPositionChanged(TimeSpan oldValue, TimeSpan value)
+        {
+            if(Math.Abs(oldValue.Subtract(value).TotalMilliseconds) > 100)
+            {
+                SuspendAskPosition();
+                _audioController.SetPosition(value);
+            }
+        }
+
+        private void SuspendAskPosition()
+        {
+            _askPositionTimer.Change(Timeout.InfiniteTimeSpan, _askPositionPeriod);
+        }
+
+        private void ResumeAskPosition()
+        {
+            _askPositionTimer.Change(TimeSpan.Zero, _askPositionPeriod);
+        }
+
+        void IAudioControllerHandler.NotifySeekCompleted()
+        {
+            ResumeAskPosition();
         }
 
         #region Rpc

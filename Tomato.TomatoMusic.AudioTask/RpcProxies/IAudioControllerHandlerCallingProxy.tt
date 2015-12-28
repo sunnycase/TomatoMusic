@@ -4,7 +4,6 @@
 <#@ import namespace="System.Text" #>
 <#@ import namespace="System.Collections.Generic" #>
 <#@ import namespace="System.Reflection" #>
-<#@ assembly name="$(TargetDir)$(TargetFileName)" #>
 <#@ assembly name="$(TargetDir)Tomato.TomatoMusic.Core.dll" #>
 <#@ output extension=".cs" #>
 <# var ifaceType = typeof(Tomato.TomatoMusic.Core.IAudioControllerHandler); #>

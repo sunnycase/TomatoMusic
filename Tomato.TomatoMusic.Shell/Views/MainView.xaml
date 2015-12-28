@@ -8,12 +8,15 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:controls="using:Tomato.Uwp.Mvvm.Controls"
+    xmlns:converters="using:Tomato.Uwp.Mvvm.Converters"
     xmlns:cal="using:Caliburn.Micro"
     mc:Ignorable="d"
     cal:Bind.Model="{x:Bind ViewModel}">
     <Page.Resources>
         <ResourceDictionary>
             <cal:BooleanToVisibilityConverter x:Name="BooleanToVisibilityConverter"/>
+            <converters:TimeSpanToDoubleConverter x:Name="TimeSpanToDoubleConverter"/>
+            <converters:TimeSpanToStringConverter x:Name="TimeSpanToStringConverter" Format="hh\:mm\:ss"/>
         </ResourceDictionary>
     </Page.Resources>
 
@@ -92,7 +95,7 @@
                             </ListBox.ItemContainerStyle>
                         </ListBox>
                     </StackPanel>
-                    <StackPanel Grid.Row="2">
+                    <StackPanel Grid.Row="2" Visibility="Collapsed">
                         <Rectangle Margin="5" Fill="#eee" Height="1" HorizontalAlignment="Stretch"/>
 
                         <StackPanel Orientation="Horizontal">
@@ -116,6 +119,7 @@
                             <ColumnDefinition Width="Auto"/>
                             <ColumnDefinition Width="Auto"/>
                             <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
                         <Button IsEnabled="{x:Bind ViewModel.PlaySession.CanPrevious, Mode=OneWay}"
                                 Click="{x:Bind ViewModel.PlaySession.RequestPrevious}"
@@ -139,7 +143,20 @@
                                 Style="{StaticResource TrackFunctionalButtonStyle}">
                             <SymbolIcon Symbol="Next"/>
                         </Button>
-                        <ProgressBar Grid.Column="3" Margin="5,0"/>
+                        <Slider Grid.Column="3" Margin="5,5,5,0" Maximum="{x:Bind ViewModel.PlaySession.Duration, Converter={StaticResource TimeSpanToDoubleConverter}, Mode=OneWay}"
+                                Value="{x:Bind ViewModel.PlaySession.Position, Converter={StaticResource TimeSpanToDoubleConverter}, Mode=TwoWay}" Style="{StaticResource TrackPositionSliderStyle}"
+                                />
+                        <StackPanel Grid.Column="4" Orientation="Horizontal">
+                            <TextBlock Text="{x:Bind ViewModel.PlaySession.Position, Converter={StaticResource TimeSpanToStringConverter}, Mode=OneWay}"/>
+                            <TextBlock>/</TextBlock>
+                            <TextBlock Text="{x:Bind ViewModel.PlaySession.Duration, Converter={StaticResource TimeSpanToStringConverter}, Mode=OneWay}"/>
+                            <StackPanel.Resources>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="VerticalAlignment" Value="Center"/>
+                                    <Setter Property="Margin" Value="2,0"/>
+                                </Style>
+                            </StackPanel.Resources>
+                        </StackPanel>
                     </Grid>
                 </Border>
             </Grid>

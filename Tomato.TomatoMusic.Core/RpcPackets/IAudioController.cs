@@ -43,5 +43,14 @@ namespace Tomato.TomatoMusic.RpcPackets.IAudioController
 		public System.Guid Arg0;
 	}
 
+	public sealed class Void_20AskPosition_28_29
+	{
+	}
+
+	public sealed class Void_20SetPosition_28System_TimeSpan_29
+	{
+		public System.TimeSpan Arg0;
+	}
+
 }
 

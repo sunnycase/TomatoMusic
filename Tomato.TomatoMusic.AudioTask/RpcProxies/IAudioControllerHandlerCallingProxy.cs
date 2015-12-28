@@ -59,6 +59,32 @@ namespace Tomato.TomatoMusic.RpcCallingProxies
 			_packetSender.Send(packet);
 		}
 
+		public void NotifyDuration(System.Nullable<System.TimeSpan> duration)
+		{
+			var packet = new Void_20NotifyDuration_28System_Nullable_601_5BSystem_TimeSpan_5D_29
+			{
+				Arg0 = duration,
+			};
+			_packetSender.Send(packet);
+		}
+
+		public void NotifyPosition(System.TimeSpan position)
+		{
+			var packet = new Void_20NotifyPosition_28System_TimeSpan_29
+			{
+				Arg0 = position,
+			};
+			_packetSender.Send(packet);
+		}
+
+		public void NotifySeekCompleted()
+		{
+			var packet = new Void_20NotifySeekCompleted_28_29
+			{
+			};
+			_packetSender.Send(packet);
+		}
+
 	}
 }
 

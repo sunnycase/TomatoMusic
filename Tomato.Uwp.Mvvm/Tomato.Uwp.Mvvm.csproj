@@ -114,6 +114,7 @@
     <Compile Include="Controls\HamburgerMenu.cs" />
     <Compile Include="Controls\HamburgerMenuButton.cs" />
     <Compile Include="Converters\BooleanNotConverter.cs" />
+    <Compile Include="Converters\TimeSpanToDoubleConverter.cs" />
     <Compile Include="Converters\TimeSpanToStringConverter.cs" />
     <Compile Include="ExceptionExtensions.cs" />
     <Compile Include="ObjectExtensions.cs" />

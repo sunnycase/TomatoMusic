@@ -122,14 +122,14 @@
     <Compile Include="Services\PlaySessionService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Content Include="Properties\Tomato.TomatoMusic.AudioServices.rd.xml" />
-    <Content Include="RpcProxies\IAudioControllerCallingProxy.tt">
+    <None Include="RpcProxies\IAudioControllerCallingProxy.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>IAudioControllerCallingProxy.cs</LastGenOutput>
-    </Content>
-    <Content Include="RpcProxies\IAudioControllerHandlerCalledProxy.tt">
+    </None>
+    <None Include="RpcProxies\IAudioControllerHandlerCalledProxy.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>IAudioControllerHandlerCalledProxy.cs</LastGenOutput>
-    </Content>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Tomato.TomatoMusic.AudioTask\Tomato.TomatoMusic.AudioTask.csproj">

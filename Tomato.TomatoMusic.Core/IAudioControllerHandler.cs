@@ -14,5 +14,8 @@ namespace Tomato.TomatoMusic.Core
         void NotifyMediaOpened();
         void NotifyControllerStateChanged(MediaPlayerState state);
         void NotifyCurrentTrackChanged(TrackInfo track);
+        void NotifyDuration(TimeSpan? duration);
+        void NotifyPosition(TimeSpan position);
+        void NotifySeekCompleted();
     }
 }
