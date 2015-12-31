@@ -368,7 +368,12 @@ namespace Tomato.TomatoMusic.Audio.Services
             if (_playlist != null)
             {
                 var currentTrack = _playlist.SingleOrDefault(o => o == track);
-                Execute.BeginOnUIThread(() => CurrentTrack = currentTrack);
+                Execute.BeginOnUIThread(() =>
+                {
+                    CurrentTrack = currentTrack;
+                    _position = TimeSpan.Zero;
+                    OnPropertyChanged(nameof(Position));
+                });
             }
         }
 
@@ -381,8 +386,11 @@ namespace Tomato.TomatoMusic.Audio.Services
         {
             Execute.BeginOnUIThread(() =>
             {
-                _position = position;
-                OnPropertyChanged(nameof(Position));
+                if(PlaybackStatus == MediaPlaybackStatus.Playing)
+                {
+                    _position = position;
+                    OnPropertyChanged(nameof(Position));
+                }
             });
         }
 
