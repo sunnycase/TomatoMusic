@@ -26,7 +26,7 @@
                 <SymbolIcon Symbol="Edit"/>
             </Button>
         </StackPanel>
-        <Border Grid.Row="1" BorderBrush="#eee" BorderThickness="0,1,0,1" Margin="5">
+        <Border Grid.Row="1" BorderBrush="#777" BorderThickness="0,1,0,1" Margin="5">
             <StackPanel Orientation="Horizontal">
                 <HyperlinkButton x:Uid="AddFolder" Content="Add Folder" Style="{StaticResource PlaylistHyperlinkButtonStyle}"
                                  Click="{x:Bind ViewModel.OnRequestAddFolder}"

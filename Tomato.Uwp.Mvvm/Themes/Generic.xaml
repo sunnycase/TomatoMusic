@@ -4,7 +4,7 @@
     xmlns:controls="using:Tomato.Uwp.Mvvm.Controls">
 
     <Style x:Key="HamburgerButtonStyle" TargetType="Button">
-        <Setter Property="Background" Value="DarkRed"/>
+        <Setter Property="Background" Value="Transparent"/>
         <Setter Property="Foreground" Value="White"/>
         <Setter Property="Height" Value="48" />
         <Setter Property="HorizontalAlignment" Value="Left" />
@@ -57,16 +57,41 @@
                         BorderBrush="{TemplateBinding BorderBrush}"
                         BorderThickness="{TemplateBinding BorderThickness}">
                         <Grid>
-                            <SplitView x:Name="PART_SplitView" DisplayMode="CompactInline" IsPaneOpen="{TemplateBinding IsPaneOpen}"
-                                       PaneBackground="Transparent" CompactPaneLength="48" OpenPaneLength="200"
+                            <SplitView x:Name="PART_SplitView" DisplayMode="CompactInline"
+                                       PaneBackground="{ThemeResource SystemControlDisabledChromeMediumLowBrush}"
+                                       CompactPaneLength="48" OpenPaneLength="200"
                                        Content="{TemplateBinding Content}">
                                 <SplitView.Pane>
-                                    <Border Margin="0,48,0,0" Child="{TemplateBinding Pane}"/>
+                                    <StackPanel Orientation="Vertical">
+                                        <Button x:Name="PART_HamburgerButton"
+                                                Style="{StaticResource HamburgerButtonStyle}"/>
+                                        <Border Child="{TemplateBinding Pane}"/>
+                                    </StackPanel>
                                 </SplitView.Pane>
                             </SplitView>
-                            <Button x:Name="PART_HamburgerButton"
-                                        Style="{StaticResource HamburgerButtonStyle}"/>
                         </Grid>
+                        <VisualStateManager.VisualStateGroups>
+                            <VisualStateGroup x:Name="WindowSizeStates">
+                                <VisualState x:Name="WideState">
+                                    <VisualState.Setters>
+                                        <Setter Target="PART_SplitView.DisplayMode" Value="CompactInline" />
+                                        <Setter Target="PART_SplitView.IsPaneOpen" Value="True" />
+                                    </VisualState.Setters>
+                                    <VisualState.StateTriggers>
+                                        <AdaptiveTrigger MinWindowWidth="720" />
+                                    </VisualState.StateTriggers>
+                                </VisualState>
+                                <VisualState x:Name="NarrowState">
+                                    <VisualState.Setters>
+                                        <Setter Target="PART_SplitView.DisplayMode" Value="CompactOverlay" />
+                                        <Setter Target="PART_SplitView.IsPaneOpen" Value="False" />
+                                    </VisualState.Setters>
+                                    <VisualState.StateTriggers>
+                                        <AdaptiveTrigger MinWindowWidth="0" />
+                                    </VisualState.StateTriggers>
+                                </VisualState>
+                            </VisualStateGroup>
+                        </VisualStateManager.VisualStateGroups>
                     </Border>
                 </ControlTemplate>
             </Setter.Value>

@@ -12,6 +12,7 @@ using Tomato.TomatoMusic.Plugins;
 using Tomato.TomatoMusic.Primitives;
 using Tomato.TomatoMusic.Services;
 using Windows.Storage;
+using Tomato.Media.Codec;
 
 namespace Tomato.TomatoMusic.AudioTask
 {
@@ -19,6 +20,7 @@ namespace Tomato.TomatoMusic.AudioTask
     {
         private readonly BackgroundMediaPlayer _mediaPlayer;
         private readonly IPlayModeManager _playModeManager;
+        private readonly CodecManager _codecManager;
         private IPlayModeProvider _currentPlayMode;
 
         private IList<TrackInfo> _playlist;
@@ -39,8 +41,9 @@ namespace Tomato.TomatoMusic.AudioTask
             _controllerHandlerClient = new JsonClient<IAudioControllerHandler>(s => new RpcCallingProxies.IAudioControllerHandlerRpcCallingProxy(s));
             _controllerHandler = _controllerHandlerClient.Proxy;
             #endregion
-
             _mediaPlayer = mediaPlayer;
+            _codecManager = new CodecManager();
+            _codecManager.RegisterDefaultCodecs();
             _playModeManager = IoC.Get<IPlayModeManager>();
 
             mediaPlayer.MediaOpened += MediaPlayer_MediaOpened;

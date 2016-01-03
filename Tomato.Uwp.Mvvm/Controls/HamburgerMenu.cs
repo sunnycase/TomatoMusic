@@ -23,8 +23,6 @@ namespace Tomato.Uwp.Mvvm.Controls
             typeof(HamburgerMenu), new PropertyMetadata(DependencyProperty.UnsetValue));
         public static DependencyProperty ContentProperty { get; } = DependencyProperty.Register(nameof(Content), typeof(UIElement),
             typeof(HamburgerMenu), new PropertyMetadata(DependencyProperty.UnsetValue));
-        public static DependencyProperty IsPaneOpenProperty { get; } = DependencyProperty.Register(nameof(IsPaneOpen), typeof(bool),
-            typeof(HamburgerMenu), new PropertyMetadata(true));
 
         public UIElement Pane
         {
@@ -38,16 +36,12 @@ namespace Tomato.Uwp.Mvvm.Controls
             set { SetValue(ContentProperty, value); }
         }
 
-        public bool IsPaneOpen
-        {
-            get { return (bool)GetValue(IsPaneOpenProperty); }
-            set { SetValue(IsPaneOpenProperty, value); }
-        }
-
         public HamburgerMenu()
         {
             this.DefaultStyleKey = typeof(HamburgerMenu);
         }
+
+        private SplitView _splitView;
 
         protected override void OnApplyTemplate()
         {
@@ -55,11 +49,12 @@ namespace Tomato.Uwp.Mvvm.Controls
 
             var hamburgerButton = (Button)GetTemplateChild("PART_HamburgerButton");
             hamburgerButton.Click += HamburgerButton_Click;
+            _splitView = (SplitView)GetTemplateChild("PART_SplitView");
         }
 
         private void HamburgerButton_Click(object sender, RoutedEventArgs e)
         {
-            IsPaneOpen = !IsPaneOpen;
+            _splitView.IsPaneOpen = !_splitView.IsPaneOpen;
         }
     }
 }

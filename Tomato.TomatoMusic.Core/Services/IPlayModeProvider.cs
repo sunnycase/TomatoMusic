@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Tomato.TomatoMusic.Primitives;
+using Windows.UI.Xaml.Controls;
 
 namespace Tomato.TomatoMusic.Services
 {
@@ -12,6 +13,8 @@ namespace Tomato.TomatoMusic.Services
         Guid Id { get; }
 
         string DisplayName { get; }
+
+        Symbol Icon { get; }
 
         TrackInfo SelectNextTrack(IList<TrackInfo> playlist, TrackInfo current);
     }

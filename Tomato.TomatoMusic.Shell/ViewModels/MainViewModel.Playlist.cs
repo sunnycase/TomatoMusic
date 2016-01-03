@@ -48,7 +48,12 @@ namespace Tomato.TomatoMusic.Shell.ViewModels
 
         private void OnSelectedPlaylistChanged()
         {
-            _navigationService.Navigate(typeof(Views.PlaylistView), PlaylistManager.SelectedPlaylist);
+            _navigationService?.Navigate(typeof(Views.PlaylistView), PlaylistManager.SelectedPlaylist);
+        }
+
+        private void NavigateToSelectedPlaylist()
+        {
+            OnSelectedPlaylistChanged();
         }
     }
 }

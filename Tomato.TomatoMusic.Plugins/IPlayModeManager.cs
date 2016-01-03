@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -9,7 +10,7 @@ namespace Tomato.TomatoMusic.Plugins
 {
     public interface IPlayModeManager
     {
-        IPlayModeProvider[] Providers { get; }
+        ReadOnlyCollection<IPlayModeProvider> Providers { get; }
 
         IPlayModeProvider GetProvider(Guid id);
         void RegisterProvider(IPlayModeProvider provider);

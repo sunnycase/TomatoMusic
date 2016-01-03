@@ -21,6 +21,9 @@ namespace Tomato.TomatoMusic.Services
         MediaPlaybackStatus PlaybackStatus { get; }
         TimeSpan? Duration { get; }
         TimeSpan Position { get; set; }
+        bool IsMuted { get; set; }
+        double Volume { get; set; }
+        IPlayModeProvider PlayMode { get; }
 
         void RequestPlay();
         void RequestPause();
@@ -28,5 +31,6 @@ namespace Tomato.TomatoMusic.Services
         void RequestNext();
         void SetPlaylist(IList<TrackInfo> tracks, TrackInfo current);
         void PlayWhenOpened();
+        void ScrollPlayMode();
     }
 }

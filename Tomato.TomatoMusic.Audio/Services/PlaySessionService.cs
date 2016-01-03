@@ -131,12 +131,36 @@ namespace Tomato.TomatoMusic.Audio.Services
             }
         }
 
+        private bool _isMuted;
+        public bool IsMuted
+        {
+            get { return _isMuted; }
+            set { SetProperty(ref _isMuted, value); }
+        }
+
+        private double _volume;
+        public double Volume
+        {
+            get { return _volume; }
+            set { SetProperty(ref _volume, value); }
+        }
+
+        private IPlayModeProvider _playMode;
+        public IPlayModeProvider PlayMode
+        {
+            get { return _playMode; }
+            set
+            {
+                if (SetProperty(ref _playMode, value))
+                    OnPlayModeChanged();
+            }
+        }
+
         private bool _autoPlay = false;
 
         private readonly BackgroundMediaPlayerClient _client;
         private readonly IMediaTransportService _mtService;
         private readonly IPlayModeManager _playModeManager;
-        private IPlayModeProvider _currentPlayMode;
         private readonly Timer _askPositionTimer;
         private static readonly TimeSpan _askPositionPeriod = TimeSpan.FromSeconds(0.25);
 
@@ -175,7 +199,7 @@ namespace Tomato.TomatoMusic.Audio.Services
 
         private void LoadState()
         {
-            _currentPlayMode = _playModeManager.Providers[0];
+            PlayMode = _playModeManager.Providers[0];
         }
 
         public void RequestPlay()
@@ -292,7 +316,7 @@ namespace Tomato.TomatoMusic.Audio.Services
         void IAudioControllerHandler.NotifyControllerReady()
         {
             Debug.WriteLine($"Player Received: Controller Ready.");
-            _audioController.SetPlayMode(_currentPlayMode.Id);
+            _audioController.SetPlayMode(PlayMode.Id);
         }
 
         void IAudioControllerHandler.NotifyMediaOpened()
@@ -386,7 +410,7 @@ namespace Tomato.TomatoMusic.Audio.Services
         {
             Execute.BeginOnUIThread(() =>
             {
-                if(PlaybackStatus == MediaPlaybackStatus.Playing)
+                if (PlaybackStatus == MediaPlaybackStatus.Playing)
                 {
                     _position = position;
                     OnPropertyChanged(nameof(Position));
@@ -396,7 +420,7 @@ namespace Tomato.TomatoMusic.Audio.Services
 
         private void OnPositionChanged(TimeSpan oldValue, TimeSpan value)
         {
-            if(Math.Abs(oldValue.Subtract(value).TotalMilliseconds) > 100)
+            if (Math.Abs(oldValue.Subtract(value).TotalMilliseconds) > 100)
             {
                 SuspendAskPosition();
                 _audioController.SetPosition(value);
@@ -416,6 +440,20 @@ namespace Tomato.TomatoMusic.Audio.Services
         void IAudioControllerHandler.NotifySeekCompleted()
         {
             ResumeAskPosition();
+        }
+
+        public void ScrollPlayMode()
+        {
+            var playModes = _playModeManager.Providers;
+            var nextIdx = _playModeManager.Providers.IndexOf(PlayMode) + 1;
+            if (nextIdx >= playModes.Count)
+                nextIdx = 0;
+            PlayMode = playModes[nextIdx];
+        }
+
+        private void OnPlayModeChanged()
+        {
+            _audioController.SetPlayMode(PlayMode.Id);
         }
 
         #region Rpc

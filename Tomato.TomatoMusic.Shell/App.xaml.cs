@@ -25,7 +25,8 @@ namespace Tomato.TomatoMusic.Shell
 
             Microsoft.ApplicationInsights.WindowsAppInitializer.InitializeAsync(
                 Microsoft.ApplicationInsights.WindowsCollectors.Metadata |
-                Microsoft.ApplicationInsights.WindowsCollectors.Session);
+                Microsoft.ApplicationInsights.WindowsCollectors.Session |
+                Microsoft.ApplicationInsights.WindowsCollectors.UnhandledException);
             this.InitializeComponent();
         }
 

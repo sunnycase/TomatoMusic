@@ -12,6 +12,7 @@ using Tomato.Uwp.Mvvm;
 using Windows.Storage;
 using Tomato.TomatoMusic.Playlist.Providers;
 using Windows.Storage.AccessCache;
+using Tomato.Media.Codec;
 
 namespace Tomato.TomatoMusic.Playlist.Services
 {
@@ -76,9 +77,12 @@ namespace Tomato.TomatoMusic.Playlist.Services
         private PlaylistIndexFile _playlistIndexFile;
 
         private readonly Dictionary<IPlaylistAnchor, WeakReference<IPlaylistContentProvider>> _playlistContentProviders = new Dictionary<IPlaylistAnchor, WeakReference<IPlaylistContentProvider>>();
+        private readonly CodecManager _codecManager;
 
         public PlaylistManager()
         {
+            _codecManager = new CodecManager();
+            _codecManager.RegisterDefaultCodecs();
             Initialize();
         }
 
@@ -89,6 +93,7 @@ namespace Tomato.TomatoMusic.Playlist.Services
             Default = WrapPlaylistAnchor(PlaylistPlaceholder.Default);
             await LoadPlaylists();
             IsRefreshing = false;
+            MusicLibrary.IsSelected = true;
         }
 
         private async Task LoadPlaylists()

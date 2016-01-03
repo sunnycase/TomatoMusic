@@ -9,25 +9,25 @@ using Windows.UI.Xaml.Controls;
 
 namespace Tomato.TomatoMusic.Plugins.PlayModes
 {
-    class ListMode : IPlayModeProvider
+    class RepeatAllMode : IPlayModeProvider
     {
-        public string DisplayName => "列表模式";
+        public string DisplayName => "循环列表";
 
-        private static readonly Guid _id = new Guid("AC3A41B1-58C9-48D3-A4FD-D01CC548B29B");
+        private static readonly Guid _id = new Guid("4009F9C9-B5B1-4FE6-AADF-B6278B1040CD");
         public Guid Id => _id;
 
-        public Symbol Icon => Symbol.List;
+        public Symbol Icon => Symbol.RepeatAll;
 
         public TrackInfo SelectNextTrack(IList<TrackInfo> playlist, TrackInfo current)
         {
             var idx = playlist.IndexOf(current);
-            if(idx != -1)
+            if (idx != -1)
             {
                 var nextId = idx + 1;
                 if (nextId > 0 && nextId < playlist.Count)
                     return playlist[nextId];
             }
-            return null;
+            return playlist.FirstOrDefault();
         }
     }
 }

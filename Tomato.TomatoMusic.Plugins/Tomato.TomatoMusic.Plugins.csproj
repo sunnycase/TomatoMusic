@@ -108,6 +108,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="IPlayModeManager.cs" />
+    <Compile Include="PlayModes\ShuffleMode.cs" />
+    <Compile Include="PlayModes\RepeatAllMode.cs" />
+    <Compile Include="PlayModes\RepeatOneMode.cs" />
     <Compile Include="PlayModes\ListMode.cs" />
     <Compile Include="PluginsModule.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

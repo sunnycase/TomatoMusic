@@ -12,7 +12,10 @@ namespace Tomato.TomatoMusic.Core
         {
             ".mp3",
             ".wav",
-            ".wma"
+            ".wma",
+            ".ogg",
+            ".flac",
+            ".ape"
         };
     }
 }

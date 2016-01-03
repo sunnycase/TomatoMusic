@@ -9,6 +9,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:controls="using:Tomato.Uwp.Mvvm.Controls"
     xmlns:converters="using:Tomato.Uwp.Mvvm.Converters"
+    xmlns:localConverters="using:Tomato.TomatoMusic.Shell.Converters"
     xmlns:cal="using:Caliburn.Micro"
     mc:Ignorable="d"
     cal:Bind.Model="{x:Bind ViewModel}">
@@ -17,6 +18,7 @@
             <cal:BooleanToVisibilityConverter x:Name="BooleanToVisibilityConverter"/>
             <converters:TimeSpanToDoubleConverter x:Name="TimeSpanToDoubleConverter"/>
             <converters:TimeSpanToStringConverter x:Name="TimeSpanToStringConverter" Format="hh\:mm\:ss"/>
+            <localConverters:PlaylistToIconConverter x:Name="PlaylistToIconConverter"/>
         </ResourceDictionary>
     </Page.Resources>
 
@@ -34,7 +36,7 @@
                             <RadioButton Background="Transparent" GroupName="Playlist" Style="{StaticResource PlaylistLabelStyle}"
                                          IsChecked="{x:Bind IsSelected, Mode=TwoWay}">
                                 <StackPanel Orientation="Horizontal">
-                                    <SymbolIcon Width="48" Height="48" Symbol="MusicInfo"/>
+                                    <SymbolIcon Width="40" Height="48" Margin="0,0,8,0" Symbol="{x:Bind Converter={StaticResource PlaylistToIconConverter}}"/>
                                     <TextBlock VerticalAlignment="Center" Text="{x:Bind Placeholder.Name}"/>
                                 </StackPanel>
                             </RadioButton>
@@ -45,13 +47,13 @@
                                           ContentTemplate="{StaticResource PlaylistLabelTemplate}"/>
                         <ContentPresenter Content="{x:Bind ViewModel.PlaylistManager.Default}"
                                           ContentTemplate="{StaticResource PlaylistLabelTemplate}"/>
-                        <Rectangle Margin="5" Fill="#eee" Height="1" HorizontalAlignment="Stretch"/>
+                        <Border Margin="5" BorderBrush="#777" BorderThickness="0,1,0,0"/>
                     </StackPanel>
                     <StackPanel Grid.Row="1">
                         <Button Loaded="{x:Bind ViewModel.SetupAddPlaylistButton}" Style="{StaticResource HamburgerButtonStyle}"
                                 Visibility="Collapsed">
                             <StackPanel Orientation="Horizontal">
-                                <SymbolIcon Width="48" Height="48" Symbol="Add"/>
+                                <SymbolIcon Width="40" Height="48" Margin="0,0,8,0" Symbol="Add"/>
                                 <TextBlock VerticalAlignment="Center">添加播放列表</TextBlock>
                             </StackPanel>
                             <Button.Flyout>
@@ -96,10 +98,10 @@
                         </ListBox>
                     </StackPanel>
                     <StackPanel Grid.Row="2" Visibility="Collapsed">
-                        <Rectangle Margin="5" Fill="#eee" Height="1" HorizontalAlignment="Stretch"/>
+                        <Border Margin="5" BorderBrush="#777" BorderThickness="0,1,0,0"/>
 
                         <StackPanel Orientation="Horizontal">
-                            <SymbolIcon Width="48" Height="48" Symbol="Setting"/>
+                            <SymbolIcon Width="40" Height="48" Margin="0,0,8,0" Symbol="Setting"/>
                             <TextBlock VerticalAlignment="Center">设置</TextBlock>
                         </StackPanel>
                     </StackPanel>
@@ -119,6 +121,8 @@
                             <ColumnDefinition Width="Auto"/>
                             <ColumnDefinition Width="Auto"/>
                             <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
                             <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
                         <Button IsEnabled="{x:Bind ViewModel.PlaySession.CanPrevious, Mode=OneWay}"
@@ -157,6 +161,32 @@
                                 </Style>
                             </StackPanel.Resources>
                         </StackPanel>
+                        <!-- 音量控制 -->
+                        <Button Grid.Column="5"
+                                Style="{StaticResource TrackFunctionalButtonStyle}">
+                            <SymbolIcon Symbol="Volume"/>
+                            <Button.Flyout>
+                                <Flyout Placement="Top">
+                                    <StackPanel Orientation="Horizontal">
+                                        <SymbolIcon Symbol="Volume"/>
+                                        <Slider Margin="15,5,15,0" Width="200" Maximum="100"
+                                                Value="{x:Bind ViewModel.PlaySession.Volume, Mode=TwoWay}"/>
+                                        <TextBlock Text="1" VerticalAlignment="Center"/>
+                                    </StackPanel>
+                                    <Flyout.FlyoutPresenterStyle>
+                                        <Style TargetType="FlyoutPresenter">
+                                            <Setter Property="Margin" Value="-10,0"/>
+                                        </Style>
+                                    </Flyout.FlyoutPresenterStyle>
+                                </Flyout>
+                            </Button.Flyout>
+                        </Button>
+                        <!-- 播放模式 -->
+                        <Button Grid.Column="6"
+                                Click="{x:Bind ViewModel.PlaySession.ScrollPlayMode}"
+                                Style="{StaticResource TrackFunctionalButtonStyle}">
+                            <SymbolIcon Symbol="{x:Bind ViewModel.PlaySession.PlayMode.Icon, Mode=OneWay}"/>
+                        </Button>
                     </Grid>
                 </Border>
             </Grid>

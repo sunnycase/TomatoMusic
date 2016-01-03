@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -11,10 +12,22 @@ namespace Tomato.TomatoMusic.Plugins.Services
     {
         private HashSet<IPlayModeProvider> _providers = new HashSet<IPlayModeProvider>
         {
-            new PlayModes.ListMode()
+            new PlayModes.ListMode(),
+            new PlayModes.RepeatOneMode(),
+            new PlayModes.RepeatAllMode(),
+            new PlayModes.ShuffleMode()
         };
 
-        public IPlayModeProvider[] Providers => _providers.ToArray();
+        private ReadOnlyCollection<IPlayModeProvider> _providersCache;
+        public ReadOnlyCollection<IPlayModeProvider> Providers
+        {
+            get
+            {
+                if(_providersCache == null)
+                    _providersCache = new ReadOnlyCollection<IPlayModeProvider>(_providers.ToList());
+                return _providersCache;
+            }
+        }
 
         public PlayModeManager()
         {

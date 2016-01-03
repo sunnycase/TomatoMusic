@@ -41,6 +41,7 @@ namespace Tomato.TomatoMusic.Shell.ViewModels
         public void SetupNavigationService(object sender, object e)
         {
             _navigationService = (Frame)sender;
+            NavigateToSelectedPlaylist();
         }
 
         private void PlaylistManager_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
