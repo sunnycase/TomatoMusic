@@ -169,6 +169,7 @@ namespace Tomato.TomatoMusic.Audio.Services
         private readonly Timer _askPositionTimer;
         private static readonly TimeSpan _askPositionPeriod = TimeSpan.FromSeconds(0.25);
         private PlayerConfiguration _playerConfig;
+        private readonly ILog _logger;
 
         #region Rpc
         private readonly JsonServer<IAudioControllerHandler> _audioControllerHandlerServer;
@@ -178,13 +179,13 @@ namespace Tomato.TomatoMusic.Audio.Services
 
         public PlaySessionService(IMediaTransportService mtService)
         {
+            _logger = LogManager.GetLog(typeof(PlaySessionService));
             #region Rpc
             _audioControllerHandlerServer = new JsonServer<IAudioControllerHandler>(s => new RpcCalledProxies.IAudioControllerHandlerRpcCalledProxy(s), this);
             _audioControllerClient = new JsonClient<IAudioController>(s => new RpcCallingProxies.IAudioControllerRpcCallingProxy(s));
             _audioControllerClient.OnSendMessage = m => _client.SendMessage(AudioRpc.RpcMessageTag, m);
             _audioController = _audioControllerClient.Proxy;
             #endregion
-
             _client = new BackgroundMediaPlayerClient(typeof(BackgroundAudioPlayerHandler));
             _playModeManager = IoC.Get<IPlayModeManager>();
 
@@ -244,6 +245,7 @@ namespace Tomato.TomatoMusic.Audio.Services
         private void Play()
         {
             PlaybackStatus = MediaPlaybackStatus.Changing;
+            OnVolumeChanged();
             _audioController.Play();
         }
 
@@ -319,23 +321,31 @@ namespace Tomato.TomatoMusic.Audio.Services
 
         private void _client_PlayerActivated(object sender, object e)
         {
-            _audioController.SetupHandler();
+            PlatformProvider.Current.BeginOnUIThread(() =>
+            {
+                _audioController.SetupHandler();
+            });
         }
 
         void IAudioControllerHandler.NotifyControllerReady()
         {
-            Debug.WriteLine($"Player Received: Controller Ready.");
-            OnPlayModeChanged();
-            OnVolumeChanged();
+            _logger.Info($"Player Received: Controller Ready.");
+            PlatformProvider.Current.BeginOnUIThread(() =>
+            {
+                OnPlayModeChanged();
+            });
         }
 
         void IAudioControllerHandler.NotifyMediaOpened()
         {
-            if (_autoPlay)
+            PlatformProvider.Current.BeginOnUIThread(() =>
             {
-                Play();
-                _autoPlay = false;
-            }
+                if (_autoPlay)
+                {
+                    Play();
+                    _autoPlay = false;
+                }
+            });
         }
 
         void IAudioControllerHandler.NotifyControllerStateChanged(MediaPlayerState state)
@@ -387,7 +397,7 @@ namespace Tomato.TomatoMusic.Audio.Services
                         break;
                 }
             });
-            Debug.WriteLine($"Player State Changed To: {state}.");
+            _logger.Info($"Player State Changed To: {state}.");
         }
 
         public void PlayWhenOpened()

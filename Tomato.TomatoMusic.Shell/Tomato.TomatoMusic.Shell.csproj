@@ -107,7 +107,9 @@
     </Compile>
     <Compile Include="Converters\PlaylistToIconConverter.cs" />
     <Compile Include="Services\ConfigurationService.cs" />
+    <Compile Include="ViewModels\MainViewModel.Playing.cs" />
     <Compile Include="ViewModels\MainViewModel.Playlist.cs" />
+    <Compile Include="ViewModels\Playing\PlayingViewModel.cs" />
     <Compile Include="ViewModels\PlaylistViewModel.cs" />
     <Compile Include="ViewModels\Playlist\MusicsViewModel.cs" />
     <Compile Include="ViewModels\ViewModelBase.cs" />
@@ -117,6 +119,12 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ShellModule.cs" />
     <Compile Include="ViewModels\MainViewModel.cs" />
+    <Compile Include="Views\PlayControlView.xaml.cs">
+      <DependentUpon>PlayControlView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Playing\PlayingView.xaml.cs">
+      <DependentUpon>PlayingView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\PlaylistView.xaml.cs">
       <DependentUpon>PlaylistView.xaml</DependentUpon>
     </Compile>
@@ -163,6 +171,14 @@
     <Page Include="Views\MainView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\PlayControlView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\Playing\PlayingView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\PlaylistView.xaml">
       <SubType>Designer</SubType>

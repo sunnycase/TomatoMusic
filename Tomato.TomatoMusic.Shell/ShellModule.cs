@@ -8,6 +8,7 @@ using Tomato.TomatoMusic.Shell.ViewModels;
 using Windows.ApplicationModel.Resources;
 using Tomato.TomatoMusic.Services;
 using Tomato.TomatoMusic.Shell.Services;
+using Tomato.TomatoMusic.Shell.ViewModels.Playing;
 
 namespace Tomato.TomatoMusic
 {
@@ -17,6 +18,7 @@ namespace Tomato.TomatoMusic
         {
             container.PerRequest<MainViewModel>();
             container.PerRequest<PlaylistViewModel>();
+            container.PerRequest<PlayingViewModel>();
             container.Instance(ResourceLoader.GetForCurrentView());
             container.Singleton<IConfigurationService, ConfigurationService>();
         }

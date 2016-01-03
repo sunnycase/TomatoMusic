@@ -1,6 +1,7 @@
 ﻿{
   "dependencies": {
     "Caliburn.Micro.Core": "3.0.0-beta2",
+    "Kfstorm.LrcParser": "1.0.3",
     "Microsoft.NETCore.UniversalWindowsPlatform": "5.0.0"
   },
   "frameworks": {

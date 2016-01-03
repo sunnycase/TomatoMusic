@@ -16,43 +16,99 @@
     <PivotItem.Resources>
         <converters:TimeSpanToStringConverter x:Key="TimeSpanToStringConverter" Format="hh\:mm\:ss"/>
         <cal:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+        <DataTemplate x:Key="WideViewMusicsTrackDataTemplate" x:DataType="localViewModels:MusicsTrackViewModel">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="1.5*"/>
+                    <ColumnDefinition Width="80"/>
+                    <ColumnDefinition Width="2*"/>
+                    <ColumnDefinition Width="1.5*"/>
+                    <ColumnDefinition Width="80"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Text="{x:Bind Track.Title}" Style="{StaticResource TrackInfoTextStyle}"/>
+                <StackPanel Grid.Column="1" Orientation="Horizontal" Visibility="{x:Bind IsSelected, Converter={StaticResource BooleanToVisibilityConverter}, Mode=OneWay}">
+                    <Button Click="{x:Bind OnRequestPlay}" Style="{StaticResource TrackFunctionalButtonStyle}">
+                        <SymbolIcon Symbol="Play"/>
+                    </Button>
+                    <Button Style="{StaticResource TrackFunctionalButtonStyle}">
+                        <SymbolIcon Symbol="More"/>
+                    </Button>
+                </StackPanel>
+                <TextBlock Grid.Column="2" Margin="15,0,0,0" Text="{x:Bind Track.Album}" Style="{StaticResource TrackInfoTextStyle}"/>
+                <TextBlock Grid.Column="3" Margin="15,0,0,0" Text="{x:Bind Track.Artist}" Style="{StaticResource TrackInfoTextStyle}"/>
+                <TextBlock Grid.Column="4" Margin="15,0,0,0" Text="{x:Bind Track.Duration, Converter={StaticResource TimeSpanToStringConverter}}" Style="{StaticResource TrackInfoTextStyle}"/>
+            </Grid>
+        </DataTemplate>
+        <DataTemplate x:Key="NarrowViewMusicsTrackDataTemplate" x:DataType="localViewModels:MusicsTrackViewModel">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="80"/>
+                        <ColumnDefinition Width="80"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Text="{x:Bind Track.Title}" Style="{StaticResource TrackInfoTextStyle}"/>
+                    <StackPanel Grid.Column="1" Orientation="Horizontal" Visibility="{x:Bind IsSelected, Converter={StaticResource BooleanToVisibilityConverter}, Mode=OneWay}">
+                        <Button Click="{x:Bind OnRequestPlay}" Style="{StaticResource TrackFunctionalButtonStyle}">
+                            <SymbolIcon Symbol="Play"/>
+                        </Button>
+                        <Button Style="{StaticResource TrackFunctionalButtonStyle}">
+                            <SymbolIcon Symbol="More"/>
+                        </Button>
+                    </StackPanel>
+                    <TextBlock Grid.Column="2" Margin="15,0,0,0" Text="{x:Bind Track.Duration, Converter={StaticResource TimeSpanToStringConverter}}" Style="{StaticResource TrackInfoTextStyle}"/>
+                </Grid>
+                <Grid Grid.Row="1" Margin="0,5">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Text="{x:Bind Track.Album}" Style="{StaticResource TrackInfoTextStyle}"/>
+                    <TextBlock Grid.Column="1" Text="-" Margin="5,0" Style="{StaticResource TrackInfoTextStyle}"/>
+                    <TextBlock Grid.Column="2" Margin="15,0,0,0" Text="{x:Bind Track.Artist}" Style="{StaticResource TrackInfoTextStyle}"/>
+                </Grid>
+            </Grid>
+        </DataTemplate>
     </PivotItem.Resources>
-    <Grid>
-        <ProgressRing IsActive="{x:Bind ViewModel.IsRefreshing, Mode=OneWay}"/>
-        <ListView x:Name="lv_Tracks" ItemsSource="{x:Bind ViewModel.Tracks, Mode=OneWay}">
-            <i:Interaction.Behaviors>
-                <behaviors:SelectorIsSelectedToSourceBindingBehavior Setter="{x:Bind TrackViewModelIsSelectedSetter}"/>
-            </i:Interaction.Behaviors>
-            <ListView.ItemTemplate>
-                <DataTemplate x:DataType="localViewModels:MusicsTrackViewModel">
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="1.5*"/>
-                            <ColumnDefinition Width="80"/>
-                            <ColumnDefinition Width="2*"/>
-                            <ColumnDefinition Width="1.5*"/>
-                            <ColumnDefinition Width="80"/>
-                        </Grid.ColumnDefinitions>
-                        <TextBlock Text="{x:Bind Track.Title}" Style="{StaticResource TrackInfoTextStyle}"/>
-                        <StackPanel Grid.Column="1" Orientation="Horizontal" Visibility="{x:Bind IsSelected, Converter={StaticResource BooleanToVisibilityConverter}, Mode=OneWay}">
-                            <Button Click="{x:Bind OnRequestPlay}" Style="{StaticResource TrackFunctionalButtonStyle}">
-                                <SymbolIcon Symbol="Play"/>
-                            </Button>
-                            <Button Style="{StaticResource TrackFunctionalButtonStyle}">
-                                <SymbolIcon Symbol="More"/>
-                            </Button>
-                        </StackPanel>
-                        <TextBlock Grid.Column="2" Margin="15,0,0,0" Text="{x:Bind Track.Album}" Style="{StaticResource TrackInfoTextStyle}"/>
-                        <TextBlock Grid.Column="3" Margin="15,0,0,0" Text="{x:Bind Track.Artist}" Style="{StaticResource TrackInfoTextStyle}"/>
-                        <TextBlock Grid.Column="4" Margin="15,0,0,0" Text="{x:Bind Track.Duration, Converter={StaticResource TimeSpanToStringConverter}}" Style="{StaticResource TrackInfoTextStyle}"/>
-                    </Grid>
-                </DataTemplate>
-            </ListView.ItemTemplate>
-            <ListView.ItemContainerStyle>
-                <Style TargetType="ListViewItem">
-                    <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
-                </Style>
-            </ListView.ItemContainerStyle>
-        </ListView>
-    </Grid>
+    <UserControl>
+        <Grid>
+            <ProgressRing IsActive="{x:Bind ViewModel.IsRefreshing, Mode=OneWay}"/>
+            <ListView x:Name="lv_Tracks" ItemsSource="{x:Bind ViewModel.Tracks, Mode=OneWay}"
+                  ItemTemplate="{StaticResource WideViewMusicsTrackDataTemplate}">
+                <i:Interaction.Behaviors>
+                    <behaviors:SelectorIsSelectedToSourceBindingBehavior Setter="{x:Bind TrackViewModelIsSelectedSetter}"/>
+                </i:Interaction.Behaviors>
+                <ListView.ItemContainerStyle>
+                    <Style TargetType="ListViewItem">
+                        <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                    </Style>
+                </ListView.ItemContainerStyle>
+            </ListView>
+            <VisualStateManager.VisualStateGroups>
+                <VisualStateGroup x:Name="WindowSizeStates">
+                    <VisualState x:Name="WideState">
+                        <VisualState.Setters>
+                            <Setter Target="lv_Tracks.ItemTemplate" Value="{StaticResource WideViewMusicsTrackDataTemplate}" />
+                        </VisualState.Setters>
+                        <VisualState.StateTriggers>
+                            <AdaptiveTrigger MinWindowWidth="720" />
+                        </VisualState.StateTriggers>
+                    </VisualState>
+                    <VisualState x:Name="NarrowState">
+                        <VisualState.Setters>
+                            <Setter Target="lv_Tracks.ItemTemplate" Value="{StaticResource NarrowViewMusicsTrackDataTemplate}" />
+                        </VisualState.Setters>
+                        <VisualState.StateTriggers>
+                            <AdaptiveTrigger MinWindowWidth="0" />
+                        </VisualState.StateTriggers>
+                    </VisualState>
+                </VisualStateGroup>
+            </VisualStateManager.VisualStateGroups>
+        </Grid>
+    </UserControl>
 </PivotItem>

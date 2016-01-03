@@ -141,4 +141,7 @@
   <data name="Musics.Header" xml:space="preserve">
     <value>音乐</value>
   </data>
+  <data name="Playing.Text" xml:space="preserve">
+    <value>正在播放</value>
+  </data>
 </root>

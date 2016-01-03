@@ -27,6 +27,7 @@ namespace Tomato.TomatoMusic.AudioTask
         private TrackInfo _currentTrack;
 
         private bool _autoPlay;
+        private readonly ILog _logger;
 
         #region Rpc
         private readonly JsonServer<IAudioController> _audioControllerServer;
@@ -36,6 +37,7 @@ namespace Tomato.TomatoMusic.AudioTask
 
         public AudioController(BackgroundMediaPlayer mediaPlayer)
         {
+            _logger = LogManager.GetLog(typeof(AudioController));
             #region Rpc
             _audioControllerServer = new JsonServer<IAudioController>(s => new RpcCalledProxies.IAudioControllerRpcCalledProxy(s), this);
             _controllerHandlerClient = new JsonClient<IAudioControllerHandler>(s => new RpcCallingProxies.IAudioControllerHandlerRpcCallingProxy(s));
@@ -50,6 +52,20 @@ namespace Tomato.TomatoMusic.AudioTask
             mediaPlayer.MediaEnded += MediaPlayer_MediaEnded;
             mediaPlayer.CurrentStateChanged += MediaPlayer_CurrentStateChanged;
             mediaPlayer.SeekCompleted += MediaPlayer_SeekCompleted;
+            mediaPlayer.MediaFailed += MediaPlayer_MediaFailed;
+        }
+
+        private void MediaPlayer_MediaFailed(IMediaPlayer sender, Windows.Media.Playback.MediaPlayerFailedEventArgs args)
+        {
+            _logger.Warn(args.Error.ToString());
+            _logger.Error(args.ExtendedErrorCode);
+            var currentTrack = _currentTrack;
+            var nextTrack = GetNextTrack();
+            if (nextTrack != currentTrack && nextTrack != null)
+            {
+                _autoPlay = true;
+                SetCurrentTrack(nextTrack);
+            }
         }
 
         private void MediaPlayer_SeekCompleted(IMediaPlayer sender, object args)
@@ -59,23 +75,30 @@ namespace Tomato.TomatoMusic.AudioTask
 
         private void MediaPlayer_MediaEnded(IMediaPlayer sender, object args)
         {
+            var currentTrack = _currentTrack;
+            var nextTrack = GetNextTrack();
+            if (nextTrack != null)
+            {
+                if (nextTrack != currentTrack)
+                {
+                    _autoPlay = true;
+                    SetCurrentTrack(nextTrack);
+                }
+                else
+                    Play();
+            }
+        }
+
+        TrackInfo GetNextTrack()
+        {
             var playlist = _playlist;
             var currentTrack = _currentTrack;
             var playMode = _currentPlayMode;
             if (playMode != null && playlist != null && currentTrack != null)
             {
-                var nextTrack = playMode.SelectNextTrack(playlist, currentTrack);
-                if (nextTrack != null)
-                {
-                    if (nextTrack != currentTrack)
-                    {
-                        _autoPlay = true;
-                        SetCurrentTrack(nextTrack);
-                    }
-                    else
-                        Play();
-                }
+                return playMode.SelectNextTrack(playlist, currentTrack);
             }
+            return currentTrack;
         }
 
         private void MediaPlayer_CurrentStateChanged(IMediaPlayer sender, object args)
@@ -110,8 +133,8 @@ namespace Tomato.TomatoMusic.AudioTask
             var stream = await file.OpenReadAsync();
             var mediaSource = await MediaSource.CreateFromStream(stream);
             _controllerHandler.NotifyDuration(mediaSource.Duration);
-            Debug.WriteLine($"Title: {mediaSource.Title}");
-            Debug.WriteLine($"Album: {mediaSource.Album}");
+            _logger.Info($"Title: {mediaSource.Title}");
+            _logger.Info($"Album: {mediaSource.Album}");
             _mediaPlayer.SetMediaSource(mediaSource);
         }
 
@@ -192,6 +215,7 @@ namespace Tomato.TomatoMusic.AudioTask
         #region Rpc
         public void OnReceiveMessage(string message)
         {
+            _logger.Info("{0}", message);
             _audioControllerServer.OnReceive(message);
         }
 

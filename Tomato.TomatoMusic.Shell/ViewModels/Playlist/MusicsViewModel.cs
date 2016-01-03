@@ -75,6 +75,7 @@ namespace Tomato.TomatoMusic.Shell.ViewModels.Playlist
                 Tracks = new BindableCollection<MusicsTrackViewModel>(_tracksSource.Select(WrapTrackInfo));
                 NotifyOfPropertyChange(nameof(Tracks));
                 _tracksSource.CollectionChanged += tracksSource_CollectionChanged;
+                OnPlaySessionCurrentTrackChanged();
             }
             finally
             {
