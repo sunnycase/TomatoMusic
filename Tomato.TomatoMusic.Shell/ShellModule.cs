@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 using Caliburn.Micro;
 using Tomato.TomatoMusic.Shell.ViewModels;
 using Windows.ApplicationModel.Resources;
+using Tomato.TomatoMusic.Services;
+using Tomato.TomatoMusic.Shell.Services;
 
 namespace Tomato.TomatoMusic
 {
@@ -16,6 +18,7 @@ namespace Tomato.TomatoMusic
             container.PerRequest<MainViewModel>();
             container.PerRequest<PlaylistViewModel>();
             container.Instance(ResourceLoader.GetForCurrentView());
+            container.Singleton<IConfigurationService, ConfigurationService>();
         }
 
         private static void ModuleReferences()

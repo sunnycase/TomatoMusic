@@ -171,7 +171,8 @@
                                         <SymbolIcon Symbol="Volume"/>
                                         <Slider Margin="15,5,15,0" Width="200" Maximum="100"
                                                 Value="{x:Bind ViewModel.PlaySession.Volume, Mode=TwoWay}"/>
-                                        <TextBlock Text="1" VerticalAlignment="Center"/>
+                                        <TextBlock Text="{x:Bind ViewModel.PlaySession.Volume, Mode=TwoWay}" 
+                                                   VerticalAlignment="Center" Width="30"/>
                                     </StackPanel>
                                     <Flyout.FlyoutPresenterStyle>
                                         <Style TargetType="FlyoutPresenter">

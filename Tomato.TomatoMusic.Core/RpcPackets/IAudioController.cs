@@ -52,5 +52,10 @@ namespace Tomato.TomatoMusic.RpcPackets.IAudioController
 		public System.TimeSpan Arg0;
 	}
 
+	public sealed class Void_20SetVolume_28Double_29
+	{
+		public System.Double Arg0;
+	}
+
 }
 

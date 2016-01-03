@@ -109,6 +109,15 @@ namespace Tomato.TomatoMusic.RpcCallingProxies
 			_packetSender.Send(packet);
 		}
 
+		public void SetVolume(System.Double value)
+		{
+			var packet = new Void_20SetVolume_28Double_29
+			{
+				Arg0 = value,
+			};
+			_packetSender.Send(packet);
+		}
+
 	}
 }
 

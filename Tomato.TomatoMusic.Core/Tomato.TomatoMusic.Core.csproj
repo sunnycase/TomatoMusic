@@ -109,6 +109,7 @@
   <ItemGroup>
     <Compile Include="AudioConstants.cs" />
     <Compile Include="AudioRpc.cs" />
+    <Compile Include="Configuration\PlayerConfiguration.cs" />
     <Compile Include="IAudioController.cs" />
     <Compile Include="IAudioControllerHandler.cs" />
     <Compile Include="RpcPackets\IAudioControllerHandler.cs">
@@ -128,6 +129,7 @@
     <Compile Include="Primitives\PlaylistPlaceholder.cs" />
     <Compile Include="Primitives\TrackInfo.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Services\IConfigurationService.cs" />
     <Compile Include="Services\IMediaTransportService.cs" />
     <Compile Include="Services\IPlaylistManager.cs" />
     <Compile Include="Services\IPlayModeProvider.cs" />

@@ -32,6 +32,7 @@ namespace Tomato.TomatoMusic.RpcCalledProxies
 				{ typeof(Void_20SetPlayMode_28System_Guid_29), ProcessVoid_20SetPlayMode_28System_Guid_29 },
 				{ typeof(Void_20AskPosition_28_29), ProcessVoid_20AskPosition_28_29 },
 				{ typeof(Void_20SetPosition_28System_TimeSpan_29), ProcessVoid_20SetPosition_28System_TimeSpan_29 },
+				{ typeof(Void_20SetVolume_28Double_29), ProcessVoid_20SetVolume_28Double_29 },
 			};
 		}
 
@@ -100,6 +101,12 @@ namespace Tomato.TomatoMusic.RpcCalledProxies
 		{
 			var packet = (Void_20SetPosition_28System_TimeSpan_29)packetObj;
 			_impl.SetPosition(packet.Arg0);
+		}
+
+		void ProcessVoid_20SetVolume_28Double_29(object packetObj)
+		{
+			var packet = (Void_20SetVolume_28Double_29)packetObj;
+			_impl.SetVolume(packet.Arg0);
 		}
 
 	}

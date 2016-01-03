@@ -2,7 +2,7 @@
   "dependencies": {
     "Caliburn.Micro.Core": "3.0.0-beta2",
     "Microsoft.NETCore.UniversalWindowsPlatform": "5.0.0",
-    "Newtonsoft.Json": "7.0.1",
+    "Newtonsoft.Json": "8.0.1",
     "Tomato.Media": "0.0.2-alpha2",
     "Tomato.Media.Codec": "0.0.2-alpha2"
   },

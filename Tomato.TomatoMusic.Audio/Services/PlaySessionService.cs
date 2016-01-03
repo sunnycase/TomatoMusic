@@ -16,6 +16,7 @@ using Windows.Media.Playback;
 using Tomato.TomatoMusic.Primitives;
 using Tomato.TomatoMusic.Plugins;
 using System.Threading;
+using Tomato.TomatoMusic.Configuration;
 
 namespace Tomato.TomatoMusic.Audio.Services
 {
@@ -142,7 +143,11 @@ namespace Tomato.TomatoMusic.Audio.Services
         public double Volume
         {
             get { return _volume; }
-            set { SetProperty(ref _volume, value); }
+            set
+            {
+                if (SetProperty(ref _volume, value))
+                    OnVolumeChanged();
+            }
         }
 
         private IPlayModeProvider _playMode;
@@ -163,6 +168,7 @@ namespace Tomato.TomatoMusic.Audio.Services
         private readonly IPlayModeManager _playModeManager;
         private readonly Timer _askPositionTimer;
         private static readonly TimeSpan _askPositionPeriod = TimeSpan.FromSeconds(0.25);
+        private PlayerConfiguration _playerConfig;
 
         #region Rpc
         private readonly JsonServer<IAudioControllerHandler> _audioControllerHandlerServer;
@@ -199,7 +205,10 @@ namespace Tomato.TomatoMusic.Audio.Services
 
         private void LoadState()
         {
-            PlayMode = _playModeManager.Providers[0];
+            var configService = IoC.Get<IConfigurationService>();
+            _playerConfig = configService.Player;
+            PlayMode = _playModeManager.GetProvider(_playerConfig.PlayMode);
+            Volume = _playerConfig.Volume;
         }
 
         public void RequestPlay()
@@ -316,7 +325,8 @@ namespace Tomato.TomatoMusic.Audio.Services
         void IAudioControllerHandler.NotifyControllerReady()
         {
             Debug.WriteLine($"Player Received: Controller Ready.");
-            _audioController.SetPlayMode(PlayMode.Id);
+            OnPlayModeChanged();
+            OnVolumeChanged();
         }
 
         void IAudioControllerHandler.NotifyMediaOpened()
@@ -454,6 +464,15 @@ namespace Tomato.TomatoMusic.Audio.Services
         private void OnPlayModeChanged()
         {
             _audioController.SetPlayMode(PlayMode.Id);
+            _playerConfig.PlayMode = PlayMode.Id;
+            _playerConfig.Save();
+        }
+
+        private void OnVolumeChanged()
+        {
+            _audioController.SetVolume(Math.Min(Math.Max(0.0, Volume / 100), 1.0));
+            _playerConfig.Volume = Volume;
+            _playerConfig.Save();
         }
 
         #region Rpc

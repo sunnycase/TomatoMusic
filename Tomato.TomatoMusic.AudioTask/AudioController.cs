@@ -184,6 +184,11 @@ namespace Tomato.TomatoMusic.AudioTask
             _mediaPlayer.Position = position;
         }
 
+        public void SetVolume(double value)
+        {
+            _mediaPlayer.Volume = value;
+        }
+
         #region Rpc
         public void OnReceiveMessage(string message)
         {
