@@ -94,9 +94,6 @@
   </PropertyGroup>
   <ItemGroup>
     <!-- A reference to the entire .Net Framework and Windows SDK are automatically included -->
-    <Content Include="ApplicationInsights.config">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
     <None Include="project.json" />
     <None Include="Tomato.TomatoMusic.Shell_StoreKey.pfx" />
     <None Include="Tomato.TomatoMusic.Shell_TemporaryKey.pfx" />
