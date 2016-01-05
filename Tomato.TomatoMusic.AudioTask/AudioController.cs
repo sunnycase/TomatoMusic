@@ -215,7 +215,6 @@ namespace Tomato.TomatoMusic.AudioTask
         #region Rpc
         public void OnReceiveMessage(string message)
         {
-            _logger.Info("{0}", message);
             _audioControllerServer.OnReceive(message);
         }
 

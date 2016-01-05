@@ -21,7 +21,7 @@
     <PackageCertificateThumbprint>DAE213C80D5EE580150F4A545FFE5EB06C9C63FC</PackageCertificateThumbprint>
     <AppxAutoIncrementPackageRevision>True</AppxAutoIncrementPackageRevision>
     <AppxBundle>Always</AppxBundle>
-    <AppxBundlePlatforms>x86</AppxBundlePlatforms>
+    <AppxBundlePlatforms>x86|arm</AppxBundlePlatforms>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|ARM'">
     <DebugSymbols>true</DebugSymbols>
@@ -92,6 +92,14 @@
     <Prefer32Bit>true</Prefer32Bit>
     <UseDotNetNativeToolchain>true</UseDotNetNativeToolchain>
   </PropertyGroup>
+  <ItemGroup Condition="Exists('ApplicationInsights.config')">
+    <Content Include="ApplicationInsights.config">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="config.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
   <ItemGroup>
     <!-- A reference to the entire .Net Framework and Windows SDK are automatically included -->
     <None Include="project.json" />
@@ -102,6 +110,7 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Converters\IndexToBrushConverter.cs" />
     <Compile Include="Converters\PlaylistToIconConverter.cs" />
     <Compile Include="Services\ConfigurationService.cs" />
     <Compile Include="ViewModels\MainViewModel.Playing.cs" />
@@ -213,6 +222,10 @@
     <ProjectReference Include="..\Tomato.TomatoMusic.Playlist\Tomato.TomatoMusic.Playlist.csproj">
       <Project>{0800f918-99f4-4ed0-bb86-dc738f0095b5}</Project>
       <Name>Tomato.TomatoMusic.Playlist</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Tomato.TomatoMusic.Plugins\Tomato.TomatoMusic.Plugins.csproj">
+      <Project>{9168235f-9d85-4053-8386-535114c68355}</Project>
+      <Name>Tomato.TomatoMusic.Plugins</Name>
     </ProjectReference>
     <ProjectReference Include="..\Tomato.Uwp.Mvvm\Tomato.Uwp.Mvvm.csproj">
       <Project>{e10050ce-4def-4627-baf2-c396c2cee6ae}</Project>

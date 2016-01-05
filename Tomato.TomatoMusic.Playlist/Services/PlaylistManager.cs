@@ -184,7 +184,7 @@ namespace Tomato.TomatoMusic.Playlist.Services
                 firstUpdate = (s, e) =>
                 {
                     _watchedProvider.Updated -= firstUpdate;
-                    _tracks = new BindableCollection<TrackInfo>(_watchedProvider.GetTrackInfos());
+                    _tracks = new BindableCollection<TrackInfo>(_watchedProvider.GetTrackInfos().Distinct());
                     _watchedProvider.Updated += _watchedProvider_Updated;
                     completion.SetResult(_tracks);
                 };
@@ -195,7 +195,7 @@ namespace Tomato.TomatoMusic.Playlist.Services
 
             private void _watchedProvider_Updated(object sender, EventArgs e)
             {
-                var newTracks = _watchedProvider.GetTrackInfos().ToList();
+                var newTracks = _watchedProvider.GetTrackInfos().Distinct().ToList();
                 var comparer = new TrackInfo.ExistenceEqualityComparer();
                 var toAdd = newTracks.Except(_tracks, comparer).ToList();
                 var toRemove = _tracks.Except(_tracks, comparer).ToList();

@@ -107,6 +107,8 @@
     <None Include="project.json" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Client\GeciMeClient.cs" />
+    <Compile Include="Config\LastFmConfig.cs" />
     <Compile Include="IPlayModeManager.cs" />
     <Compile Include="PlayModes\ShuffleMode.cs" />
     <Compile Include="PlayModes\RepeatAllMode.cs" />
@@ -114,6 +116,7 @@
     <Compile Include="PlayModes\ListMode.cs" />
     <Compile Include="PluginsModule.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Services\MediaMetadataService.cs" />
     <Compile Include="Services\PlayModeManager.cs" />
     <Content Include="Properties\Tomato.TomatoMusic.Plugins.rd.xml" />
   </ItemGroup>

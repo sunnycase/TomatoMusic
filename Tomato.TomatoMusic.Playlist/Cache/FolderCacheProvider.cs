@@ -60,7 +60,7 @@ namespace Tomato.TomatoMusic.Playlist.Cache
                     _tracks.Clear();
                     var toAdd = JsonConvert.DeserializeObject<FolderCache>(content)?.Tracks;
                     if (toAdd != null)
-                        _tracks.AddRange(toAdd);
+                        _tracks.AddRange(toAdd.Distinct());
                 }
                 OnTracksUpdated();
             });
@@ -93,7 +93,7 @@ namespace Tomato.TomatoMusic.Playlist.Cache
                 {
                     content = JsonConvert.SerializeObject(new FolderCache
                     {
-                        Tracks = _tracks
+                        Tracks = _tracks.Distinct().ToList()
                     });
                 }
                 using (var writer = await (await _cacheFile).OpenTransactedWriteAsync())

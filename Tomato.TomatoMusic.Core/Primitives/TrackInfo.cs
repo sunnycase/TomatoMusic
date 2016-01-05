@@ -36,7 +36,7 @@ namespace Tomato.TomatoMusic.Primitives
 
             public override int GetHashCode(TrackInfo obj)
             {
-                return obj?.Source?.GetHashCode() ?? 0;
+                return (obj?.Source?.GetHashCode() ?? 0);
             }
         }
 
@@ -49,7 +49,7 @@ namespace Tomato.TomatoMusic.Primitives
             return Source == other.Source;
         }
 
-        public static bool operator==(TrackInfo left, TrackInfo right)
+        public static bool operator ==(TrackInfo left, TrackInfo right)
         {
             if (object.ReferenceEquals(left, null))
             {

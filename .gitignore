@@ -212,3 +212,5 @@ _Pvt_Extensions/
 ModelManifest.xml
 /Tomato.TomatoMusic.Shell/Package.StoreAssociation.xml
 /Tomato.TomatoMusic.Shell/BundleArtifacts
+/Tomato.TomatoMusic.Shell/ApplicationInsights.config
+/Tomato.TomatoMusic.Shell/config.json

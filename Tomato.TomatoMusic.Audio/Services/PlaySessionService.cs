@@ -183,10 +183,17 @@ namespace Tomato.TomatoMusic.Audio.Services
             #region Rpc
             _audioControllerHandlerServer = new JsonServer<IAudioControllerHandler>(s => new RpcCalledProxies.IAudioControllerHandlerRpcCalledProxy(s), this);
             _audioControllerClient = new JsonClient<IAudioController>(s => new RpcCallingProxies.IAudioControllerRpcCallingProxy(s));
-            _audioControllerClient.OnSendMessage = m => _client.SendMessage(AudioRpc.RpcMessageTag, m);
+            _audioControllerClient.OnSendMessage = m =>
+            {
+                try
+                {
+                    _client.SendMessage(AudioRpc.RpcMessageTag, m);
+                }
+                catch { }
+            };
             _audioController = _audioControllerClient.Proxy;
             #endregion
-            _client = new BackgroundMediaPlayerClient(typeof(BackgroundAudioPlayerHandler));
+            _client = SetupMediaPlayerClient();
             _playModeManager = IoC.Get<IPlayModeManager>();
 
             _client.MessageReceived += _client_MessageReceived;
@@ -197,6 +204,34 @@ namespace Tomato.TomatoMusic.Audio.Services
             _askPositionTimer = new Timer(OnAskPosition, null, Timeout.InfiniteTimeSpan, _askPositionPeriod);
 
             LoadState();
+        }
+
+        private BackgroundMediaPlayerClient SetupMediaPlayerClient()
+        {
+            try
+            {
+                Windows.Media.Playback.BackgroundMediaPlayer.Shutdown();
+                return new BackgroundMediaPlayerClient(typeof(BackgroundAudioPlayerHandler));
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex);
+                return ResetMediaPlayerClient();
+            }
+        }
+
+        private BackgroundMediaPlayerClient ResetMediaPlayerClient()
+        {
+            try
+            {
+                Windows.Media.Playback.BackgroundMediaPlayer.Shutdown();
+                return new BackgroundMediaPlayerClient(typeof(BackgroundAudioPlayerHandler));
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex);
+                throw;
+            }
         }
 
         private void OnAskPosition(object state)
@@ -411,7 +446,7 @@ namespace Tomato.TomatoMusic.Audio.Services
         {
             if (_playlist != null)
             {
-                var currentTrack = _playlist.SingleOrDefault(o => o == track);
+                var currentTrack = _playlist.FirstOrDefault(o => o == track);
                 Execute.BeginOnUIThread(() =>
                 {
                     CurrentTrack = currentTrack;

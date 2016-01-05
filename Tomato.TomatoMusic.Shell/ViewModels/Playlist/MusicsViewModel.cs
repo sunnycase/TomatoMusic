@@ -14,6 +14,13 @@ namespace Tomato.TomatoMusic.Shell.ViewModels.Playlist
     {
         public TrackInfo Track { get; set; }
 
+        private int _index;
+        public int Index
+        {
+            get { return _index; }
+            set { SetProperty(ref _index, value); }
+        }
+
         private bool _isSelected;
         public bool IsSelected
         {
@@ -73,6 +80,7 @@ namespace Tomato.TomatoMusic.Shell.ViewModels.Playlist
                 _playlistContentProvider = IoC.Get<IPlaylistManager>().GetPlaylistContentProvider(_anchor);
                 _tracksSource = await _playlistContentProvider.Result;
                 Tracks = new BindableCollection<MusicsTrackViewModel>(_tracksSource.Select(WrapTrackInfo));
+                RefreshIndex();
                 NotifyOfPropertyChange(nameof(Tracks));
                 _tracksSource.CollectionChanged += tracksSource_CollectionChanged;
                 OnPlaySessionCurrentTrackChanged();
@@ -81,6 +89,12 @@ namespace Tomato.TomatoMusic.Shell.ViewModels.Playlist
             {
                 IsRefreshing = false;
             }
+        }
+
+        private void RefreshIndex()
+        {
+            int index = 0;
+            Tracks.Apply(o => o.Index = index++);
         }
 
         private void _playSession_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
@@ -141,6 +155,7 @@ namespace Tomato.TomatoMusic.Shell.ViewModels.Playlist
                 default:
                     break;
             }
+            RefreshIndex();
         }
     }
 }

@@ -6,10 +6,35 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:cal="using:Caliburn.Micro"
+    xmlns:win2d="using:Microsoft.Graphics.Canvas.UI.Xaml"
     cal:Bind.Model="{x:Bind ViewModel}"
     mc:Ignorable="d">
+    <Page.Resources>
+        <Style x:Key="TrackInfoTextBlockStyle" TargetType="TextBlock">
+            <Setter Property="HorizontalAlignment" Value="Center"/>
+            <Setter Property="Margin" Value="10,5"/>
+        </Style>
+    </Page.Resources>
 
-    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-        
+    <Grid>
+        <Grid Padding="0,20,0,0">
+            <Grid.Background>
+                <ImageBrush ImageSource="{x:Bind ViewModel.Metadata.Cover, Mode=OneWay}" Opacity="0.6" Stretch="UniformToFill"/>
+            </Grid.Background>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <Border Width="120" Height="120" Margin="10">
+                <Image Source="{x:Bind ViewModel.Metadata.Cover, Mode=OneWay}" Stretch="UniformToFill" />
+            </Border>
+            <TextBlock Grid.Row="1" Text="{x:Bind ViewModel.Track.Title, Mode=OneWay}" Style="{StaticResource TrackInfoTextBlockStyle}"/>
+            <TextBlock Grid.Row="2" Text="{x:Bind ViewModel.Track.Album, Mode=OneWay}" Style="{StaticResource TrackInfoTextBlockStyle}"/>
+            <TextBlock Grid.Row="3" Text="{x:Bind ViewModel.Track.Artist, Mode=OneWay}" Style="{StaticResource TrackInfoTextBlockStyle}"/>
+            <!--<ListBox Grid.Row="4" Margin="0,5,0,0" Padding="10" Background="Transparent"/>-->
+        </Grid>
     </Grid>
 </Page>
