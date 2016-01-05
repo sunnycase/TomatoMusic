@@ -6,7 +6,6 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:cal="using:Caliburn.Micro"
-    xmlns:win2d="using:Microsoft.Graphics.Canvas.UI.Xaml"
     cal:Bind.Model="{x:Bind ViewModel}"
     mc:Ignorable="d">
     <Page.Resources>

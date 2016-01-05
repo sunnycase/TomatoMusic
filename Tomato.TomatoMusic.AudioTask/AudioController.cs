@@ -133,8 +133,6 @@ namespace Tomato.TomatoMusic.AudioTask
             var stream = await file.OpenReadAsync();
             var mediaSource = await MediaSource.CreateFromStream(stream);
             _controllerHandler.NotifyDuration(mediaSource.Duration);
-            _logger.Info($"Title: {mediaSource.Title}");
-            _logger.Info($"Album: {mediaSource.Album}");
             _mediaPlayer.SetMediaSource(mediaSource);
         }
 
@@ -218,9 +216,14 @@ namespace Tomato.TomatoMusic.AudioTask
             _audioControllerServer.OnReceive(message);
         }
 
+        private readonly object _messageLocker = new object();
         public void SetupHandler()
         {
-            _controllerHandlerClient.OnSendMessage = m => _mediaPlayer.SendMessage(AudioRpc.RpcMessageTag, m);
+            _controllerHandlerClient.OnSendMessage = m =>
+            {
+                lock (_messageLocker)
+                _mediaPlayer.SendMessage(AudioRpc.RpcMessageTag, m);
+            };
             _controllerHandler.NotifyControllerReady();
         }
         #endregion

@@ -24,6 +24,11 @@ namespace Tomato.TomatoMusic.AudioTask
             _audioController = new AudioController(mediaPlayer);
         }
 
+        public void OnCanceled()
+        {
+
+        }
+
         public void OnReceiveMessage(string tag, string message)
         {
             if (tag == AudioRpc.RpcMessageTag)

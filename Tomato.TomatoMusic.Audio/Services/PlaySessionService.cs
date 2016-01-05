@@ -175,6 +175,7 @@ namespace Tomato.TomatoMusic.Audio.Services
         private readonly JsonServer<IAudioControllerHandler> _audioControllerHandlerServer;
         private readonly JsonClient<IAudioController> _audioControllerClient;
         private readonly IAudioController _audioController;
+        private readonly object _messageLocker = new object();
         #endregion
 
         public PlaySessionService(IMediaTransportService mtService)
@@ -187,51 +188,24 @@ namespace Tomato.TomatoMusic.Audio.Services
             {
                 try
                 {
-                    _client.SendMessage(AudioRpc.RpcMessageTag, m);
+                    lock (_messageLocker)
+                    _client?.SendMessage(AudioRpc.RpcMessageTag, m);
                 }
                 catch { }
             };
             _audioController = _audioControllerClient.Proxy;
             #endregion
-            _client = SetupMediaPlayerClient();
             _playModeManager = IoC.Get<IPlayModeManager>();
 
-            _client.MessageReceived += _client_MessageReceived;
-            _client.PlayerActivated += _client_PlayerActivated;
             _mtService = mtService;
             _mtService.IsEnabled = _mtService.IsPauseEnabled = _mtService.IsPlayEnabled = true;
             _mtService.ButtonPressed += _mtService_ButtonPressed;
             _askPositionTimer = new Timer(OnAskPosition, null, Timeout.InfiniteTimeSpan, _askPositionPeriod);
 
             LoadState();
-        }
-
-        private BackgroundMediaPlayerClient SetupMediaPlayerClient()
-        {
-            try
-            {
-                Windows.Media.Playback.BackgroundMediaPlayer.Shutdown();
-                return new BackgroundMediaPlayerClient(typeof(BackgroundAudioPlayerHandler));
-            }
-            catch (Exception ex)
-            {
-                _logger.Error(ex);
-                return ResetMediaPlayerClient();
-            }
-        }
-
-        private BackgroundMediaPlayerClient ResetMediaPlayerClient()
-        {
-            try
-            {
-                Windows.Media.Playback.BackgroundMediaPlayer.Shutdown();
-                return new BackgroundMediaPlayerClient(typeof(BackgroundAudioPlayerHandler));
-            }
-            catch (Exception ex)
-            {
-                _logger.Error(ex);
-                throw;
-            }
+            _client = new BackgroundMediaPlayerClient(typeof(BackgroundAudioPlayerHandler));
+            _client.MessageReceived += _client_MessageReceived;
+            _client.PlayerActivated += _client_PlayerActivated;
         }
 
         private void OnAskPosition(object state)
@@ -280,7 +254,6 @@ namespace Tomato.TomatoMusic.Audio.Services
         private void Play()
         {
             PlaybackStatus = MediaPlaybackStatus.Changing;
-            OnVolumeChanged();
             _audioController.Play();
         }
 
@@ -368,6 +341,7 @@ namespace Tomato.TomatoMusic.Audio.Services
             PlatformProvider.Current.BeginOnUIThread(() =>
             {
                 OnPlayModeChanged();
+                OnVolumeChanged();
             });
         }
 
