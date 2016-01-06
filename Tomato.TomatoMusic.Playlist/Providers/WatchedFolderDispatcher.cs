@@ -23,7 +23,7 @@ namespace Tomato.TomatoMusic.Playlist.Providers
     class WatchedFolderDispatcher : BindableBase
     {
         private readonly HashSet<WatchedFolder> _wantUpdateFolders = new HashSet<WatchedFolder>();
-        
+
         private readonly object _countdownLocker = new object();
         private ThreadPoolTimer _countdown;
         private static readonly TimeSpan CountdownTime = new TimeSpan(0, 0, 3);
@@ -71,7 +71,7 @@ namespace Tomato.TomatoMusic.Playlist.Providers
             _refreshSuspended = false;
             lock (_wantUpdateFolders)
             {
-                if(_wantUpdateFolders.Any())
+                if (_wantUpdateFolders.Any())
                     RestartCountdown();
             }
         }
@@ -151,6 +151,7 @@ namespace Tomato.TomatoMusic.Playlist.Providers
         private async Task<Dictionary<WatchedFolder, IReadOnlyCollection<TrackInfo>>> FindTrackInfos(IEnumerable<WatchedFolder> folders, CancellationToken cancelToken)
         {
             var folderContents = new Dictionary<WatchedFolder, IReadOnlyCollection<TrackInfo>>();
+            int i = 0;
             foreach (var folder in folders)
             {
                 var tracks = new List<TrackInfo>();
@@ -159,6 +160,11 @@ namespace Tomato.TomatoMusic.Playlist.Providers
                 {
                     cancelToken.ThrowIfCancellationRequested();
                     await TryAddTrackInfo(file, tracks);
+                    if (i >= 10)
+                    {
+                        i = 0;
+                        GC.Collect();
+                    }
                 }
                 folderContents.Add(folder, tracks);
             }
@@ -169,18 +175,21 @@ namespace Tomato.TomatoMusic.Playlist.Providers
         {
             try
             {
-                var mediaSource = await MediaSource.CreateFromStream(await file.OpenReadAsync().AsTask().ConfigureAwait(false)).AsTask().ConfigureAwait(false);
-                var title = mediaSource.Title;
-                var trackInfo = new TrackInfo
+                using (var stream = await file.OpenReadAsync())
                 {
-                    Source = new Uri(file.Path),
-                    Title = string.IsNullOrWhiteSpace(title) ? Path.GetFileNameWithoutExtension(file.Path) : title,
-                    Album = mediaSource.Album,
-                    Artist = mediaSource.Artist,
-                    AlbumArtist = mediaSource.AlbumArtist,
-                    Duration = mediaSource.Duration
-                };
-                tracks.Add(trackInfo);
+                    var mediaSource = await MediaSource.CreateFromStream(stream);
+                    var title = mediaSource.Title;
+                    var trackInfo = new TrackInfo
+                    {
+                        Source = new Uri(file.Path),
+                        Title = string.IsNullOrWhiteSpace(title) ? Path.GetFileNameWithoutExtension(file.Path) : title,
+                        Album = mediaSource.Album,
+                        Artist = mediaSource.Artist,
+                        AlbumArtist = mediaSource.AlbumArtist,
+                        Duration = mediaSource.Duration
+                    };
+                    tracks.Add(trackInfo);
+                }
             }
             catch (Exception ex)
             {

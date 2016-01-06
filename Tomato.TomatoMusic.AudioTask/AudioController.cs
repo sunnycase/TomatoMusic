@@ -58,6 +58,7 @@ namespace Tomato.TomatoMusic.AudioTask
             mediaPlayer.SeekCompleted += MediaPlayer_SeekCompleted;
             mediaPlayer.MediaFailed += MediaPlayer_MediaFailed;
             _mtService = new MediaTransportService(mediaPlayer.SystemMediaTransportControls);
+            _mtService.IsEnabled = _mtService.IsPauseEnabled = _mtService.IsPlayEnabled = true;
             _mtService.ButtonPressed += _mtService_ButtonPressed;
         }
 

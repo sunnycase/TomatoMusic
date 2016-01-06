@@ -423,7 +423,7 @@ namespace Tomato.TomatoMusic.Audio.Services
                 var currentTrack = _playlist.FirstOrDefault(o => o == track);
                 Execute.BeginOnUIThread(() =>
                 {
-                    if (SetProperty(ref _currentTrack, track))
+                    if (SetProperty(ref _currentTrack, track, nameof(CurrentTrack)))
                     {
                         _mtService.SetCurrentTrack(track);
                         OnCurrentTrackChanged();
