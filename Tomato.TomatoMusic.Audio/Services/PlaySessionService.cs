@@ -178,7 +178,7 @@ namespace Tomato.TomatoMusic.Audio.Services
         private readonly object _messageLocker = new object();
         #endregion
 
-        public PlaySessionService(IMediaTransportService mtService)
+        public PlaySessionService()
         {
             _logger = LogManager.GetLog(typeof(PlaySessionService));
             #region Rpc
@@ -197,7 +197,7 @@ namespace Tomato.TomatoMusic.Audio.Services
             #endregion
             _playModeManager = IoC.Get<IPlayModeManager>();
 
-            _mtService = mtService;
+            _mtService = new MediaTransportService();
             _mtService.IsEnabled = _mtService.IsPauseEnabled = _mtService.IsPlayEnabled = true;
             _mtService.ButtonPressed += _mtService_ButtonPressed;
             _askPositionTimer = new Timer(OnAskPosition, null, Timeout.InfiniteTimeSpan, _askPositionPeriod);
@@ -423,7 +423,11 @@ namespace Tomato.TomatoMusic.Audio.Services
                 var currentTrack = _playlist.FirstOrDefault(o => o == track);
                 Execute.BeginOnUIThread(() =>
                 {
-                    CurrentTrack = currentTrack;
+                    if (SetProperty(ref _currentTrack, track))
+                    {
+                        _mtService.SetCurrentTrack(track);
+                        OnCurrentTrackChanged();
+                    }
                     _position = TimeSpan.Zero;
                     OnPropertyChanged(nameof(Position));
                 });

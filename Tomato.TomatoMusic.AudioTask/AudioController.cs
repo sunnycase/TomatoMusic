@@ -13,10 +13,13 @@ using Tomato.TomatoMusic.Primitives;
 using Tomato.TomatoMusic.Services;
 using Windows.Storage;
 using Tomato.Media.Codec;
+using Windows.Media;
+using Tomato.Uwp.Mvvm;
+using MediaPlayerState = Windows.Media.Playback.MediaPlayerState;
 
 namespace Tomato.TomatoMusic.AudioTask
 {
-    class AudioController : IAudioController
+    class AudioController : BindableBase, IAudioController
     {
         private readonly BackgroundMediaPlayer _mediaPlayer;
         private readonly IPlayModeManager _playModeManager;
@@ -28,6 +31,7 @@ namespace Tomato.TomatoMusic.AudioTask
 
         private bool _autoPlay;
         private readonly ILog _logger;
+        private readonly MediaTransportService _mtService;
 
         #region Rpc
         private readonly JsonServer<IAudioController> _audioControllerServer;
@@ -53,6 +57,8 @@ namespace Tomato.TomatoMusic.AudioTask
             mediaPlayer.CurrentStateChanged += MediaPlayer_CurrentStateChanged;
             mediaPlayer.SeekCompleted += MediaPlayer_SeekCompleted;
             mediaPlayer.MediaFailed += MediaPlayer_MediaFailed;
+            _mtService = new MediaTransportService(mediaPlayer.SystemMediaTransportControls);
+            _mtService.ButtonPressed += _mtService_ButtonPressed;
         }
 
         private void MediaPlayer_MediaFailed(IMediaPlayer sender, Windows.Media.Playback.MediaPlayerFailedEventArgs args)
@@ -104,6 +110,47 @@ namespace Tomato.TomatoMusic.AudioTask
         private void MediaPlayer_CurrentStateChanged(IMediaPlayer sender, object args)
         {
             _controllerHandler.NotifyControllerStateChanged(_mediaPlayer.State);
+
+            switch (_mediaPlayer.State)
+            {
+                case MediaPlayerState.Closed:
+                    CanPlay = CanPause = false;
+                    ShowPause = false;
+                    ShowPlay = true;
+                    PlaybackStatus = MediaPlaybackStatus.Closed;
+                    break;
+                case MediaPlayerState.Opening:
+                    CanPlay = CanPause = false;
+                    ShowPause = false;
+                    ShowPlay = true;
+                    PlaybackStatus = MediaPlaybackStatus.Changing;
+                    break;
+                case MediaPlayerState.Buffering:
+                    CanPlay = CanPause = false;
+                    ShowPause = false;
+                    ShowPlay = true;
+                    PlaybackStatus = MediaPlaybackStatus.Changing;
+                    break;
+                case MediaPlayerState.Playing:
+                    CanPause = true;
+                    CanPlay = false;
+                    ShowPause = true;
+                    ShowPlay = false;
+                    PlaybackStatus = MediaPlaybackStatus.Playing;
+                    break;
+                case MediaPlayerState.Paused:
+                    CanPause = false;
+                    CanPlay = true;
+                    ShowPause = false;
+                    ShowPlay = true;
+                    PlaybackStatus = MediaPlaybackStatus.Paused;
+                    break;
+                case MediaPlayerState.Stopped:
+                    PlaybackStatus = MediaPlaybackStatus.Stopped;
+                    break;
+                default:
+                    break;
+            }
         }
 
         private void MediaPlayer_MediaOpened(IMediaPlayer sender, object args)
@@ -123,17 +170,27 @@ namespace Tomato.TomatoMusic.AudioTask
 
         private async void SetMediaSource(Uri uri)
         {
-            StorageFile file;
-            if (uri.Scheme == "ms-appx")
-                file = await StorageFile.GetFileFromApplicationUriAsync(uri);
-            else if (uri.IsFile)
-                file = await StorageFile.GetFileFromPathAsync(uri.LocalPath);
-            else
-                throw new NotSupportedException("Not supported uri.");
-            var stream = await file.OpenReadAsync();
-            var mediaSource = await MediaSource.CreateFromStream(stream);
-            _controllerHandler.NotifyDuration(mediaSource.Duration);
-            _mediaPlayer.SetMediaSource(mediaSource);
+            try
+            {
+                GC.Collect();
+                GC.WaitForPendingFinalizers();
+                GC.Collect();
+                StorageFile file;
+                if (uri.Scheme == "ms-appx")
+                    file = await StorageFile.GetFileFromApplicationUriAsync(uri);
+                else if (uri.IsFile)
+                    file = await StorageFile.GetFileFromPathAsync(uri.LocalPath);
+                else
+                    throw new NotSupportedException("Not supported uri.");
+                var stream = await file.OpenReadAsync();
+                var mediaSource = await MediaSource.CreateFromStream(stream);
+                _controllerHandler.NotifyDuration(mediaSource.Duration);
+                _mediaPlayer.SetMediaSource(mediaSource);
+            }
+            catch
+            {
+                PlaybackStatus = MediaPlaybackStatus.Closed;
+            }
         }
 
         public void Pause()
@@ -155,7 +212,9 @@ namespace Tomato.TomatoMusic.AudioTask
                 {
                     SetMediaSource(track.Source);
                     _controllerHandler.NotifyCurrentTrackChanged(track);
+                    OnCurrentTrackChanged();
                 }
+                _mtService.SetCurrentTrack(track);
             }
         }
 
@@ -166,7 +225,10 @@ namespace Tomato.TomatoMusic.AudioTask
             {
                 var nextIdx = cntIdx + 1;
                 if (nextIdx >= 0 && nextIdx < _playlist.Count)
+                {
+                    _autoPlay = true;
                     SetCurrentTrack(_playlist[nextIdx]);
+                }
             }
         }
 
@@ -177,7 +239,10 @@ namespace Tomato.TomatoMusic.AudioTask
             {
                 var prevIdx = cntIdx - 1;
                 if (prevIdx >= 0 && prevIdx < _playlist.Count)
+                {
+                    _autoPlay = true;
                     SetCurrentTrack(_playlist[prevIdx]);
+                }
             }
         }
 
@@ -208,6 +273,152 @@ namespace Tomato.TomatoMusic.AudioTask
         public void SetVolume(double value)
         {
             _mediaPlayer.Volume = value;
+        }
+
+        #region SMTC
+
+        private bool _canPrevious;
+        public bool CanPrevious
+        {
+            get { return _canPrevious; }
+            private set
+            {
+                if (SetProperty(ref _canPrevious, value))
+                    _mtService.CanPrevious = value;
+            }
+        }
+
+        private bool _canPause;
+        public bool CanPause
+        {
+            get { return _canPause; }
+            private set { SetProperty(ref _canPause, value); }
+        }
+
+        private bool _canPlay;
+        public bool CanPlay
+        {
+            get { return _canPlay; }
+            private set { SetProperty(ref _canPlay, value); }
+        }
+
+        private bool _showPause;
+        public bool ShowPause
+        {
+            get { return _showPause; }
+            private set { SetProperty(ref _showPause, value); }
+        }
+
+        private bool _showPlay = true;
+        public bool ShowPlay
+        {
+            get { return _showPlay; }
+            private set { SetProperty(ref _showPlay, value); }
+        }
+        private bool _canNext;
+        public bool CanNext
+        {
+            get { return _canNext; }
+            private set
+            {
+                if (SetProperty(ref _canNext, value))
+                    _mtService.CanNext = value;
+            }
+        }
+
+        private MediaPlaybackStatus _playbackStatus = MediaPlaybackStatus.Closed;
+        public MediaPlaybackStatus PlaybackStatus
+        {
+            get { return _playbackStatus; }
+            private set
+            {
+                if (SetProperty(ref _playbackStatus, value))
+                {
+                    _mtService.PlaybackStatus = value;
+                    OnCurrentTrackChanged();
+                }
+            }
+        }
+
+        private void OnCurrentTrackChanged()
+        {
+            if (_currentTrack != null && _playlist != null)
+            {
+                var idx = _playlist.IndexOf(_currentTrack);
+                if (idx != -1)
+                {
+                    CanPrevious = idx > 0 && PlaybackStatus != MediaPlaybackStatus.Changing;
+                    CanNext = idx < _playlist.Count - 1 && PlaybackStatus != MediaPlaybackStatus.Changing;
+                }
+                else
+                    CanPrevious = CanNext = false;
+            }
+            else
+                CanPlay = CanPause = CanPrevious = CanNext = false;
+        }
+        
+        public void RequestPlay()
+        {
+            if (CanPlay)
+                Play();
+        }
+
+        public void RequestPause()
+        {
+            if (CanPause)
+                Pause();
+        }
+
+        public void RequestNext()
+        {
+            if (CanNext)
+                MoveNext();
+        }
+
+        public void RequestPrevious()
+        {
+            if (CanPrevious)
+                MovePrevious();
+        }
+
+        private void _mtService_ButtonPressed(object sender, Windows.Media.SystemMediaTransportControlsButtonPressedEventArgs e)
+        {
+            switch (e.Button)
+            {
+                case Windows.Media.SystemMediaTransportControlsButton.Play:
+                    RequestPlay();
+                    break;
+                case Windows.Media.SystemMediaTransportControlsButton.Pause:
+                    RequestPause();
+                    break;
+                case Windows.Media.SystemMediaTransportControlsButton.Stop:
+                    break;
+                case Windows.Media.SystemMediaTransportControlsButton.Record:
+                    break;
+                case Windows.Media.SystemMediaTransportControlsButton.FastForward:
+                    break;
+                case Windows.Media.SystemMediaTransportControlsButton.Rewind:
+                    break;
+                case Windows.Media.SystemMediaTransportControlsButton.Next:
+                    RequestNext();
+                    break;
+                case Windows.Media.SystemMediaTransportControlsButton.Previous:
+                    RequestPrevious();
+                    break;
+                case Windows.Media.SystemMediaTransportControlsButton.ChannelUp:
+                    break;
+                case Windows.Media.SystemMediaTransportControlsButton.ChannelDown:
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        #endregion
+
+        public void OnCanceled()
+        {
+            _mtService.Dispose();
         }
 
         #region Rpc

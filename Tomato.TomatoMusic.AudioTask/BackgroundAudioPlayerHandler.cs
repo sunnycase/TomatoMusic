@@ -26,7 +26,7 @@ namespace Tomato.TomatoMusic.AudioTask
 
         public void OnCanceled()
         {
-
+            _audioController.OnCanceled();
         }
 
         public void OnReceiveMessage(string tag, string message)

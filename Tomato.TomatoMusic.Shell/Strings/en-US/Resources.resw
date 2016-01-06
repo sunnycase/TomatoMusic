@@ -117,13 +117,31 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="AddFiles.Content" xml:space="preserve">
+    <value>Add Files</value>
+  </data>
+  <data name="AddFolder.Content" xml:space="preserve">
+    <value>Add Folder</value>
+  </data>
+  <data name="Albums.Header" xml:space="preserve">
+    <value>Album</value>
+  </data>
   <data name="AppName" xml:space="preserve">
     <value>Tomato Music</value>
+  </data>
+  <data name="Artists.Header" xml:space="preserve">
+    <value>Artist</value>
   </data>
   <data name="Default" xml:space="preserve">
     <value>Default</value>
   </data>
   <data name="MusicLibrary" xml:space="preserve">
     <value>Music Library</value>
+  </data>
+  <data name="Musics.Header" xml:space="preserve">
+    <value>Music</value>
+  </data>
+  <data name="Playing.Text" xml:space="preserve">
+    <value>Playing</value>
   </data>
 </root>

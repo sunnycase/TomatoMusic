@@ -118,7 +118,6 @@
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Services\MediaTransportService.cs" />
     <Compile Include="Services\PlaySessionService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Content Include="Properties\Tomato.TomatoMusic.AudioServices.rd.xml" />

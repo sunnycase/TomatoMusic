@@ -13,7 +13,6 @@ namespace Tomato.TomatoMusic
     {
         public static void UseAudio(this SimpleContainer container)
         {
-            container.Singleton<IMediaTransportService, MediaTransportService>();
             container.Singleton<IPlaySessionService, PlaySessionService>();
         }
     }

@@ -136,6 +136,7 @@
     <Compile Include="Services\IPlaylistManager.cs" />
     <Compile Include="Services\IPlayModeProvider.cs" />
     <Compile Include="Services\IPlaySessionService.cs" />
+    <Compile Include="Services\MediaTransportService.cs" />
     <None Include="RpcPackets\IAudioControllerHandler.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>IAudioControllerHandler.cs</LastGenOutput>

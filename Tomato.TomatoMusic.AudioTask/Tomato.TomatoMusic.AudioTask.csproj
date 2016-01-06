@@ -135,6 +135,10 @@
       <Project>{9168235f-9d85-4053-8386-535114c68355}</Project>
       <Name>Tomato.TomatoMusic.Plugins</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Tomato.Uwp.Mvvm\Tomato.Uwp.Mvvm.csproj">
+      <Project>{E10050CE-4DEF-4627-BAF2-C396C2CEE6AE}</Project>
+      <Name>Tomato.Uwp.Mvvm</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>

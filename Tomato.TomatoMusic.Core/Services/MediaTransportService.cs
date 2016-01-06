@@ -8,9 +8,9 @@ using Tomato.TomatoMusic.Services;
 using Tomato.Uwp.Mvvm;
 using Windows.Media;
 
-namespace Tomato.TomatoMusic.Audio.Services
+namespace Tomato.TomatoMusic.Services
 {
-    class MediaTransportService : BindableBase, IMediaTransportService
+    public class MediaTransportService : BindableBase, IMediaTransportService, IDisposable
     {
         private readonly SystemMediaTransportControls _smtc;
 
@@ -52,13 +52,19 @@ namespace Tomato.TomatoMusic.Audio.Services
 
         public event EventHandler<SystemMediaTransportControlsButtonPressedEventArgs> ButtonPressed;
 
-        public MediaTransportService()
+        public MediaTransportService(SystemMediaTransportControls smtc)
         {
-            _smtc = SystemMediaTransportControls.GetForCurrentView();
+            _smtc = smtc;
             PlaybackStatus = MediaPlaybackStatus.Closed;
             _smtc.DisplayUpdater.Type = MediaPlaybackType.Music;
             _smtc.DisplayUpdater.Update();
             _smtc.ButtonPressed += _smtc_ButtonPressed;
+        }
+
+        public MediaTransportService()
+            :this(SystemMediaTransportControls.GetForCurrentView())
+        {
+
         }
 
         private void _smtc_ButtonPressed(SystemMediaTransportControls sender, SystemMediaTransportControlsButtonPressedEventArgs args)
@@ -80,8 +86,32 @@ namespace Tomato.TomatoMusic.Audio.Services
             else
             {
                 updater.ClearAll();
+                PlaybackStatus = MediaPlaybackStatus.Closed;
             }
             updater.Update();
         }
+
+        #region IDisposable Support
+        private bool disposedValue = false; // 要检测冗余调用
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!disposedValue)
+            {
+                if (disposing)
+                {
+                    PlaybackStatus = MediaPlaybackStatus.Closed;
+                    _smtc.ButtonPressed -= _smtc_ButtonPressed;
+                }
+                disposedValue = true;
+            }
+        }
+
+        // 添加此代码以正确实现可处置模式。
+        public void Dispose()
+        {
+            Dispose(true);
+        }
+        #endregion
     }
 }
