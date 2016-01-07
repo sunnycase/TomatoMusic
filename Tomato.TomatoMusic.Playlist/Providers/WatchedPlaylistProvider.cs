@@ -51,10 +51,10 @@ namespace Tomato.TomatoMusic.Playlist.Providers
                 // Tracks
                 _individualTracks.AddRange(_playlist.Tracks);
                 UpdateAll();
-                _folderDispatcher.ResumeRefresh();
             }
             finally
             {
+                _folderDispatcher.ResumeRefresh();
                 NotifyUpdated();
             }
         }
@@ -149,10 +149,19 @@ namespace Tomato.TomatoMusic.Playlist.Providers
             if (_folders.All(o => o.Folder != folder))
             {
                 _folderDispatcher.SuspendRefresh();
-                var watcher = await TryAddFolder(folder.Path, _folders);
-                _folderDispatcher.ResumeRefresh();
-                watcher.Refresh();
-                NotifyUpdated();
+                try
+                {
+                    var watcher = await TryAddFolder(folder.Path, _folders);
+                    if (watcher != null)
+                    {
+                        watcher.Refresh();
+                        NotifyUpdated();
+                    }
+                }
+                finally
+                {
+                    _folderDispatcher.ResumeRefresh();
+                }
             }
         }
     }

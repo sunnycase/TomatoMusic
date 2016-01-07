@@ -10,6 +10,8 @@ using Newtonsoft.Json;
 using Tomato.TomatoMusic.Primitives;
 using Tomato.Uwp.Mvvm.Threading;
 using Windows.Foundation;
+using Windows.Security.Cryptography;
+using Windows.Security.Cryptography.Core;
 using Windows.Storage;
 using Windows.Storage.Streams;
 
@@ -121,7 +123,16 @@ namespace Tomato.TomatoMusic.Playlist.Cache
         private async Task<StorageFile> OpenCacheFile()
         {
             var folder = await ApplicationData.Current.LocalCacheFolder.CreateFolderAsync(_playlistKey.ToString("N"), CreationCollisionOption.OpenIfExists);
-            return await folder.CreateFileAsync(Uri.EscapeDataString(_folderName), CreationCollisionOption.OpenIfExists);
+            return await folder.CreateFileAsync(Uri.EscapeDataString(HashFolderName(_folderName)), CreationCollisionOption.OpenIfExists);
+        }
+
+        private static readonly HashAlgorithmProvider _sha1 = HashAlgorithmProvider.OpenAlgorithm(HashAlgorithmNames.Sha1);
+
+        private string HashFolderName(string path)
+        {
+            var bufPath = CryptographicBuffer.ConvertStringToBinary(path, BinaryStringEncoding.Utf8);
+            var hash = _sha1.HashData(bufPath);
+            return CryptographicBuffer.EncodeToBase64String(hash);
         }
     }
 }

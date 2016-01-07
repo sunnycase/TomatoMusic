@@ -453,10 +453,13 @@ namespace Tomato.TomatoMusic.Audio.Services
 
         private void OnPositionChanged(TimeSpan oldValue, TimeSpan value)
         {
-            if (Math.Abs(oldValue.Subtract(value).TotalMilliseconds) > 100)
+            if(PlaybackStatus != MediaPlaybackStatus.Changing)
             {
-                SuspendAskPosition();
-                _audioController.SetPosition(value);
+                if (Math.Abs(oldValue.Subtract(value).TotalMilliseconds) > 100)
+                {
+                    SuspendAskPosition();
+                    _audioController.SetPosition(value);
+                }
             }
         }
 
