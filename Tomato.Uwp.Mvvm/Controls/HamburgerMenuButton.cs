@@ -13,7 +13,7 @@ using Windows.UI.Xaml.Media;
 
 namespace Tomato.Uwp.Mvvm.Controls
 {
-    public sealed class HamburgerMenuButton : Control
+    public sealed class HamburgerMenuButton : Button
     {
         public HamburgerMenuButton()
         {

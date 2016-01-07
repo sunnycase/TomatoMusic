@@ -15,7 +15,7 @@
 
     <Grid>
         <Grid.Background>
-            <ImageBrush ImageSource="http://area.sinaapp.com/bingImg" Opacity="0.2" Stretch="UniformToFill"/>
+            <ImageBrush ImageSource="{x:Bind ViewModel.ThemeService.Background, Mode=OneWay}" Opacity="0.2" Stretch="UniformToFill"/>
         </Grid.Background>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -23,7 +23,7 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         <StackPanel Orientation="Horizontal">
-            <TextBlock Text="{x:Bind ViewModel.Anchor.Placeholder.Name}" FontSize="25" Padding="0,5"/>
+            <TextBlock x:Name="tb_Title" Text="{x:Bind ViewModel.Anchor.Placeholder.Name}" FontSize="25" Padding="0,5"/>
             <Button Style="{StaticResource TrackFunctionalButtonStyle}"
                     Visibility="{x:Bind ViewModel.CanEditName, Converter={StaticResource BooleanToVisibilityConverter}, Mode=OneWay}">
                 <SymbolIcon Symbol="Edit"/>
@@ -37,6 +37,8 @@
                 <!--<HyperlinkButton x:Uid="AddFiles" Content="Add Files" Style="{StaticResource PlaylistHyperlinkButtonStyle}"
                                  Click="{x:Bind ViewModel.OnRequestAddFiles}"
                                  Visibility="{x:Bind ViewModel.CanEditContent, Converter={StaticResource BooleanToVisibilityConverter}, Mode=OneWay}"/>-->
+
+                <ProgressRing Margin="5,0" IsActive="{x:Bind ViewModel.IsRefreshing, Mode=OneWay}"/>
             </StackPanel>
         </Border>
         <Pivot Grid.Row="2">

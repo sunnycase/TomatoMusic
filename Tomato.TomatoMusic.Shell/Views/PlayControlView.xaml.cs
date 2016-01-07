@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
 using Tomato.TomatoMusic.Services;
+using Tomato.Uwp.Mvvm.Controls;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.UI.Xaml;
@@ -23,15 +24,29 @@ namespace Tomato.TomatoMusic.Shell.Views
         public static DependencyProperty PlaySessionProperty { get; } = DependencyProperty.Register(nameof(PlaySession),
             typeof(IPlaySessionService), typeof(PlayControlView), new PropertyMetadata(DependencyProperty.UnsetValue));
 
+        public static DependencyProperty HamburgerMenuProperty { get; } = DependencyProperty.Register(nameof(HamburgerMenu),
+            typeof(HamburgerMenu), typeof(PlayControlView), new PropertyMetadata(DependencyProperty.UnsetValue));
+
         public IPlaySessionService PlaySession
         {
             get { return (IPlaySessionService)GetValue(PlaySessionProperty); }
             set { SetValue(PlaySessionProperty, value); }
         }
 
+        public HamburgerMenu HamburgerMenu
+        {
+            get { return (HamburgerMenu)GetValue(HamburgerMenuProperty); }
+            set { SetValue(HamburgerMenuProperty, value); }
+        }
+
         public PlayControlView()
         {
             this.InitializeComponent();
+        }
+
+        public void SwitchHamburger()
+        {
+            HamburgerMenu?.SwitchPane();
         }
     }
 }

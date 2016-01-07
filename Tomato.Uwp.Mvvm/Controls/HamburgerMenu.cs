@@ -54,6 +54,11 @@ namespace Tomato.Uwp.Mvvm.Controls
 
         private void HamburgerButton_Click(object sender, RoutedEventArgs e)
         {
+            SwitchPane();
+        }
+
+        public void SwitchPane()
+        {
             _splitView.IsPaneOpen = !_splitView.IsPaneOpen;
         }
     }

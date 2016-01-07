@@ -17,6 +17,7 @@ namespace Tomato.TomatoMusic
         {
             container.Singleton<IPlayModeManager, PlayModeManager>();
             container.Singleton<IMediaMetadataService, MediaMetadataService>();
+            container.Singleton<IThemeService, ThemeService>();
 
             return new PluginsModuleConfig(container);
         }

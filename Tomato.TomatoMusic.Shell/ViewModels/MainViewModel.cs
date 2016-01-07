@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Caliburn.Micro;
 using Windows.UI.Xaml.Controls;
 using Tomato.TomatoMusic.Services;
+using Windows.UI.ApplicationSettings;
 
 namespace Tomato.TomatoMusic.Shell.ViewModels
 {
@@ -54,6 +55,11 @@ namespace Tomato.TomatoMusic.Shell.ViewModels
                 default:
                     break;
             }
+        }
+
+        public void NavigateToSettings()
+        {
+            _navigationService?.Navigate(typeof(Views.SettingsView));
         }
     }
 }

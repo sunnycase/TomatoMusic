@@ -144,4 +144,10 @@
   <data name="Playing.Text" xml:space="preserve">
     <value>Playing</value>
   </data>
+  <data name="SettingOnUpdateBackgroundPerByteBasis.Text" xml:space="preserve">
+    <value>Update background even my internet connection is costed on a per-byte basis</value>
+  </data>
+  <data name="Settings.Text" xml:space="preserve">
+    <value>Settings</value>
+  </data>
 </root>

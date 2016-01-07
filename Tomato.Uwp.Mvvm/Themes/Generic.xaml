@@ -3,14 +3,14 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:controls="using:Tomato.Uwp.Mvvm.Controls">
 
-    <Style x:Key="HamburgerButtonStyle" TargetType="Button">
+    <Style TargetType="controls:HamburgerMenuButton">
         <Setter Property="Background" Value="Transparent"/>
         <Setter Property="Foreground" Value="White"/>
         <Setter Property="Height" Value="48" />
         <Setter Property="HorizontalAlignment" Value="Left" />
         <Setter Property="Template">
             <Setter.Value>
-                <ControlTemplate TargetType="Button">
+                <ControlTemplate TargetType="controls:HamburgerMenuButton">
                     <Grid x:Name="RootGrid" Background="{TemplateBinding Background}">
                         <VisualStateManager.VisualStateGroups>
                             <VisualStateGroup x:Name="CommonStates">
@@ -62,11 +62,14 @@
                                        CompactPaneLength="48" OpenPaneLength="200"
                                        Content="{TemplateBinding Content}">
                                 <SplitView.Pane>
-                                    <StackPanel Orientation="Vertical">
-                                        <Button x:Name="PART_HamburgerButton"
-                                                Style="{StaticResource HamburgerButtonStyle}"/>
-                                        <Border Child="{TemplateBinding Pane}"/>
-                                    </StackPanel>
+                                    <Grid>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="*"/>
+                                        </Grid.RowDefinitions>
+                                        <controls:HamburgerMenuButton x:Name="PART_HamburgerButton"/>
+                                        <Border Grid.Row="1" Child="{TemplateBinding Pane}"/>
+                                    </Grid>
                                 </SplitView.Pane>
                             </SplitView>
                         </Grid>
@@ -78,7 +81,7 @@
                                         <Setter Target="PART_SplitView.IsPaneOpen" Value="True" />
                                     </VisualState.Setters>
                                     <VisualState.StateTriggers>
-                                        <AdaptiveTrigger MinWindowWidth="720" />
+                                        <AdaptiveTrigger MinWindowWidth="900" />
                                     </VisualState.StateTriggers>
                                 </VisualState>
                                 <VisualState x:Name="NarrowState">
@@ -87,25 +90,20 @@
                                         <Setter Target="PART_SplitView.IsPaneOpen" Value="False" />
                                     </VisualState.Setters>
                                     <VisualState.StateTriggers>
+                                        <AdaptiveTrigger MinWindowWidth="600" />
+                                    </VisualState.StateTriggers>
+                                </VisualState>
+                                <VisualState x:Name="TinyState">
+                                    <VisualState.Setters>
+                                        <Setter Target="PART_SplitView.DisplayMode" Value="Overlay" />
+                                        <Setter Target="PART_SplitView.IsPaneOpen" Value="False" />
+                                    </VisualState.Setters>
+                                    <VisualState.StateTriggers>
                                         <AdaptiveTrigger MinWindowWidth="0" />
                                     </VisualState.StateTriggers>
                                 </VisualState>
                             </VisualStateGroup>
                         </VisualStateManager.VisualStateGroups>
-                    </Border>
-                </ControlTemplate>
-            </Setter.Value>
-        </Setter>
-    </Style>
-
-    <Style TargetType="controls:HamburgerMenuButton">
-        <Setter Property="Template">
-            <Setter.Value>
-                <ControlTemplate TargetType="controls:HamburgerMenuButton">
-                    <Border
-                        Background="{TemplateBinding Background}"
-                        BorderBrush="{TemplateBinding BorderBrush}"
-                        BorderThickness="{TemplateBinding BorderThickness}">
                     </Border>
                 </ControlTemplate>
             </Setter.Value>

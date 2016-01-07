@@ -75,7 +75,6 @@
     </PivotItem.Resources>
     <UserControl>
         <Grid>
-            <ProgressRing IsActive="{x:Bind ViewModel.IsRefreshing, Mode=OneWay}"/>
             <ListView x:Name="lv_Tracks" ItemsSource="{x:Bind ViewModel.Tracks, Mode=OneWay}"
                   ItemTemplate="{StaticResource WideViewMusicsTrackDataTemplate}">
                 <ListView.Resources>

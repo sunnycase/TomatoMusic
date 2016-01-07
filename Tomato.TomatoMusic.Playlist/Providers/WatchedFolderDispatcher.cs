@@ -56,7 +56,10 @@ namespace Tomato.TomatoMusic.Playlist.Providers
         public void RequestFileUpdate(WatchedFolder folder)
         {
             lock (_wantUpdateFolders)
-            _wantUpdateFolders.Add(folder);
+            {
+                _wantUpdateFolders.Add(folder);
+                Execute.BeginOnUIThread(() => IsRefreshing = true);
+            }
             if (!_refreshSuspended)
                 RestartCountdown();
         }
@@ -112,25 +115,22 @@ namespace Tomato.TomatoMusic.Playlist.Providers
             var token = (CancellationToken)state;
             try
             {
-                Execute.OnUIThread(() => IsRefreshing = true);
-
                 var folders = ConsumeAllWantUpdateFolders();
                 var folderContents = await FindTrackInfos(folders, token);
 
                 token.ThrowIfCancellationRequested();
                 UpdateFolderContents(folderContents);
                 lock (_wantUpdateFolders)
+                {
                     _wantUpdateFolders.Clear();
+                    Execute.BeginOnUIThread(() => IsRefreshing = _wantUpdateFolders.Any());
+                }
                 GC.Collect();
                 Debug.WriteLine($"WatchedFolderDispatcher: Update Completed.");
             }
             catch (OperationCanceledException)
             {
                 Debug.WriteLine($"WatchedFolderDispatcher: Cancel Update.");
-            }
-            finally
-            {
-                Execute.OnUIThread(() => IsRefreshing = false);
             }
         }
 
@@ -160,7 +160,7 @@ namespace Tomato.TomatoMusic.Playlist.Providers
                 {
                     cancelToken.ThrowIfCancellationRequested();
                     await TryAddTrackInfo(file, tracks);
-                    if (i >= 10)
+                    if (i++ >= 10)
                     {
                         i = 0;
                         GC.Collect();

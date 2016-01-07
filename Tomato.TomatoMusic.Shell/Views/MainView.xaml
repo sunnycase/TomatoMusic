@@ -20,7 +20,7 @@
     </Page.Resources>
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-        <controls:HamburgerMenu>
+        <controls:HamburgerMenu x:Name="hm_Menu">
             <controls:HamburgerMenu.Pane>
                 <Grid Margin="0,5">
                     <Grid.RowDefinitions>
@@ -30,13 +30,16 @@
                     </Grid.RowDefinitions>
                     <Grid.Resources>
                         <DataTemplate x:Key="PlaylistLabelTemplate" x:DataType="primitives:IPlaylistAnchor">
-                            <RadioButton Background="Transparent" GroupName="Playlist" Style="{StaticResource PlaylistLabelStyle}"
-                                         IsChecked="{x:Bind IsSelected, Mode=TwoWay}">
-                                <StackPanel Orientation="Horizontal">
-                                    <SymbolIcon Width="40" Height="48" Margin="0,0,8,0" Symbol="{x:Bind Converter={StaticResource PlaylistToIconConverter}}"/>
-                                    <TextBlock VerticalAlignment="Center" Text="{x:Bind Placeholder.Name}"/>
-                                </StackPanel>
-                            </RadioButton>
+                            <Border>
+                                <RadioButton Background="Transparent" GroupName="Playlist" Style="{StaticResource PlaylistLabelStyle}"
+                                         IsChecked="{x:Bind IsSelected, Mode=TwoWay}"
+                                         Click="{x:Bind RaiseIsSelectedChanged}">
+                                    <StackPanel Orientation="Horizontal">
+                                        <SymbolIcon Width="40" Height="48" Margin="0,0,8,0" Symbol="{x:Bind Converter={StaticResource PlaylistToIconConverter}}"/>
+                                        <TextBlock VerticalAlignment="Center" Text="{x:Bind Placeholder.Name}"/>
+                                    </StackPanel>
+                                </RadioButton>
+                            </Border>
                         </DataTemplate>
                     </Grid.Resources>
                     <StackPanel>
@@ -45,7 +48,8 @@
                         <!--<ContentPresenter Content="{x:Bind ViewModel.PlaylistManager.Default}"
                                           ContentTemplate="{StaticResource PlaylistLabelTemplate}"/>-->
                         <RadioButton Background="Transparent" GroupName="Playlist" Style="{StaticResource PlaylistLabelStyle}"
-                                     IsChecked="{x:Bind ViewModel.IsPlayingViewSelected, Mode=TwoWay}">
+                                     IsChecked="{x:Bind ViewModel.IsPlayingViewSelected, Mode=TwoWay}"
+                                     Click="{x:Bind ViewModel.OnSelectedPlaylistChanged}">
                             <StackPanel Orientation="Horizontal">
                                 <SymbolIcon Width="40" Height="48" Margin="0,0,8,0" Symbol="FourBars"/>
                                 <TextBlock x:Uid="Playing" VerticalAlignment="Center" Text="Playing"/>
@@ -101,13 +105,15 @@
                             </ListBox.ItemContainerStyle>
                         </ListBox>
                     </StackPanel>
-                    <StackPanel Grid.Row="2" Visibility="Collapsed">
+                    <StackPanel Grid.Row="2">
                         <Border Margin="5" BorderBrush="#777" BorderThickness="0,1,0,0"/>
 
-                        <StackPanel Orientation="Horizontal">
-                            <SymbolIcon Width="40" Height="48" Margin="0,0,8,0" Symbol="Setting"/>
-                            <TextBlock VerticalAlignment="Center">设置</TextBlock>
-                        </StackPanel>
+                        <Button Click="{x:Bind ViewModel.NavigateToSettings}" Style="{StaticResource HamburgerButtonStyle}">
+                            <StackPanel Orientation="Horizontal">
+                                <SymbolIcon Width="40" Height="48" Margin="0,0,8,0" Symbol="Setting"/>
+                                <TextBlock x:Uid="Settings" VerticalAlignment="Center">Settings</TextBlock>
+                            </StackPanel>
+                        </Button>
                     </StackPanel>
                 </Grid>
             </controls:HamburgerMenu.Pane>
@@ -118,7 +124,8 @@
                 </Grid.RowDefinitions>
                 <Frame x:Name="ContentFrame" Loaded="{x:Bind ViewModel.SetupNavigationService}" Padding="10"/>
                 <!-- 音乐控制面板 -->
-                <local:PlayControlView Grid.Row="1" PlaySession="{x:Bind ViewModel.PlaySession}" Padding="15"/>
+                <local:PlayControlView Grid.Row="1" PlaySession="{x:Bind ViewModel.PlaySession}" Padding="15"
+                                       HamburgerMenu="{x:Bind hm_Menu}"/>
             </Grid>
         </controls:HamburgerMenu>
     </Grid>

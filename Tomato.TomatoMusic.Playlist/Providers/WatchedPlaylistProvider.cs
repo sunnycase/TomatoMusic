@@ -16,10 +16,11 @@ using Windows.Storage;
 using Windows.Storage.Search;
 using Windows.System.Threading;
 using Windows.System.Threading.Core;
+using Tomato.Uwp.Mvvm;
 
 namespace Tomato.TomatoMusic.Playlist.Providers
 {
-    class WatchedPlaylistProvider
+    class WatchedPlaylistProvider : BindableBase
     {
         private WatchedFolderDispatcher _folderDispatcher = new WatchedFolderDispatcher();
         private readonly Primitives.Playlist _playlist;
@@ -30,6 +31,8 @@ namespace Tomato.TomatoMusic.Playlist.Providers
         private readonly Dictionary<WatchedFolder, FolderCacheProvider> _folderCaches = new Dictionary<WatchedFolder, FolderCacheProvider>();
 
         public event EventHandler Updated;
+
+        public bool IsRefreshing => _folderDispatcher.IsRefreshing;
 
         public WatchedPlaylistProvider(Primitives.Playlist playlist)
         {
@@ -126,6 +129,9 @@ namespace Tomato.TomatoMusic.Playlist.Providers
             {
                 case nameof(WatchedFolderDispatcher.FolderContents):
                     OnFolderContentsChanged();
+                    break;
+                case nameof(WatchedFolderDispatcher.IsRefreshing):
+                    OnPropertyChanged(nameof(IsRefreshing));
                     break;
             }
         }

@@ -46,7 +46,7 @@ namespace Tomato.TomatoMusic.Shell.ViewModels
             _addPlaylistButton?.Flyout.Hide();
         }
 
-        private void OnSelectedPlaylistChanged()
+        public void OnSelectedPlaylistChanged()
         {
             _navigationService?.Navigate(typeof(Views.PlaylistView), PlaylistManager.SelectedPlaylist);
         }

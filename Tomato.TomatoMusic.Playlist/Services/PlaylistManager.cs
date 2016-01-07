@@ -47,6 +47,11 @@ namespace Tomato.TomatoMusic.Playlist.Services
             _placeholder = placeholder;
             _handler = handler;
         }
+
+        public void RaiseIsSelectedChanged()
+        {
+            OnPropertyChanged(nameof(IsSelected));
+        }
     }
 
     class PlaylistManager : BindableBase, IPlaylistManager, IPlaylistAnchorHandler
@@ -68,7 +73,11 @@ namespace Tomato.TomatoMusic.Playlist.Services
         public IPlaylistAnchor SelectedPlaylist
         {
             get { return _selectedPlaylist; }
-            private set { SetProperty(ref _selectedPlaylist, value); }
+            private set
+            {
+                _selectedPlaylist = value;
+                OnPropertyChanged(nameof(SelectedPlaylist));
+            }
         }
 
         public IPlaylistAnchor MusicLibrary { get; private set; }
@@ -145,7 +154,7 @@ namespace Tomato.TomatoMusic.Playlist.Services
             }
         }
 
-        class PlaylistContentProvider : IPlaylistContentProvider
+        class PlaylistContentProvider : BindableBase, IPlaylistContentProvider
         {
             public Task<IObservableCollection<TrackInfo>> Result { get; }
             private WatchedPlaylistProvider _watchedProvider;
@@ -153,6 +162,13 @@ namespace Tomato.TomatoMusic.Playlist.Services
             private BindableCollection<TrackInfo> _tracks;
 
             private readonly Task _openPlaylistTask;
+
+            private bool _isRefreshing = true;
+            public bool IsRefreshing
+            {
+                get { return _isRefreshing; }
+                private set { SetProperty(ref _isRefreshing, value); }
+            }
 
             public PlaylistContentProvider(IPlaylistAnchor anchor)
             {
@@ -174,6 +190,20 @@ namespace Tomato.TomatoMusic.Playlist.Services
             {
                 _playlistFile = await PlaylistFile.OpenAsync(anchor.Placeholder);
                 _watchedProvider = new WatchedPlaylistProvider(_playlistFile.Playlist);
+                IsRefreshing = _watchedProvider.IsRefreshing;
+                _watchedProvider.PropertyChanged += _watchedProvider_PropertyChanged;
+            }
+
+            private void _watchedProvider_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+            {
+                switch (e.PropertyName)
+                {
+                    case nameof(WatchedPlaylistProvider.IsRefreshing):
+                        IsRefreshing = _watchedProvider.IsRefreshing;
+                        break;
+                    default:
+                        break;
+                }
             }
 
             private async Task<IObservableCollection<TrackInfo>> LoadContent(IPlaylistAnchor anchor)

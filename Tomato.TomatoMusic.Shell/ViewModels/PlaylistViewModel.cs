@@ -38,24 +38,47 @@ namespace Tomato.TomatoMusic.Shell.ViewModels
             private set { SetProperty(ref _musicsViewModel, value); }
         }
 
+
+        private bool _isRefreshing;
+        public bool IsRefreshing
+        {
+            get { return _isRefreshing; }
+            private set { SetProperty(ref _isRefreshing, value); }
+        }
+
         public bool CanEditName => _anchor?.Placeholder.Key != Primitives.Playlist.DefaultPlaylistKey &&
             _anchor?.Placeholder.Key != Primitives.Playlist.MusicLibraryPlaylistKey;
         public bool CanEditContent => _anchor?.Placeholder.Key != Primitives.Playlist.DefaultPlaylistKey;
 
-        private Lazy<IPlaylistContentProvider> _playlistContentProvider;
-        private IPlaylistContentProvider PlaylistContentProvider => _playlistContentProvider.Value;
+        private IPlaylistContentProvider _playlistContentProvider;
+        public IThemeService ThemeService { get; }
 
-        public PlaylistViewModel()
+        public PlaylistViewModel(IThemeService themeService)
         {
-            _playlistContentProvider = new Lazy<IPlaylistContentProvider>(() => IoC.Get<IPlaylistManager>().GetPlaylistContentProvider(Anchor));
+            ThemeService = themeService;
+        }
+
+        private void Provider_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        {
+            switch (e.PropertyName)
+            {
+                case nameof(IPlaylistContentProvider.IsRefreshing):
+                    IsRefreshing = _playlistContentProvider?.IsRefreshing ?? false;
+                    break;
+                default:
+                    break;
+            }
         }
 
         public async void OnRequestAddFolder()
         {
-            var folder = await FolderPicker.PickSingleFolderAsync();
-            if(folder != null)
+            if(_playlistContentProvider != null)
             {
-                PlaylistContentProvider.AddFolder(folder);
+                var folder = await FolderPicker.PickSingleFolderAsync();
+                if (folder != null)
+                {
+                    _playlistContentProvider.AddFolder(folder);
+                }
             }
         }
 
@@ -67,6 +90,9 @@ namespace Tomato.TomatoMusic.Shell.ViewModels
         private void OnPlaylistAnchorChanged(IPlaylistAnchor anchor)
         {
             MusicsViewModel = new MusicsViewModel(anchor);
+            _playlistContentProvider = IoC.Get<IPlaylistManager>().GetPlaylistContentProvider(anchor);
+            IsRefreshing = _playlistContentProvider.IsRefreshing;
+            _playlistContentProvider.PropertyChanged += Provider_PropertyChanged;
         }
 
         private static readonly Lazy<FolderPicker> _folderPicker = new Lazy<FolderPicker>(() =>
