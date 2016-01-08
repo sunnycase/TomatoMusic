@@ -108,6 +108,18 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AudioModule.cs" />
+    <Compile Include="AudioTask\App.cs" />
+    <Compile Include="AudioTask\AudioController.cs" />
+    <Compile Include="AudioTask\AudioTaskModule.cs" />
+    <Compile Include="AudioTask\BackgroundAudioPlayerDispatcher.cs" />
+    <Compile Include="AudioTask\MinimalApplication.cs" />
+    <Compile Include="AudioTask\MinimalPlatformProvider.cs" />
+    <Compile Include="Config\AudioModuleConfig.cs" />
+    <Compile Include="RpcProxies\IAudioControllerCalledProxy.cs">
+      <DependentUpon>IAudioControllerCalledProxy.tt</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
     <Compile Include="RpcProxies\IAudioControllerCallingProxy.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -118,9 +130,22 @@
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
     </Compile>
+    <Compile Include="RpcProxies\IAudioControllerHandlerCallingProxy.cs">
+      <DependentUpon>IAudioControllerHandlerCallingProxy.tt</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
     <Compile Include="Services\PlaySessionService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Content Include="Properties\Tomato.TomatoMusic.AudioServices.rd.xml" />
+    <None Include="RpcProxies\IAudioControllerHandlerCallingProxy.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>IAudioControllerHandlerCallingProxy.cs</LastGenOutput>
+    </None>
+    <None Include="RpcProxies\IAudioControllerCalledProxy.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>IAudioControllerCalledProxy.cs</LastGenOutput>
+    </None>
     <None Include="RpcProxies\IAudioControllerCallingProxy.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>IAudioControllerCallingProxy.cs</LastGenOutput>
@@ -131,10 +156,6 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Tomato.TomatoMusic.AudioTask\Tomato.TomatoMusic.AudioTask.csproj">
-      <Project>{c64a2cdb-dcbe-4f90-95e8-73d59d16ee21}</Project>
-      <Name>Tomato.TomatoMusic.AudioTask</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Tomato.TomatoMusic.Core\Tomato.TomatoMusic.Core.csproj">
       <Project>{3dca3f42-22c9-4d8f-9f0c-3853d54b8b32}</Project>
       <Name>Tomato.TomatoMusic.Core</Name>

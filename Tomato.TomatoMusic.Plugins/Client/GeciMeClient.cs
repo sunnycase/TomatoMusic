@@ -22,9 +22,16 @@ namespace Tomato.TomatoMusic.Plugins.Client
 
         public async Task<string> GetLyrics(string title, string artist)
         {
-            title = PreProcess(title);
+            var lyrics = await GetLyricsCore(title, artist);
+            if (string.IsNullOrEmpty(lyrics))
+                return await GetLyricsCore(PreProcess(title), artist);
+            return lyrics;
+        }
+
+        public async Task<string> GetLyricsCore(string title, string artist)
+        {
             var result = JsonConvert.DeserializeObject<ApiResult>(await _httpClient.GetStringAsync($"{title}/{artist}"));
-            if(result.Count == 0)
+            if (result.Count == 0)
                 result = JsonConvert.DeserializeObject<ApiResult>(await _httpClient.GetStringAsync($"{title}"));
             if (result.Count != 0)
                 return await _httpClient.GetStringAsync(result.Result.First().Lrc);
@@ -38,6 +45,7 @@ namespace Tomato.TomatoMusic.Plugins.Client
             var sb = new StringBuilder(title);
             sb.Replace("TV Mix", "");
             sb.Replace("-", "");
+            sb.Replace("~", "");
             return sb.ToString().Trim();
         }
 

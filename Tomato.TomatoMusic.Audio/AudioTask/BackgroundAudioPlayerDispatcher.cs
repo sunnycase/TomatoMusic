@@ -10,11 +10,11 @@ using Tomato.TomatoMusic.Core;
 
 namespace Tomato.TomatoMusic.AudioTask
 {
-    public sealed class BackgroundAudioPlayerHandler : IBackgroundMediaPlayerHandler
+    public sealed class BackgroundAudioPlayerDispatcher
     {
         private AudioController _audioController;
 
-        public BackgroundAudioPlayerHandler()
+        public BackgroundAudioPlayerDispatcher()
         {
             App.Startup();
         }

@@ -10,5 +10,7 @@ namespace Tomato.TomatoMusic.Services
     public interface IConfigurationService
     {
         PlayerConfiguration Player { get; }
+        ThemeConfiguration Theme { get; }
+        MetadataConfiguration Metadata { get; }
     }
 }

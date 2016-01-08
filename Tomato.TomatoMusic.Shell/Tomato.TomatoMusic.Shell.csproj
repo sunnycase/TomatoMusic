@@ -90,7 +90,7 @@
     <UseVSHostingProcess>false</UseVSHostingProcess>
     <ErrorReport>prompt</ErrorReport>
     <Prefer32Bit>true</Prefer32Bit>
-    <UseDotNetNativeToolchain>false</UseDotNetNativeToolchain>
+    <UseDotNetNativeToolchain>true</UseDotNetNativeToolchain>
   </PropertyGroup>
   <ItemGroup Condition="Exists('ApplicationInsights.config')">
     <Content Include="ApplicationInsights.config">
@@ -217,7 +217,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Tomato.TomatoMusic.AudioTask\Tomato.TomatoMusic.AudioTask.csproj">
-      <Project>{c64a2cdb-dcbe-4f90-95e8-73d59d16ee21}</Project>
+      <Project>{bbc0e494-65f4-4666-b91f-5c8a02b9a88c}</Project>
       <Name>Tomato.TomatoMusic.AudioTask</Name>
     </ProjectReference>
     <ProjectReference Include="..\Tomato.TomatoMusic.Audio\Tomato.TomatoMusic.Audio.csproj">

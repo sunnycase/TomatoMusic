@@ -109,7 +109,10 @@
   <ItemGroup>
     <Compile Include="AudioConstants.cs" />
     <Compile Include="AudioRpc.cs" />
+    <Compile Include="Configuration\MetadataConfiguration.cs" />
     <Compile Include="Configuration\PlayerConfiguration.cs" />
+    <Compile Include="Configuration\ThemeConfiguration.cs" />
+    <Compile Include="EnvironmentHelper.cs" />
     <Compile Include="IAudioController.cs" />
     <Compile Include="IAudioControllerHandler.cs" />
     <Compile Include="Primitives\IMediaMetadata.cs" />

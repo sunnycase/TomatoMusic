@@ -144,8 +144,14 @@
   <data name="Playing.Text" xml:space="preserve">
     <value>正在播放</value>
   </data>
+  <data name="SettingOnUpdateAlbumCoverPerByteBasis.Text" xml:space="preserve">
+    <value>即便使用流量计费网络时也更新背景</value>
+  </data>
   <data name="SettingOnUpdateBackgroundPerByteBasis.Text" xml:space="preserve">
-    <value>即时使用流量计费网络时也更新背景</value>
+    <value>即便使用流量计费网络时也更新背景</value>
+  </data>
+  <data name="SettingOnUpdateLyricsPerByteBasis.Text" xml:space="preserve">
+    <value>即便使用流量计费网络时也更新歌词</value>
   </data>
   <data name="Settings.Text" xml:space="preserve">
     <value>设置</value>

@@ -3,7 +3,8 @@
     "Caliburn.Micro.Core": "3.0.0-beta2",
     "Inflatable.Lastfm": "0.2.2.252",
     "Kfstorm.LrcParser": "1.0.3",
-    "Microsoft.NETCore.UniversalWindowsPlatform": "5.0.0"
+    "Microsoft.NETCore.UniversalWindowsPlatform": "5.0.0",
+    "Tomato.Media": "0.0.2-alpha8"
   },
   "frameworks": {
     "uap10.0": {}

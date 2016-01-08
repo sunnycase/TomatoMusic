@@ -7,6 +7,7 @@ using Tomato.TomatoMusic.Shell.Views;
 using System.Threading.Tasks;
 using System.IO;
 using Newtonsoft.Json;
+using Tomato.TomatoMusic.AudioTask;
 
 namespace Tomato.TomatoMusic.Shell
 {
@@ -58,7 +59,7 @@ namespace Tomato.TomatoMusic.Shell
             _container.RegisterWinRTServices();
 
             _container.UseShell();
-            _container.UseAudio();
+            _container.UseAudio().AddBackgroundMedia(typeof(BackgroundAudioHandler));
             _container.UsePlaylist();
             _container.UsePlugins()
                 .AddLastFm(config.LastFmApiKey);

@@ -269,6 +269,7 @@ namespace Tomato.TomatoMusic.AudioTask
         public void SetPosition(TimeSpan position)
         {
             _mediaPlayer.Position = position;
+            _logger.Info($"Set Position: {position}");
         }
 
         public void SetVolume(double value)

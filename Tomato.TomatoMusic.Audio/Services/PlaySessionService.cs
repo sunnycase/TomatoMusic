@@ -17,6 +17,7 @@ using Tomato.TomatoMusic.Primitives;
 using Tomato.TomatoMusic.Plugins;
 using System.Threading;
 using Tomato.TomatoMusic.Configuration;
+using Tomato.TomatoMusic.Audio.Config;
 
 namespace Tomato.TomatoMusic.Audio.Services
 {
@@ -178,7 +179,7 @@ namespace Tomato.TomatoMusic.Audio.Services
         private readonly object _messageLocker = new object();
         #endregion
 
-        public PlaySessionService()
+        public PlaySessionService(AudioModuleConfig config)
         {
             _logger = LogManager.GetLog(typeof(PlaySessionService));
             #region Rpc
@@ -203,7 +204,7 @@ namespace Tomato.TomatoMusic.Audio.Services
             _askPositionTimer = new Timer(OnAskPosition, null, Timeout.InfiniteTimeSpan, _askPositionPeriod);
 
             LoadState();
-            _client = new BackgroundMediaPlayerClient(typeof(BackgroundAudioPlayerHandler));
+            _client = new BackgroundMediaPlayerClient(config.BackgroundMediaHandlerType);
             _client.MessageReceived += _client_MessageReceived;
             _client.PlayerActivated += _client_PlayerActivated;
         }

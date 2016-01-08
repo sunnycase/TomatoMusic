@@ -6,10 +6,14 @@ using System.Text;
 using System.Threading.Tasks;
 using IF.Lastfm.Core.Api;
 using Kfstorm.LrcParser;
+using Tomato.Media;
+using Tomato.TomatoMusic.Configuration;
 using Tomato.TomatoMusic.Plugins.Client;
 using Tomato.TomatoMusic.Plugins.Config;
 using Tomato.TomatoMusic.Primitives;
 using Tomato.TomatoMusic.Services;
+using Windows.Networking.Connectivity;
+using Windows.Storage;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Imaging;
 
@@ -20,8 +24,11 @@ namespace Tomato.TomatoMusic.Plugins.Services
         private readonly LastfmClient _lastfm;
         private readonly GeciMeClient _geciMe;
 
-        public MediaMetadataService(LastFmConfig lastFmConfig)
+        private readonly MetadataConfiguration _metadataConfiguration;
+
+        public MediaMetadataService(LastFmConfig lastFmConfig, IConfigurationService configurationService)
         {
+            _metadataConfiguration = configurationService.Metadata;
             _lastfm = new LastfmClient(lastFmConfig.ApiKey, null);
             _geciMe = new GeciMeClient();
 
@@ -33,9 +40,30 @@ namespace Tomato.TomatoMusic.Plugins.Services
         public async Task<ITrackMediaMetadata> GetMetadata(TrackInfo track)
         {
             var meta = TrackMediaMetadata.Default();
-            await TryFillFromLastFm(track, meta);
-            await TryFillFromGeciMe(track, meta);
+
+            if (meta.Cover == null && EnvironmentHelper.HasInternetConnection(!_metadataConfiguration.UpdateAlbumCoverEvenByteBasis))
+                await TryFillFromLastFm(track, meta);
+            if (string.IsNullOrEmpty(meta.Lyrics) && EnvironmentHelper.HasInternetConnection(!_metadataConfiguration.UpdateLyricsEvenByteBasis))
+                await TryFillFromGeciMe(track, meta);
             return meta;
+        }
+
+        private async Task TryFillFromTrack(TrackInfo track, TrackMediaMetadata meta)
+        {
+            try
+            {
+                var uri = track.Source;
+                StorageFile file;
+                if (uri.Scheme == "ms-appx")
+                    file = await StorageFile.GetFileFromApplicationUriAsync(uri);
+                else if (uri.IsFile)
+                    file = await StorageFile.GetFileFromPathAsync(uri.LocalPath);
+                else
+                    throw new NotSupportedException("not supported uri.");
+                var provider = await MediaMetadataProvider.CreateFromStream(await file.OpenReadAsync(), false);
+                
+            }
+            catch { }
         }
 
         private async Task TryFillFromLastFm(TrackInfo track, TrackMediaMetadata meta)

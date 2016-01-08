@@ -7,7 +7,7 @@ using Tomato.Uwp.Mvvm;
 
 namespace Tomato.TomatoMusic.Configuration
 {
-    public abstract class ConfigurationBase
+    public abstract class ConfigurationBase : BindableBase
     {
         public event EventHandler OnSaved;
         public abstract string RuntimeKey { get; }
@@ -21,10 +21,9 @@ namespace Tomato.TomatoMusic.Configuration
     public class PlayerConfiguration : ConfigurationBase
     {
         public const string Key = "PlayerConfiguration";
-
-        public double Volume { get; set; } = 100;
-        public Guid PlayMode { get; set; } = new Guid("AC3A41B1-58C9-48D3-A4FD-D01CC548B29B");
-
         public override string RuntimeKey => Key;
+
+        public Guid PlayMode { get; set; } = new Guid("AC3A41B1-58C9-48D3-A4FD-D01CC548B29B");
+        public double Volume { get; set; } = 100;
     }
 }

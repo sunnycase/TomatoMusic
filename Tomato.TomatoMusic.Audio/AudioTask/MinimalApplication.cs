@@ -17,9 +17,6 @@ namespace Caliburn.Micro
         /// </summary>
         protected virtual void StartDesignTime()
         {
-            AssemblySource.Instance.Clear();
-            AssemblySource.Instance.AddRange(SelectAssemblies());
-
             Configure();
             IoC.GetInstance = GetInstance;
             IoC.GetAllInstances = GetAllInstances;
@@ -48,9 +45,6 @@ namespace Caliburn.Micro
                     Coroutine.BeginExecute(coroutine.GetEnumerator(), context);
                 }
             };
-
-            AssemblySourceCache.Install();
-            AssemblySource.Instance.AddRange(SelectAssemblies());
             
             Configure();
 
@@ -72,20 +66,6 @@ namespace Caliburn.Micro
             isInitialized = true;
 
             PlatformProvider.Current = new MinimalPlatformProvider();
-
-            var baseExtractTypes = AssemblySourceCache.ExtractTypes;
-
-            AssemblySourceCache.ExtractTypes = assembly =>
-            {
-                var baseTypes = baseExtractTypes(assembly);
-                var elementTypes = assembly.GetExportedTypes()
-                    .Where(t => typeof(UIElement).IsAssignableFrom(t));
-
-                return baseTypes.Union(elementTypes);
-            };
-
-            AssemblySource.Instance.Refresh();
-
 
             if (Execute.InDesignMode)
             {

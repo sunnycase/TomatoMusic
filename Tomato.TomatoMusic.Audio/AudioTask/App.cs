@@ -9,7 +9,7 @@ namespace Tomato.TomatoMusic.AudioTask
 {
     class App : MinimalApplication
     {
-        private WinRTContainer _container;
+        private SimpleContainer _container;
         private IEventAggregator _eventAggregator;
 
         public static App Current { get; private set; }
@@ -28,8 +28,7 @@ namespace Tomato.TomatoMusic.AudioTask
 
         protected override void Configure()
         {
-            _container = new WinRTContainer();
-            _container.RegisterWinRTServices();
+            _container = new SimpleContainer();
 
             _container.UseAudioTask();
             _container.UsePlugins();

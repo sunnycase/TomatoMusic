@@ -12,8 +12,10 @@ namespace Tomato.TomatoMusic.Shell.Services
 {
     class ConfigurationService : IConfigurationService
     {
-        public PlayerConfiguration Player { get; private set; } = new PlayerConfiguration();
-        
+        public PlayerConfiguration Player { get; } = new PlayerConfiguration();
+        public ThemeConfiguration Theme { get; } = new ThemeConfiguration();
+        public MetadataConfiguration Metadata { get; } = new MetadataConfiguration();
+
         private readonly ApplicationDataContainer _configContainer;
         private const string _configContainerName = "Tomato.TomatoMusic.Config";
 
@@ -26,11 +28,16 @@ namespace Tomato.TomatoMusic.Shell.Services
 
         private void Load()
         {
-            Player = TryLoad<PlayerConfiguration>(PlayerConfiguration.Key);
-            Player.OnSaved += Player_OnSaved;
+            TryLoad(Player);
+            TryLoad(Theme);
+            TryLoad(Metadata);
+
+            Player.OnSaved += Config_OnSaved;
+            Theme.OnSaved += Config_OnSaved;
+            Metadata.OnSaved += Config_OnSaved;
         }
 
-        private void Player_OnSaved(object sender, EventArgs e)
+        private void Config_OnSaved(object sender, EventArgs e)
         {
             var config = sender as ConfigurationBase;
             if (config != null)
@@ -39,20 +46,15 @@ namespace Tomato.TomatoMusic.Shell.Services
             }
         }
 
-        private T TryLoad<T>(string key) where T : class, new()
+        private void TryLoad<T>(T config) where T : ConfigurationBase
         {
-            object obj;
-            if (_configContainer.Values.TryGetValue(key, out obj))
+            try
             {
-                try
-                {
-                    return JsonConvert.DeserializeObject<T>(obj?.ToString()) ?? new T();
-                }
-                catch (Exception)
-                {
-                }
+                object obj;
+                if (_configContainer.Values.TryGetValue(config.RuntimeKey, out obj))
+                    JsonConvert.PopulateObject(obj?.ToString(), config);
             }
-            return new T();
+            catch (Exception) { }
         }
     }
 }
