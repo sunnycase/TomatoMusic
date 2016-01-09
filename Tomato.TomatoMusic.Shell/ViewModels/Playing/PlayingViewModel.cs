@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Tomato.TomatoMusic.Primitives;
 using Tomato.TomatoMusic.Services;
 using Tomato.Uwp.Mvvm;
+using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
 
 namespace Tomato.TomatoMusic.Shell.ViewModels.Playing
@@ -35,6 +36,7 @@ namespace Tomato.TomatoMusic.Shell.ViewModels.Playing
         public IThemeService Theme { get; }
 
         private readonly IPlaySessionService _playSession;
+        private ListBox _lyricsListBox;
 
         public PlayingViewModel(IPlaySessionService playSession, IThemeService themeService)
         {
@@ -48,6 +50,12 @@ namespace Tomato.TomatoMusic.Shell.ViewModels.Playing
         {
             if (e.PropertyName == nameof(IPlaySessionService.CurrentTrack))
                 Track = _playSession.CurrentTrack;
+            else if (e.PropertyName == nameof(IPlaySessionService.Position))
+            {
+                var listBox = _lyricsListBox;
+                if (listBox != null)
+                    Metadata?.OnPositionChanged(listBox, _playSession.Position);
+            }
         }
 
         private void OnTrackChanged()
@@ -57,6 +65,11 @@ namespace Tomato.TomatoMusic.Shell.ViewModels.Playing
                 Metadata = new TrackMetadataViewModel(track);
             else
                 Metadata = null;
+        }
+
+        public void SetLyricsListBox(ListBox listBox)
+        {
+            _lyricsListBox = listBox;
         }
 
         private static readonly WeakReference<PlayingViewModel> _viewModel = new WeakReference<PlayingViewModel>(null);
@@ -103,8 +116,24 @@ namespace Tomato.TomatoMusic.Shell.ViewModels.Playing
         {
             var metaService = IoC.Get<IMediaMetadataService>();
             var meta = await metaService.GetMetadata(track);
+            meta.PropertyChanged += Meta_PropertyChanged;
             Cover = meta.Cover;
             TryAnalyzeLyrics(meta.Lyrics);
+        }
+
+        private void Meta_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        {
+            switch (e.PropertyName)
+            {
+                case nameof(ITrackMediaMetadata.Cover):
+                    Cover = ((ITrackMediaMetadata)sender).Cover;
+                    break;
+                case nameof(ITrackMediaMetadata.Lyrics):
+                    TryAnalyzeLyrics(((ITrackMediaMetadata)sender).Lyrics);
+                    break;
+                default:
+                    break;
+            }
         }
 
         private void TryAnalyzeLyrics(string lyrics)
@@ -116,6 +145,24 @@ namespace Tomato.TomatoMusic.Shell.ViewModels.Playing
                     LyricModel = LrcFile.FromText(lyrics);
                 }
                 catch { }
+            }
+        }
+
+        public void OnPositionChanged(ListBox listBox, TimeSpan position)
+        {
+            var lyrics = LyricModel;
+            if (lyrics != null && lyrics.Lyrics != null)
+            {
+                var selected = lyrics.BeforeOrAt(position);
+                if (selected != null)
+                {
+                    listBox.SelectedItem = selected;
+                    var display = lyrics.Lyrics.SkipWhile(o => o != selected).Skip(3).FirstOrDefault();
+                    if (display != null)
+                        listBox.ScrollIntoView(display);
+                    else
+                        listBox.ScrollIntoView(selected);
+                }
             }
         }
     }

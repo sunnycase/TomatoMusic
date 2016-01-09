@@ -118,6 +118,30 @@ namespace Tomato.TomatoMusic.RpcCallingProxies
 			_packetSender.Send(packet);
 		}
 
+		public void AskPlaylist()
+		{
+			var packet = new Void_20AskPlaylist_28_29
+			{
+			};
+			_packetSender.Send(packet);
+		}
+
+		public void AskCurrentTrack()
+		{
+			var packet = new Void_20AskCurrentTrack_28_29
+			{
+			};
+			_packetSender.Send(packet);
+		}
+
+		public void AskCurrentState()
+		{
+			var packet = new Void_20AskCurrentState_28_29
+			{
+			};
+			_packetSender.Send(packet);
+		}
+
 	}
 }
 

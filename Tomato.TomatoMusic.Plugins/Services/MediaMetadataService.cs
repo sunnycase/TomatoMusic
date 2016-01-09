@@ -28,6 +28,7 @@ namespace Tomato.TomatoMusic.Plugins.Services
         private readonly GeciMeClient _geciMe;
 
         private readonly AlbumCoverCache _albumCoverCache = new AlbumCoverCache();
+        private readonly LyricsCache _lyricsCache = new LyricsCache();
         private readonly MetadataConfiguration _metadataConfiguration;
 
         public MediaMetadataService(LastFmConfig lastFmConfig, IConfigurationService configurationService)
@@ -48,11 +49,20 @@ namespace Tomato.TomatoMusic.Plugins.Services
             await TryFillFromTrack(track, meta);
             if (meta.Cover == null)
                 await TryLoadCoverFromCache(track, meta);
+            if (string.IsNullOrEmpty(meta.Lyrics))
+                await TryLoadLyricsFromCache(track, meta);
             if (meta.Cover == null && EnvironmentHelper.HasInternetConnection(!_metadataConfiguration.UpdateAlbumCoverEvenByteBasis))
-                await TryFillFromLastFm(track, meta);
+                TryFillFromLastFm(track, meta).Ignore();
             if (string.IsNullOrEmpty(meta.Lyrics) && EnvironmentHelper.HasInternetConnection(!_metadataConfiguration.UpdateLyricsEvenByteBasis))
-                await TryFillFromGeciMe(track, meta);
+                TryFillFromGeciMe(track, meta).Ignore();
             return meta;
+        }
+
+        private async Task TryLoadLyricsFromCache(TrackInfo track, TrackMediaMetadata meta)
+        {
+            var text = await _lyricsCache.TryGetCache(track.Title, track.Artist);
+            if (!string.IsNullOrEmpty(text))
+                meta.Lyrics = text;
         }
 
         private async Task TryLoadCoverFromCache(TrackInfo track, TrackMediaMetadata meta)
@@ -93,9 +103,9 @@ namespace Tomato.TomatoMusic.Plugins.Services
             try
             {
                 var uri = await GetCoverUriFromLastFm(track.Artist, track.Album);
-                if(uri == null)
+                if (uri == null)
                 {
-                    var trackResp = await _lastfm.Track.GetInfoAsync(track.Title, track.Artist);
+                    var trackResp = await _lastfm.Track.GetInfoAsync(track.Title ?? string.Empty, track.Artist ?? string.Empty);
                     if (trackResp.Success)
                         uri = await GetCoverUriFromLastFm(trackResp.Content.ArtistName, trackResp.Content.AlbumName);
                 }
@@ -113,7 +123,7 @@ namespace Tomato.TomatoMusic.Plugins.Services
         {
             try
             {
-                var response = await _lastfm.Album.GetInfoAsync(artist, album);
+                var response = await _lastfm.Album.GetInfoAsync(artist ?? string.Empty, album ?? string.Empty);
                 if (response.Success)
                     return response.Content.Images.ExtraLarge;
             }
@@ -125,16 +135,29 @@ namespace Tomato.TomatoMusic.Plugins.Services
         {
             try
             {
-                meta.Lyrics = await _geciMe.GetLyrics(track.Title, track.Artist);
+                var uri = await _geciMe.GetLyrics(track.Title, track.Artist);
+                if (uri != null)
+                    meta.Lyrics = await _lyricsCache.Download(track.Title, track.Artist, uri);
             }
             catch { }
         }
     }
 
-    class TrackMediaMetadata : ITrackMediaMetadata
+    class TrackMediaMetadata : BindableBase, ITrackMediaMetadata
     {
-        public ImageSource Cover { get; set; }
-        public string Lyrics { get; set; }
+        private ImageSource _cover;
+        public ImageSource Cover
+        {
+            get { return _cover; }
+            set { SetProperty(ref _cover, value); }
+        }
+
+        private string _lyrics;
+        public string Lyrics
+        {
+            get { return _lyrics; }
+            set { SetProperty(ref _lyrics, value); }
+        }
 
         public static TrackMediaMetadata Default() => new TrackMediaMetadata
         {

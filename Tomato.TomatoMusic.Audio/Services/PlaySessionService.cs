@@ -86,16 +86,14 @@ namespace Tomato.TomatoMusic.Audio.Services
             }
         }
 
-        private IList<TrackInfo> _playlist;
+        private IList<TrackInfo> _playlist = new List<TrackInfo>();
         public IList<TrackInfo> Playlist
         {
             get { return _playlist; }
             private set
             {
-                if (SetProperty(ref _playlist, value))
-                {
-                    _audioController.SetPlaylist(value);
-                }
+                if (SetProperty(ref _playlist, value ?? new List<TrackInfo>()))
+                    _audioController.SetPlaylist(_playlist);
             }
         }
 
@@ -207,6 +205,21 @@ namespace Tomato.TomatoMusic.Audio.Services
             _client = new BackgroundMediaPlayerClient(config.BackgroundMediaHandlerType);
             _client.MessageReceived += _client_MessageReceived;
             _client.PlayerActivated += _client_PlayerActivated;
+            TryAskPreviousStates();
+        }
+
+        private void TryAskPreviousStates()
+        {
+            try
+            {
+                if(Windows.Media.Playback.BackgroundMediaPlayer.IsMediaPlaying())
+                {
+                    _audioController.AskPlaylist();
+                    _audioController.AskCurrentTrack();
+                    _audioController.AskCurrentState();
+                }
+            }
+            catch { }
         }
 
         private void OnAskPosition(object state)
@@ -500,6 +513,14 @@ namespace Tomato.TomatoMusic.Audio.Services
             _audioController.SetVolume(Math.Min(Math.Max(0.0, Volume / 100), 1.0));
             _playerConfig.Volume = Volume;
             _playerConfig.Save();
+        }
+
+        public void NotifyPlaylist(IList<TrackInfo> playlist)
+        {
+            Execute.BeginOnUIThread(() =>
+            {
+                SetProperty(ref _playlist, playlist ?? new List<TrackInfo>(), nameof(Playlist));
+            });
         }
 
         #region Rpc

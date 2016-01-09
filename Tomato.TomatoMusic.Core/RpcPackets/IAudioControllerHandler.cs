@@ -40,5 +40,10 @@ namespace Tomato.TomatoMusic.RpcPackets.IAudioControllerHandler
 	{
 	}
 
+	public sealed class Void_20NotifyPlaylist_28System_Collections_Generic_IList_601_5BTomato_TomatoMusic_Primitives_TrackInfo_5D_29
+	{
+		public System.Collections.Generic.IList<Tomato.TomatoMusic.Primitives.TrackInfo> Arg0;
+	}
+
 }
 

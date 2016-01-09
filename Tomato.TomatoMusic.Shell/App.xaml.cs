@@ -40,6 +40,8 @@ namespace Tomato.TomatoMusic.Shell
 
         private void App_UnhandledException(object sender, Windows.UI.Xaml.UnhandledExceptionEventArgs e)
         {
+            var client = new Microsoft.ApplicationInsights.TelemetryClient();
+            client.TrackException(e.Exception);
             _logger.Error(e.Exception);
             e.Handled = true;
         }
@@ -47,7 +49,7 @@ namespace Tomato.TomatoMusic.Shell
         private void TaskScheduler_UnobservedTaskException(object sender, UnobservedTaskExceptionEventArgs e)
         {
             var client = new Microsoft.ApplicationInsights.TelemetryClient();
-            client.TrackException(e.Exception.Flatten());
+            client.TrackException(e.Exception);
             _logger.Error(e.Exception);
             e.SetObserved();
         }

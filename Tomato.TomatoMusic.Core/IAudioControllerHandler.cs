@@ -17,5 +17,6 @@ namespace Tomato.TomatoMusic.Core
         void NotifyDuration(TimeSpan? duration);
         void NotifyPosition(TimeSpan position);
         void NotifySeekCompleted();
+        void NotifyPlaylist(IList<TrackInfo> playlist);
     }
 }

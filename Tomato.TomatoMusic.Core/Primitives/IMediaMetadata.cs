@@ -8,7 +8,7 @@ using Windows.UI.Xaml.Media;
 
 namespace Tomato.TomatoMusic.Primitives
 {
-    public interface ITrackMediaMetadata
+    public interface ITrackMediaMetadata : INotifyPropertyChanged
     {
         ImageSource Cover { get; }
         string Lyrics { get; }

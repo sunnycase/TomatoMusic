@@ -57,5 +57,17 @@ namespace Tomato.TomatoMusic.RpcPackets.IAudioController
 		public System.Double Arg0;
 	}
 
+	public sealed class Void_20AskPlaylist_28_29
+	{
+	}
+
+	public sealed class Void_20AskCurrentTrack_28_29
+	{
+	}
+
+	public sealed class Void_20AskCurrentState_28_29
+	{
+	}
+
 }
 

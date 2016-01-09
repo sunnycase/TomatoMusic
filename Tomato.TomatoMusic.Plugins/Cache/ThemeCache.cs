@@ -33,7 +33,8 @@ namespace Tomato.TomatoMusic.Plugins.Cache
             try
             {
                 var file = await TryGetCache(_backgroundCacheFileName);
-                return await file?.OpenReadAsync();
+                if (file != null)
+                    return await file.OpenReadAsync();
             }
             catch { }
             return null;

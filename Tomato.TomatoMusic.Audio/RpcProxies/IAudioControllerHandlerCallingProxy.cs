@@ -85,6 +85,15 @@ namespace Tomato.TomatoMusic.RpcCallingProxies
 			_packetSender.Send(packet);
 		}
 
+		public void NotifyPlaylist(System.Collections.Generic.IList<Tomato.TomatoMusic.Primitives.TrackInfo> playlist)
+		{
+			var packet = new Void_20NotifyPlaylist_28System_Collections_Generic_IList_601_5BTomato_TomatoMusic_Primitives_TrackInfo_5D_29
+			{
+				Arg0 = playlist,
+			};
+			_packetSender.Send(packet);
+		}
+
 	}
 }
 

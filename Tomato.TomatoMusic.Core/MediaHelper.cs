@@ -13,9 +13,14 @@ namespace Tomato.TomatoMusic
     {
         public static async Task<ImageSource> CreateImage(IRandomAccessStream stream)
         {
-            var image = new BitmapImage();
-            await image.SetSourceAsync(stream);
-            return image;
+            try
+            {
+                var image = new BitmapImage();
+                await image.SetSourceAsync(stream);
+                return image;
+            }
+            catch { }
+            return null;
         }
     }
 }

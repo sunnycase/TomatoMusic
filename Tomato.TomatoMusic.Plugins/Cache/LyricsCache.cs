@@ -27,20 +27,24 @@ namespace Tomato.TomatoMusic.Plugins.Cache
             _metadataConfiguration = IoC.Get<IConfigurationService>().Metadata;
         }
 
-        public async Task<IRandomAccessStream> TryGetCache(string trackName, string artist)
+        public async Task<string> TryGetCache(string trackName, string artist)
         {
             try
             {
                 var file = await TryGetCache(GetFileName(trackName, artist));
-                return await file?.OpenReadAsync();
+                if (file != null)
+                    return await FileIO.ReadTextAsync(file);
             }
             catch { }
             return null;
         }
 
-        public async Task<IRandomAccessStream> Download(string trackName, string artist, Uri source)
+        public async Task<string> Download(string trackName, string artist, Uri source)
         {
-            return await (await Download(GetFileName(trackName, artist), source))?.OpenReadAsync();
+            var file = await Download(GetFileName(trackName, artist), source);
+            if (file != null)
+                return await FileIO.ReadTextAsync(file);
+            return null;
         }
 
         private string GetFileName(string trackName, string artist)

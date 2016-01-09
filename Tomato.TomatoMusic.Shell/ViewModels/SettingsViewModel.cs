@@ -29,5 +29,10 @@ namespace Tomato.TomatoMusic.Shell.ViewModels
         {
             ((ConfigurationBase)sender).Save();
         }
+
+        public void NavigateToAbout()
+        {
+            MainViewModel.Current?.NavigateToAbout();
+        }
     }
 }

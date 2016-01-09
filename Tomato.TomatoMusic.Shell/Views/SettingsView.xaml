@@ -25,6 +25,8 @@
                 <ToggleSwitch IsOn="{x:Bind ViewModel.MetadataConfiguration.UpdateAlbumCoverEvenByteBasis, Mode=TwoWay}"/>
                 <TextBlock x:Uid="SettingOnUpdateLyricsPerByteBasis" TextWrapping="WrapWholeWords">Update lyrics even my internet connection is costed on a per-byte basis</TextBlock>
                 <ToggleSwitch IsOn="{x:Bind ViewModel.MetadataConfiguration.UpdateLyricsEvenByteBasis, Mode=TwoWay}"/>
+                <Button HorizontalAlignment="Center" Click="{x:Bind ViewModel.NavigateToAbout}">
+                    <TextBlock x:Uid="About">About</TextBlock></Button>
             </StackPanel>
         </ScrollViewer>
     </Grid>

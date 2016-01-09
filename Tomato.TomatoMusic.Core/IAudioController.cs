@@ -20,5 +20,8 @@ namespace Tomato.TomatoMusic.Core
         void AskPosition();
         void SetPosition(TimeSpan position);
         void SetVolume(double value);
+        void AskPlaylist();
+        void AskCurrentTrack();
+        void AskCurrentState();
     }
 }

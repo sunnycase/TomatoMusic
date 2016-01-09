@@ -19,9 +19,12 @@ namespace Tomato.TomatoMusic.Shell.ViewModels
         public IPlaySessionService PlaySession { get; }
         public IPlaylistManager PlaylistManager { get; }
 
+        public static MainViewModel Current { get; private set; }
+
         public MainViewModel(WinRTContainer container, IEventAggregator eventAggregator,
             IPlaySessionService playSessionService, IPlaylistManager playlistManager)
         {
+            Current = this;
             _container = container;
             _eventAggregator = eventAggregator;
             PlaySession = playSessionService;

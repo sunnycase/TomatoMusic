@@ -20,22 +20,22 @@ namespace Tomato.TomatoMusic.Plugins.Client
             };
         }
 
-        public async Task<string> GetLyrics(string title, string artist)
+        public async Task<Uri> GetLyrics(string title, string artist)
         {
-            var lyrics = await GetLyricsCore(title, artist);
-            if (string.IsNullOrEmpty(lyrics))
+            var uri = await GetLyricsCore(title, artist);
+            if (uri == null)
                 return await GetLyricsCore(PreProcess(title), artist);
-            return lyrics;
+            return uri;
         }
 
-        public async Task<string> GetLyricsCore(string title, string artist)
+        public async Task<Uri> GetLyricsCore(string title, string artist)
         {
             var result = JsonConvert.DeserializeObject<ApiResult>(await _httpClient.GetStringAsync($"{title}/{artist}"));
             if (result.Count == 0)
                 result = JsonConvert.DeserializeObject<ApiResult>(await _httpClient.GetStringAsync($"{title}"));
             if (result.Count != 0)
-                return await _httpClient.GetStringAsync(result.Result.First().Lrc);
-            return string.Empty;
+                return result.Result.First().Lrc;
+            return null;
         }
 
         private string PreProcess(string title)

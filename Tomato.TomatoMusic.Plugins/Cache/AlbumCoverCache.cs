@@ -32,7 +32,8 @@ namespace Tomato.TomatoMusic.Plugins.Cache
             try
             {
                 var file = await TryGetCache(GetFileName(albumName, artist));
-                return await file?.OpenReadAsync();
+                if (file != null)
+                    return await file.OpenReadAsync();
             }
             catch { }
             return null;

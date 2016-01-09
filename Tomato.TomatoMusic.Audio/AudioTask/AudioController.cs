@@ -358,7 +358,7 @@ namespace Tomato.TomatoMusic.AudioTask
             else
                 CanPlay = CanPause = CanPrevious = CanNext = false;
         }
-        
+
         public void RequestPlay()
         {
             if (CanPlay)
@@ -421,6 +421,21 @@ namespace Tomato.TomatoMusic.AudioTask
         public void OnCanceled()
         {
             _mtService.Dispose();
+        }
+
+        public void AskPlaylist()
+        {
+            _controllerHandler?.NotifyPlaylist(_playlist);
+        }
+
+        public void AskCurrentTrack()
+        {
+            _controllerHandler?.NotifyCurrentTrackChanged(_currentTrack);
+        }
+
+        public void AskCurrentState()
+        {
+            _controllerHandler?.NotifyControllerStateChanged(_mediaPlayer?.State ?? MediaPlayerState.Closed);
         }
 
         #region Rpc

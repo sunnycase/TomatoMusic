@@ -117,6 +117,9 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="About.Text" xml:space="preserve">
+    <value>关于</value>
+  </data>
   <data name="AddFiles.Content" xml:space="preserve">
     <value>添加文件</value>
   </data>
@@ -135,6 +138,9 @@
   <data name="Default" xml:space="preserve">
     <value>默认</value>
   </data>
+  <data name="Design.Text" xml:space="preserve">
+    <value>设计</value>
+  </data>
   <data name="MusicLibrary" xml:space="preserve">
     <value>音乐库</value>
   </data>
@@ -143,6 +149,9 @@
   </data>
   <data name="Playing.Text" xml:space="preserve">
     <value>正在播放</value>
+  </data>
+  <data name="Program.Text" xml:space="preserve">
+    <value>程序</value>
   </data>
   <data name="SettingOnUpdateAlbumCoverPerByteBasis.Text" xml:space="preserve">
     <value>即便使用流量计费网络时也更新背景</value>
@@ -155,5 +164,8 @@
   </data>
   <data name="Settings.Text" xml:space="preserve">
     <value>设置</value>
+  </data>
+  <data name="SpecialThanks.Text" xml:space="preserve">
+    <value>特别鸣谢</value>
   </data>
 </root>
