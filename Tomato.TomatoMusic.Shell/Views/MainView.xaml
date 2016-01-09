@@ -33,7 +33,7 @@
                             <Border>
                                 <RadioButton Background="Transparent" GroupName="Playlist" Style="{StaticResource PlaylistLabelStyle}"
                                          IsChecked="{x:Bind IsSelected, Mode=TwoWay}"
-                                         Click="{x:Bind RaiseIsSelectedChanged}">
+                                         Click="{x:Bind ResetViewToMe}">
                                     <StackPanel Orientation="Horizontal">
                                         <SymbolIcon Width="40" Height="48" Margin="0,0,8,0" Symbol="{x:Bind Converter={StaticResource PlaylistToIconConverter}}"/>
                                         <TextBlock VerticalAlignment="Center" Text="{x:Bind Placeholder.Name}"/>
@@ -49,7 +49,7 @@
                                           ContentTemplate="{StaticResource PlaylistLabelTemplate}"/>-->
                         <RadioButton Background="Transparent" GroupName="Playlist" Style="{StaticResource PlaylistLabelStyle}"
                                      IsChecked="{x:Bind ViewModel.IsPlayingViewSelected, Mode=TwoWay}"
-                                     Click="{x:Bind ViewModel.OnSelectedPlaylistChanged}">
+                                     Click="{x:Bind ViewModel.NavigateToPlayingView}">
                             <StackPanel Orientation="Horizontal">
                                 <SymbolIcon Width="40" Height="48" Margin="0,0,8,0" Symbol="FourBars"/>
                                 <TextBlock x:Uid="Playing" VerticalAlignment="Center" Text="Playing"/>

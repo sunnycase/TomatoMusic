@@ -16,20 +16,7 @@ namespace Tomato.TomatoMusic.Shell.ViewModels
 {
     class PlaylistViewModel : BindableBase
     {
-        private IPlaylistAnchor _anchor;
-        public IPlaylistAnchor Anchor
-        {
-            get { return _anchor; }
-            set
-            {
-                if (SetProperty(ref _anchor, value))
-                {
-                    OnPropertyChanged(nameof(CanEditName));
-                    OnPropertyChanged(nameof(CanEditContent));
-                    OnPlaylistAnchorChanged(value);
-                }
-            }
-        }
+        public IPlaylistAnchor Anchor { get; }
 
         private MusicsViewModel _musicsViewModel;
         public MusicsViewModel MusicsViewModel
@@ -46,16 +33,21 @@ namespace Tomato.TomatoMusic.Shell.ViewModels
             private set { SetProperty(ref _isRefreshing, value); }
         }
 
-        public bool CanEditName => _anchor?.Placeholder.Key != Primitives.Playlist.DefaultPlaylistKey &&
-            _anchor?.Placeholder.Key != Primitives.Playlist.MusicLibraryPlaylistKey;
-        public bool CanEditContent => _anchor?.Placeholder.Key != Primitives.Playlist.DefaultPlaylistKey;
+        public bool CanEditName => Anchor.Placeholder.Key != Primitives.Playlist.DefaultPlaylistKey &&
+            Anchor.Placeholder.Key != Primitives.Playlist.MusicLibraryPlaylistKey;
+        public bool CanEditContent => Anchor.Placeholder.Key != Primitives.Playlist.DefaultPlaylistKey;
 
         private IPlaylistContentProvider _playlistContentProvider;
         public IThemeService ThemeService { get; }
 
-        public PlaylistViewModel(IThemeService themeService)
+        public PlaylistViewModel(IPlaylistAnchor anchor)
         {
-            ThemeService = themeService;
+            ThemeService = IoC.Get<IThemeService>();
+            Anchor = anchor;
+            MusicsViewModel = new MusicsViewModel(anchor);
+            _playlistContentProvider = IoC.Get<IPlaylistManager>().GetPlaylistContentProvider(anchor);
+            IsRefreshing = _playlistContentProvider.IsRefreshing;
+            _playlistContentProvider.PropertyChanged += Provider_PropertyChanged;
         }
 
         private void Provider_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
@@ -87,14 +79,6 @@ namespace Tomato.TomatoMusic.Shell.ViewModels
 
         }
 
-        private void OnPlaylistAnchorChanged(IPlaylistAnchor anchor)
-        {
-            MusicsViewModel = new MusicsViewModel(anchor);
-            _playlistContentProvider = IoC.Get<IPlaylistManager>().GetPlaylistContentProvider(anchor);
-            IsRefreshing = _playlistContentProvider.IsRefreshing;
-            _playlistContentProvider.PropertyChanged += Provider_PropertyChanged;
-        }
-
         private static readonly Lazy<FolderPicker> _folderPicker = new Lazy<FolderPicker>(() =>
         {
             var picker = new FolderPicker()
@@ -106,5 +90,29 @@ namespace Tomato.TomatoMusic.Shell.ViewModels
         });
 
         private FolderPicker FolderPicker => _folderPicker.Value;
+
+        private static readonly Dictionary<IPlaylistAnchor, WeakReference<PlaylistViewModel>> _viewModels = new Dictionary<IPlaylistAnchor, WeakReference<PlaylistViewModel>>();
+        public static PlaylistViewModel Activate(IPlaylistAnchor anchor)
+        {
+            PlaylistViewModel viewModel;
+            WeakReference<PlaylistViewModel> weak;
+            if(_viewModels.TryGetValue(anchor, out weak))
+            {
+                if (weak.TryGetTarget(out viewModel))
+                    return viewModel;
+                else
+                {
+                    viewModel = new PlaylistViewModel(anchor);
+                    weak.SetTarget(viewModel);
+                    return viewModel;
+                }
+            }
+            else
+            {
+                viewModel = new PlaylistViewModel(anchor);
+                _viewModels.Add(anchor, new WeakReference<PlaylistViewModel>(viewModel));
+                return viewModel;
+            }
+        }
     }
 }

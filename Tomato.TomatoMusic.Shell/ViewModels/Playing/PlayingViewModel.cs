@@ -1,4 +1,5 @@
 ﻿using Caliburn.Micro;
+using Kfstorm.LrcParser;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,7 +18,11 @@ namespace Tomato.TomatoMusic.Shell.ViewModels.Playing
         public TrackInfo Track
         {
             get { return _track; }
-            private set { this.SetProperty(ref _track, value); }
+            private set
+            {
+                if (this.SetProperty(ref _track, value))
+                    OnTrackChanged();
+            }
         }
 
         private TrackMetadataViewModel _metadata;
@@ -27,29 +32,43 @@ namespace Tomato.TomatoMusic.Shell.ViewModels.Playing
             private set { this.SetProperty(ref _metadata, value); }
         }
 
+        public IThemeService Theme { get; }
+
         private readonly IPlaySessionService _playSession;
 
-        public PlayingViewModel(IPlaySessionService playSession)
+        public PlayingViewModel(IPlaySessionService playSession, IThemeService themeService)
         {
+            Theme = themeService;
             _playSession = playSession;
-            OnCurrentTrackChanged();
+            Track = playSession.CurrentTrack;
             playSession.PropertyChanged += PlaySession_PropertyChanged;
         }
 
         private void PlaySession_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
             if (e.PropertyName == nameof(IPlaySessionService.CurrentTrack))
-                OnCurrentTrackChanged();
+                Track = _playSession.CurrentTrack;
         }
 
-        private void OnCurrentTrackChanged()
+        private void OnTrackChanged()
         {
-            var track = _playSession.CurrentTrack;
-            Track = track;
+            var track = Track;
             if (track != null)
                 Metadata = new TrackMetadataViewModel(track);
             else
                 Metadata = null;
+        }
+
+        private static readonly WeakReference<PlayingViewModel> _viewModel = new WeakReference<PlayingViewModel>(null);
+        public static PlayingViewModel Activate()
+        {
+            PlayingViewModel viewModel;
+            if (!_viewModel.TryGetTarget(out viewModel))
+            {
+                viewModel = IoC.Get<PlayingViewModel>();
+                _viewModel.SetTarget(viewModel);
+            }
+            return viewModel;
         }
     }
 
@@ -62,12 +81,18 @@ namespace Tomato.TomatoMusic.Shell.ViewModels.Playing
             private set { SetProperty(ref _cover, value); }
         }
 
-        private string _lyrics;
-        public string Lyrics
+        private ILrcFile _lyricModel;
+        public ILrcFile LyricModel
         {
-            get { return _lyrics; }
-            private set { SetProperty(ref _lyrics, value); }
+            get { return _lyricModel; }
+            private set
+            {
+                if (SetProperty(ref _lyricModel, value))
+                    OnPropertyChanged(nameof(Lyrics));
+            }
         }
+
+        public IList<IOneLineLyric> Lyrics => _lyricModel?.Lyrics;
 
         public TrackMetadataViewModel(TrackInfo track)
         {
@@ -79,7 +104,19 @@ namespace Tomato.TomatoMusic.Shell.ViewModels.Playing
             var metaService = IoC.Get<IMediaMetadataService>();
             var meta = await metaService.GetMetadata(track);
             Cover = meta.Cover;
-            Lyrics = meta.Lyrics;
+            TryAnalyzeLyrics(meta.Lyrics);
+        }
+
+        private void TryAnalyzeLyrics(string lyrics)
+        {
+            if (!string.IsNullOrEmpty(lyrics))
+            {
+                try
+                {
+                    LyricModel = LrcFile.FromText(lyrics);
+                }
+                catch { }
+            }
         }
     }
 }

@@ -10,6 +10,6 @@ namespace Tomato.TomatoMusic.Primitives
     {
         PlaylistPlaceholder Placeholder { get; }
         bool? IsSelected { get; set; }
-        void RaiseIsSelectedChanged();
+        void ResetViewToMe();
     }
 }

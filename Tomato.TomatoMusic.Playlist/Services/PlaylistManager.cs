@@ -19,6 +19,7 @@ namespace Tomato.TomatoMusic.Playlist.Services
     interface IPlaylistAnchorHandler
     {
         void OnPlaylistSelectionChanged(IPlaylistAnchor anchor, bool? selected);
+        void SetPlaylist(IPlaylistAnchor anchor);
     }
 
     class PlaylistAnchor : BindableBase, IPlaylistAnchor
@@ -48,9 +49,11 @@ namespace Tomato.TomatoMusic.Playlist.Services
             _handler = handler;
         }
 
-        public void RaiseIsSelectedChanged()
+        public void ResetViewToMe()
         {
-            OnPropertyChanged(nameof(IsSelected));
+            IPlaylistAnchorHandler handler;
+            if (_handler.TryGetTarget(out handler))
+                handler.SetPlaylist(this);
         }
     }
 
@@ -73,11 +76,7 @@ namespace Tomato.TomatoMusic.Playlist.Services
         public IPlaylistAnchor SelectedPlaylist
         {
             get { return _selectedPlaylist; }
-            private set
-            {
-                _selectedPlaylist = value;
-                OnPropertyChanged(nameof(SelectedPlaylist));
-            }
+            private set { SetProperty(ref _selectedPlaylist, value); }
         }
 
         public IPlaylistAnchor MusicLibrary { get; private set; }
@@ -152,6 +151,14 @@ namespace Tomato.TomatoMusic.Playlist.Services
                 _playlistContentProviders.Add(anchor, new WeakReference<IPlaylistContentProvider>(target));
                 return target;
             }
+        }
+
+        public void SetPlaylist(IPlaylistAnchor anchor)
+        {
+            if (SelectedPlaylist != anchor)
+                SelectedPlaylist = anchor;
+            else
+                OnPropertyChanged(nameof(SelectedPlaylist));
         }
 
         class PlaylistContentProvider : BindableBase, IPlaylistContentProvider

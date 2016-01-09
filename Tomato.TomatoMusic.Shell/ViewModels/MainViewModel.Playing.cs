@@ -19,7 +19,7 @@ namespace Tomato.TomatoMusic.Shell.ViewModels
             }
         }
 
-        private void NavigateToPlayingView()
+        public void NavigateToPlayingView()
         {
             _navigationService?.Navigate(typeof(Views.Playing.PlayingView));
         }

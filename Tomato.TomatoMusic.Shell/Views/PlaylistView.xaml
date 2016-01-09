@@ -33,7 +33,7 @@
             <StackPanel Orientation="Horizontal">
                 <HyperlinkButton x:Uid="AddFolder" Content="Add Folder" Style="{StaticResource PlaylistHyperlinkButtonStyle}"
                                  Click="{x:Bind ViewModel.OnRequestAddFolder}"
-                                 Visibility="{x:Bind ViewModel.CanEditContent, Converter={StaticResource BooleanToVisibilityConverter}, Mode=OneWay}"/>
+                                 Visibility="{x:Bind ViewModel.CanEditContent, Converter={StaticResource BooleanToVisibilityConverter}}"/>
                 <!--<HyperlinkButton x:Uid="AddFiles" Content="Add Files" Style="{StaticResource PlaylistHyperlinkButtonStyle}"
                                  Click="{x:Bind ViewModel.OnRequestAddFiles}"
                                  Visibility="{x:Bind ViewModel.CanEditContent, Converter={StaticResource BooleanToVisibilityConverter}, Mode=OneWay}"/>-->
@@ -42,7 +42,7 @@
             </StackPanel>
         </Border>
         <Pivot Grid.Row="2">
-            <playlistViews:MusicsView ViewModel="{x:Bind ViewModel.MusicsViewModel, Mode=OneWay}"/>
+            <playlistViews:MusicsView ViewModel="{x:Bind ViewModel.MusicsViewModel}"/>
             <!--<playlistViews:AlbumsView/>
             <playlistViews:ArtistsView/>-->
         </Pivot>

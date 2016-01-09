@@ -24,7 +24,7 @@ namespace Tomato.TomatoMusic.Shell.Views.Playing
     /// </summary>
     public sealed partial class PlayingView : Page
     {
-        internal PlayingViewModel ViewModel { get; } = IoC.Get<PlayingViewModel>();
+        internal PlayingViewModel ViewModel { get; } = PlayingViewModel.Activate();
 
         public PlayingView()
         {

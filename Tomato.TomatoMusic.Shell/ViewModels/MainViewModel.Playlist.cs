@@ -34,7 +34,7 @@ namespace Tomato.TomatoMusic.Shell.ViewModels
 
         public async void OnSubmitNewPlaylist()
         {
-            if(CanSubmitNewPlaylist)
+            if (CanSubmitNewPlaylist)
             {
                 await PlaylistManager.AddCustomPlaylist(NewPlaylistName);
                 _addPlaylistButton?.Flyout.Hide();
@@ -48,7 +48,9 @@ namespace Tomato.TomatoMusic.Shell.ViewModels
 
         public void OnSelectedPlaylistChanged()
         {
-            _navigationService?.Navigate(typeof(Views.PlaylistView), PlaylistManager.SelectedPlaylist);
+            var playlist = PlaylistManager.SelectedPlaylist;
+            if (playlist != null)
+                _navigationService?.Navigate(typeof(Views.PlaylistView), playlist);
         }
 
         private void NavigateToSelectedPlaylist()
