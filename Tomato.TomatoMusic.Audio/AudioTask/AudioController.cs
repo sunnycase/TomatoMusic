@@ -425,7 +425,8 @@ namespace Tomato.TomatoMusic.AudioTask
 
         public void AskPlaylist()
         {
-            _controllerHandler?.NotifyPlaylist(_playlist);
+            if (_playlist != null)
+                _controllerHandler?.NotifyPlaylist(_playlist);
         }
 
         public void AskCurrentTrack()
@@ -436,6 +437,11 @@ namespace Tomato.TomatoMusic.AudioTask
         public void AskCurrentState()
         {
             _controllerHandler?.NotifyControllerStateChanged(_mediaPlayer?.State ?? MediaPlayerState.Closed);
+        }
+
+        public void AskDuration()
+        {
+            _controllerHandler?.NotifyDuration(_currentTrack?.Duration);
         }
 
         #region Rpc

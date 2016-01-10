@@ -212,12 +212,10 @@ namespace Tomato.TomatoMusic.Audio.Services
         {
             try
             {
-                if(Windows.Media.Playback.BackgroundMediaPlayer.IsMediaPlaying())
-                {
-                    _audioController.AskPlaylist();
-                    _audioController.AskCurrentTrack();
-                    _audioController.AskCurrentState();
-                }
+                _audioController.AskPlaylist();
+                _audioController.AskCurrentTrack();
+                _audioController.AskDuration();
+                _audioController.AskCurrentState();
             }
             catch { }
         }
@@ -467,7 +465,7 @@ namespace Tomato.TomatoMusic.Audio.Services
 
         private void OnPositionChanged(TimeSpan oldValue, TimeSpan value)
         {
-            if(PlaybackStatus != MediaPlaybackStatus.Changing)
+            if (PlaybackStatus != MediaPlaybackStatus.Changing)
             {
                 if (Math.Abs(oldValue.Subtract(value).TotalMilliseconds) > 100)
                 {

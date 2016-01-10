@@ -112,7 +112,7 @@ namespace Tomato.TomatoMusic.Shell.ViewModels.Playlist
         private void OnPlaySessionCurrentTrackChanged()
         {
             var track = _playSession.CurrentTrack;
-            var trackVM = Tracks.FirstOrDefault(o => o.Track == track);
+            var trackVM = Tracks?.FirstOrDefault(o => o.Track == track);
             if (trackVM != null)
                 RequestViewSelect?.Invoke(trackVM);
         }

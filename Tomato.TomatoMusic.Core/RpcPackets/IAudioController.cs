@@ -69,5 +69,9 @@ namespace Tomato.TomatoMusic.RpcPackets.IAudioController
 	{
 	}
 
+	public sealed class Void_20AskDuration_28_29
+	{
+	}
+
 }
 

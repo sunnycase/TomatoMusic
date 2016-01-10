@@ -29,7 +29,7 @@ namespace Tomato.TomatoMusic.AudioTask
             _audioController.OnCanceled();
         }
 
-        public void OnReceiveMessage(string tag, string message)
+        public async void OnReceiveMessage(string tag, string message)
         {
             if (tag == AudioRpc.RpcMessageTag)
                 _audioController?.OnReceiveMessage(message);

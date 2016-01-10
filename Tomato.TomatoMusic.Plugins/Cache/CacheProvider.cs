@@ -56,7 +56,12 @@ namespace Tomato.TomatoMusic.Plugins.Cache
         {
             var operations = await BackgroundDownloader.GetCurrentDownloadsForTransferGroupAsync(_transferGroup);
             lock (_activeDownloadLocker)
-            operations.Apply(o => _activeDownloads.Add(Path.GetFileName(o.ResultFile.Path), HandleOperation(o, false)));
+            operations.Apply(o =>
+            {
+                var fileName = Path.GetFileName(o.ResultFile.Path);
+                if (!_activeDownloads.ContainsKey(fileName))
+                    _activeDownloads.Add(fileName, HandleOperation(o, false));
+            });
         }
 
         private async Task<IStorageFile> HandleOperation(DownloadOperation operation, bool start)
@@ -110,21 +115,37 @@ namespace Tomato.TomatoMusic.Plugins.Cache
             return null;
         }
 
-        protected async Task<IStorageFile> Download(string fileName, Uri source)
+        protected Task<IStorageFile> Download(string fileName, Uri source)
         {
             if (EnvironmentHelper.HasInternetConnection(!CanUseByteBasis))
             {
-                var file = await (await _lyricsCacheFolder).CreateFileAsync(fileName, CreationCollisionOption.ReplaceExisting);
-                var operation = _downloader.CreateDownload(source, file);
                 Task<IStorageFile> task;
                 lock (_activeDownloadLocker)
                 {
-                    task = HandleOperation(operation, true);
-                    _activeDownloads.Add(fileName, task);
+                    if (!_activeDownloads.TryGetValue(fileName, out task))
+                    {
+                        task = DownloadCore(fileName, source);
+                        _activeDownloads.Add(fileName, task);
+                    }
                 }
-                return await task;
+                return task;
             }
-            return null;
+            return Task.FromResult<IStorageFile>(null);
+        }
+
+        private async Task<IStorageFile> DownloadCore(string fileName, Uri source)
+        {
+            try
+            {
+                var file = await (await _lyricsCacheFolder).CreateFileAsync(fileName, CreationCollisionOption.ReplaceExisting);
+                var operation = _downloader.CreateDownload(source, file);
+                return await HandleOperation(operation, true);
+            }
+            finally
+            {
+                lock (_activeDownloadLocker)
+                    _activeDownloads.Remove(fileName);
+            }
         }
 
         private async Task<StorageFolder> CreateCacheFolder()

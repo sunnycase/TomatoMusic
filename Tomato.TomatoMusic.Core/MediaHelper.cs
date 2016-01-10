@@ -15,9 +15,12 @@ namespace Tomato.TomatoMusic
         {
             try
             {
-                var image = new BitmapImage();
-                await image.SetSourceAsync(stream);
-                return image;
+                using (stream)
+                {
+                    var image = new BitmapImage();
+                    await image.SetSourceAsync(stream);
+                    return image;
+                }
             }
             catch { }
             return null;

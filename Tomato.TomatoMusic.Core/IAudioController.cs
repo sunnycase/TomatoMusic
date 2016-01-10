@@ -23,5 +23,6 @@ namespace Tomato.TomatoMusic.Core
         void AskPlaylist();
         void AskCurrentTrack();
         void AskCurrentState();
+        void AskDuration();
     }
 }

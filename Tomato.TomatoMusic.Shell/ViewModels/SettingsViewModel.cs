@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Tomato.TomatoMusic.Configuration;
 using Tomato.TomatoMusic.Services;
 using Tomato.Uwp.Mvvm;
+using Windows.System;
 
 namespace Tomato.TomatoMusic.Shell.ViewModels
 {
@@ -33,6 +34,11 @@ namespace Tomato.TomatoMusic.Shell.ViewModels
         public void NavigateToAbout()
         {
             MainViewModel.Current?.NavigateToAbout();
+        }
+
+        public async void LaunchReview()
+        {
+            await Launcher.LaunchUriAsync(new Uri("ms-windows-store://review/?ProductId=9WZDNCRDM7JW"));
         }
     }
 }

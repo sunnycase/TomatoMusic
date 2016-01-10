@@ -142,6 +142,14 @@ namespace Tomato.TomatoMusic.RpcCallingProxies
 			_packetSender.Send(packet);
 		}
 
+		public void AskDuration()
+		{
+			var packet = new Void_20AskDuration_28_29
+			{
+			};
+			_packetSender.Send(packet);
+		}
+
 	}
 }
 

@@ -153,6 +153,9 @@
   <data name="Program.Text" xml:space="preserve">
     <value>Program</value>
   </data>
+  <data name="Review.Text" xml:space="preserve">
+    <value>Review</value>
+  </data>
   <data name="SettingOnUpdateAlbumCoverPerByteBasis.Text" xml:space="preserve">
     <value>Update album images even my internet connection is costed on a per-byte basis</value>
   </data>
