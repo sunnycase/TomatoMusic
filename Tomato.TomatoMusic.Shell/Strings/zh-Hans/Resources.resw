@@ -157,7 +157,7 @@
     <value>评分</value>
   </data>
   <data name="SettingOnUpdateAlbumCoverPerByteBasis.Text" xml:space="preserve">
-    <value>即便使用流量计费网络时也更新背景</value>
+    <value>即便使用流量计费网络时也更新专辑图片</value>
   </data>
   <data name="SettingOnUpdateBackgroundPerByteBasis.Text" xml:space="preserve">
     <value>即便使用流量计费网络时也更新背景</value>

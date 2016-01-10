@@ -38,11 +38,9 @@ namespace Tomato.TomatoMusic.Shell.ViewModels
         public bool CanEditContent => Anchor.Placeholder.Key != Primitives.Playlist.DefaultPlaylistKey;
 
         private IPlaylistContentProvider _playlistContentProvider;
-        public IThemeService ThemeService { get; }
 
         public PlaylistViewModel(IPlaylistAnchor anchor)
         {
-            ThemeService = IoC.Get<IThemeService>();
             Anchor = anchor;
             MusicsViewModel = new MusicsViewModel(anchor);
             _playlistContentProvider = IoC.Get<IPlaylistManager>().GetPlaylistContentProvider(anchor);

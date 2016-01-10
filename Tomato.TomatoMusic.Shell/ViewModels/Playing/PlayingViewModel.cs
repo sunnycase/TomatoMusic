@@ -33,14 +33,11 @@ namespace Tomato.TomatoMusic.Shell.ViewModels.Playing
             private set { this.SetProperty(ref _metadata, value); }
         }
 
-        public IThemeService Theme { get; }
-
         private readonly IPlaySessionService _playSession;
         private ListBox _lyricsListBox;
 
-        public PlayingViewModel(IPlaySessionService playSession, IThemeService themeService)
+        public PlayingViewModel(IPlaySessionService playSession)
         {
-            Theme = themeService;
             _playSession = playSession;
             Track = playSession.CurrentTrack;
             playSession.PropertyChanged += PlaySession_PropertyChanged;

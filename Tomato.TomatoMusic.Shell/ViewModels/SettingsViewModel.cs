@@ -14,11 +14,9 @@ namespace Tomato.TomatoMusic.Shell.ViewModels
     {
         public ThemeConfiguration ThemeConfiguration { get; }
         public MetadataConfiguration MetadataConfiguration { get; }
-        public IThemeService ThemeService { get; }
 
-        public SettingsViewModel(IConfigurationService configurationService, IThemeService themeService)
+        public SettingsViewModel(IConfigurationService configurationService)
         {
-            ThemeService = themeService;
             ThemeConfiguration = configurationService.Theme;
             MetadataConfiguration = configurationService.Metadata;
 

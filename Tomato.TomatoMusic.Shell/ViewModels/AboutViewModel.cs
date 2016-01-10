@@ -11,11 +11,8 @@ namespace Tomato.TomatoMusic.Shell.ViewModels
 {
     class AboutViewModel : BindableBase
     {
-        public IThemeService ThemeService { get; }
-
-        public AboutViewModel(IThemeService themeService)
+        public AboutViewModel()
         {
-            ThemeService = themeService;
         }
 
         public async void LaunchIYinYong()

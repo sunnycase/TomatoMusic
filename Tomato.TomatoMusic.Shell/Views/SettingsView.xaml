@@ -7,9 +7,6 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
     <Grid>
-        <Grid.Background>
-            <ImageBrush ImageSource="{x:Bind ViewModel.ThemeService.Background, Mode=OneWay}" Opacity="0.2" Stretch="UniformToFill"/>
-        </Grid.Background>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
