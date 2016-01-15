@@ -111,6 +111,7 @@
     <Compile Include="Cache\LyricsCache.cs" />
     <Compile Include="Cache\AlbumCoverCache.cs" />
     <Compile Include="Cache\ThemeCache.cs" />
+    <Compile Include="Client\MoeAtHomeClient.cs" />
     <Compile Include="Client\GeciMeClient.cs" />
     <Compile Include="Config\LastFmConfig.cs" />
     <Compile Include="IPlayModeManager.cs" />

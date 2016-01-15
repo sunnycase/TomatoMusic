@@ -26,6 +26,7 @@ namespace Tomato.TomatoMusic.Plugins.Services
     {
         private readonly LastfmClient _lastfm;
         private readonly GeciMeClient _geciMe;
+        private readonly MoeAtHomeClient _moeAtHome;
 
         private readonly AlbumCoverCache _albumCoverCache = new AlbumCoverCache();
         private readonly LyricsCache _lyricsCache = new LyricsCache();
@@ -36,6 +37,7 @@ namespace Tomato.TomatoMusic.Plugins.Services
             _metadataConfiguration = configurationService.Metadata;
             _lastfm = new LastfmClient(lastFmConfig.ApiKey, null);
             _geciMe = new GeciMeClient();
+            _moeAtHome = new MoeAtHomeClient();
 
             var packageVersion = Windows.ApplicationModel.Package.Current.Id.Version;
             _lastfm.HttpClient.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue("TomatoMusic",
@@ -54,8 +56,16 @@ namespace Tomato.TomatoMusic.Plugins.Services
             if (meta.Cover == null && EnvironmentHelper.HasInternetConnection(!_metadataConfiguration.UpdateAlbumCoverEvenByteBasis))
                 TryFillFromLastFm(track, meta).Ignore();
             if (string.IsNullOrEmpty(meta.Lyrics) && EnvironmentHelper.HasInternetConnection(!_metadataConfiguration.UpdateLyricsEvenByteBasis))
-                TryFillFromGeciMe(track, meta).Ignore();
+                TryFillLyrics(track, meta);
             return meta;
+        }
+
+        private async void TryFillLyrics(TrackInfo track, TrackMediaMetadata meta)
+        {
+            if (string.IsNullOrEmpty(meta.Lyrics) && EnvironmentHelper.HasInternetConnection(!_metadataConfiguration.UpdateLyricsEvenByteBasis))
+                await TryFillFromMoeAtHome(track, meta);
+            if (string.IsNullOrEmpty(meta.Lyrics) && EnvironmentHelper.HasInternetConnection(!_metadataConfiguration.UpdateLyricsEvenByteBasis))
+                await TryFillFromGeciMe(track, meta);
         }
 
         private async Task TryLoadLyricsFromCache(TrackInfo track, TrackMediaMetadata meta)
@@ -136,6 +146,17 @@ namespace Tomato.TomatoMusic.Plugins.Services
             try
             {
                 var uri = await _geciMe.GetLyrics(track.Title, track.Artist);
+                if (uri != null)
+                    meta.Lyrics = await _lyricsCache.Download(track.Title, track.Artist, uri);
+            }
+            catch { }
+        }
+
+        private async Task TryFillFromMoeAtHome(TrackInfo track, TrackMediaMetadata meta)
+        {
+            try
+            {
+                var uri = await _moeAtHome.GetLyrics(track.Title, track.Artist);
                 if (uri != null)
                     meta.Lyrics = await _lyricsCache.Download(track.Title, track.Artist, uri);
             }

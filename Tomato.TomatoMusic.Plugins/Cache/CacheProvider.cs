@@ -100,6 +100,7 @@ namespace Tomato.TomatoMusic.Plugins.Cache
         {
             try
             {
+                fileName = NormalizeFileName(fileName);
                 Task<IStorageFile> task = null;
                 lock (_activeDownloadLocker)
                     _activeDownloads.TryGetValue(fileName, out task);
@@ -119,6 +120,7 @@ namespace Tomato.TomatoMusic.Plugins.Cache
         {
             if (EnvironmentHelper.HasInternetConnection(!CanUseByteBasis))
             {
+                fileName = NormalizeFileName(fileName);
                 Task<IStorageFile> task;
                 lock (_activeDownloadLocker)
                 {
@@ -151,6 +153,18 @@ namespace Tomato.TomatoMusic.Plugins.Cache
         private async Task<StorageFolder> CreateCacheFolder()
         {
             return await ApplicationData.Current.LocalCacheFolder.CreateFolderAsync(LyricsCacheFolderName, CreationCollisionOption.OpenIfExists);
+        }
+
+        private string NormalizeFileName(string fileName)
+        {
+            var invalidChars = Path.GetInvalidFileNameChars();
+            var sb = new StringBuilder(fileName);
+            for (int i = 0; i < sb.Length; i++)
+            {
+                if (invalidChars.Contains(sb[i]))
+                    sb[i] = '_';
+            }
+            return sb.ToString();
         }
     }
 }
