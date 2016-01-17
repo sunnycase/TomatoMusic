@@ -16,6 +16,7 @@ using Tomato.Media.Codec;
 using Windows.Media;
 using Tomato.Uwp.Mvvm;
 using MediaPlayerState = Windows.Media.Playback.MediaPlayerState;
+using Tomato.Media.Effect;
 
 namespace Tomato.TomatoMusic.AudioTask
 {
@@ -32,6 +33,8 @@ namespace Tomato.TomatoMusic.AudioTask
         private bool _autoPlay;
         private readonly ILog _logger;
         private readonly MediaTransportService _mtService;
+        private EffectMediaStreamSource _mss;
+        private EqualizerEffectTransform _equalizerEffect;
 
         #region Rpc
         private readonly JsonServer<IAudioController> _audioControllerServer;
@@ -60,6 +63,22 @@ namespace Tomato.TomatoMusic.AudioTask
             _mtService = new MediaTransportService(mediaPlayer.SystemMediaTransportControls);
             _mtService.IsEnabled = _mtService.IsPauseEnabled = _mtService.IsPlayEnabled = true;
             _mtService.ButtonPressed += _mtService_ButtonPressed;
+            InitializeEffects();
+        }
+
+        private void InitializeEffects()
+        {
+            _equalizerEffect = new EqualizerEffectTransform();
+            _equalizerEffect.AddOrUpdateFilter(31, 18, 2.0f);
+            _equalizerEffect.AddOrUpdateFilter(62, 18, 2.0f);
+            _equalizerEffect.AddOrUpdateFilter(125, 18, 2.0f);
+            _equalizerEffect.AddOrUpdateFilter(250, 18, 2.0f);
+            _equalizerEffect.AddOrUpdateFilter(500, 18, 2.0f);
+            _equalizerEffect.AddOrUpdateFilter(1000, 18, 2.0f);
+            _equalizerEffect.AddOrUpdateFilter(2000, 18, 2.0f);
+            _equalizerEffect.AddOrUpdateFilter(4000, 18, 2.0f);
+            _equalizerEffect.AddOrUpdateFilter(8000, 18, 2.0f);
+            _equalizerEffect.AddOrUpdateFilter(16000, 18, 2.0f);
         }
 
         private void MediaPlayer_MediaFailed(IMediaPlayer sender, Windows.Media.Playback.MediaPlayerFailedEventArgs args)
@@ -184,14 +203,23 @@ namespace Tomato.TomatoMusic.AudioTask
                 else
                     throw new NotSupportedException("Not supported uri.");
                 var stream = await file.OpenReadAsync();
-                var mediaSource = await MediaSource.CreateFromStream(stream);
+                var mediaSource = await MediaSource.CreateFromStream(stream, uri.ToString());
+                var mss = CreateMediaStreamSource(mediaSource);
                 _controllerHandler.NotifyDuration(mediaSource.Duration);
-                _mediaPlayer.SetMediaSource(mediaSource);
+                _mediaPlayer.SetMediaStreamSource(mss.Source);
+                _mss = mss;
             }
             catch
             {
                 PlaybackStatus = MediaPlaybackStatus.Closed;
             }
+        }
+
+        private EffectMediaStreamSource CreateMediaStreamSource(MediaSource mediaSource)
+        {
+            var mss = new EffectMediaStreamSource(mediaSource);
+            mss.AddTransform(_equalizerEffect);
+            return mss;
         }
 
         public void Pause()
