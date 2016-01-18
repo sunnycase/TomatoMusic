@@ -69,16 +69,6 @@ namespace Tomato.TomatoMusic.AudioTask
         private void InitializeEffects()
         {
             _equalizerEffect = new EqualizerEffectTransform();
-            _equalizerEffect.AddOrUpdateFilter(31, 18, 2.0f);
-            _equalizerEffect.AddOrUpdateFilter(62, 18, 2.0f);
-            _equalizerEffect.AddOrUpdateFilter(125, 18, 2.0f);
-            _equalizerEffect.AddOrUpdateFilter(250, 18, 2.0f);
-            _equalizerEffect.AddOrUpdateFilter(500, 18, 2.0f);
-            _equalizerEffect.AddOrUpdateFilter(1000, 18, 2.0f);
-            _equalizerEffect.AddOrUpdateFilter(2000, 18, 2.0f);
-            _equalizerEffect.AddOrUpdateFilter(4000, 18, 2.0f);
-            _equalizerEffect.AddOrUpdateFilter(8000, 18, 2.0f);
-            _equalizerEffect.AddOrUpdateFilter(16000, 18, 2.0f);
         }
 
         private void MediaPlayer_MediaFailed(IMediaPlayer sender, Windows.Media.Playback.MediaPlayerFailedEventArgs args)
@@ -470,6 +460,16 @@ namespace Tomato.TomatoMusic.AudioTask
         public void AskDuration()
         {
             _controllerHandler?.NotifyDuration(_currentTrack?.Duration);
+        }
+
+        public void SetEqualizerParameter(float frequency, float bandWidth, float gain)
+        {
+            _equalizerEffect.AddOrUpdateFilter(frequency, bandWidth, gain);
+        }
+
+        public void ClearEqualizerParameter(float frequency)
+        {
+            _equalizerEffect.RemoveFilter(frequency);
         }
 
         #region Rpc

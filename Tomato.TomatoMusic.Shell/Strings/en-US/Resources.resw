@@ -141,6 +141,12 @@
   <data name="Design.Text" xml:space="preserve">
     <value>Design</value>
   </data>
+  <data name="Effects.Header" xml:space="preserve">
+    <value>Effects</value>
+  </data>
+  <data name="Lyrics.Header" xml:space="preserve">
+    <value>Lyrics</value>
+  </data>
   <data name="MusicLibrary" xml:space="preserve">
     <value>Music Library</value>
   </data>

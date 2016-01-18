@@ -37,6 +37,8 @@ namespace Tomato.TomatoMusic.RpcCalledProxies
 				{ typeof(Void_20AskCurrentTrack_28_29), ProcessVoid_20AskCurrentTrack_28_29 },
 				{ typeof(Void_20AskCurrentState_28_29), ProcessVoid_20AskCurrentState_28_29 },
 				{ typeof(Void_20AskDuration_28_29), ProcessVoid_20AskDuration_28_29 },
+				{ typeof(Void_20SetEqualizerParameter_28Single_2C_20Single_2C_20Single_29), ProcessVoid_20SetEqualizerParameter_28Single_2C_20Single_2C_20Single_29 },
+				{ typeof(Void_20ClearEqualizerParameter_28Single_29), ProcessVoid_20ClearEqualizerParameter_28Single_29 },
 			};
 		}
 
@@ -135,6 +137,18 @@ namespace Tomato.TomatoMusic.RpcCalledProxies
 		{
 			var packet = (Void_20AskDuration_28_29)packetObj;
 			_impl.AskDuration();
+		}
+
+		void ProcessVoid_20SetEqualizerParameter_28Single_2C_20Single_2C_20Single_29(object packetObj)
+		{
+			var packet = (Void_20SetEqualizerParameter_28Single_2C_20Single_2C_20Single_29)packetObj;
+			_impl.SetEqualizerParameter(packet.Arg0, packet.Arg1, packet.Arg2);
+		}
+
+		void ProcessVoid_20ClearEqualizerParameter_28Single_29(object packetObj)
+		{
+			var packet = (Void_20ClearEqualizerParameter_28Single_29)packetObj;
+			_impl.ClearEqualizerParameter(packet.Arg0);
 		}
 
 	}

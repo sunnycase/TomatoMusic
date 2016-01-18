@@ -1,9 +1,9 @@
-﻿using Caliburn.Micro;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
+using Caliburn.Micro;
 using Tomato.TomatoMusic.Shell.ViewModels.Playing;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
@@ -15,16 +15,15 @@ using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 
-// “空白页”项模板在 http://go.microsoft.com/fwlink/?LinkId=234238 上提供
+// The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
 namespace Tomato.TomatoMusic.Shell.Views.Playing
 {
-    /// <summary>
-    /// 可用于自身或导航至 Frame 内部的空白页。
-    /// </summary>
-    public sealed partial class PlayingView : Page
+    public sealed partial class EffectsView : PivotItem
     {
-        public PlayingView()
+        internal EffectsViewModel ViewModel { get; } = IoC.Get<EffectsViewModel>();
+
+        public EffectsView()
         {
             this.InitializeComponent();
         }

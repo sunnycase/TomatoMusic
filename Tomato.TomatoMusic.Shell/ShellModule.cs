@@ -18,7 +18,8 @@ namespace Tomato.TomatoMusic
         {
             container.PerRequest<MainViewModel>();
             container.PerRequest<PlaylistViewModel>();
-            container.PerRequest<PlayingViewModel>();
+            container.PerRequest<LyricsViewModel>();
+            container.PerRequest<EffectsViewModel>();
             container.PerRequest<SettingsViewModel>();
             container.PerRequest<AboutViewModel>();
             container.Instance(ResourceLoader.GetForCurrentView());

@@ -150,6 +150,26 @@ namespace Tomato.TomatoMusic.RpcCallingProxies
 			_packetSender.Send(packet);
 		}
 
+		public void SetEqualizerParameter(System.Single frequency, System.Single bandWidth, System.Single gain)
+		{
+			var packet = new Void_20SetEqualizerParameter_28Single_2C_20Single_2C_20Single_29
+			{
+				Arg0 = frequency,
+				Arg1 = bandWidth,
+				Arg2 = gain,
+			};
+			_packetSender.Send(packet);
+		}
+
+		public void ClearEqualizerParameter(System.Single frequency)
+		{
+			var packet = new Void_20ClearEqualizerParameter_28Single_29
+			{
+				Arg0 = frequency,
+			};
+			_packetSender.Send(packet);
+		}
+
 	}
 }
 

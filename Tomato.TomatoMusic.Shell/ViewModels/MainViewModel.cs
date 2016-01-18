@@ -7,6 +7,8 @@ using Caliburn.Micro;
 using Windows.UI.Xaml.Controls;
 using Tomato.TomatoMusic.Services;
 using Windows.UI.ApplicationSettings;
+using Windows.UI.ViewManagement;
+using Windows.UI;
 
 namespace Tomato.TomatoMusic.Shell.ViewModels
 {
@@ -32,6 +34,7 @@ namespace Tomato.TomatoMusic.Shell.ViewModels
             PlaylistManager = playlistManager;
             ThemeService = themeService;
             PlaylistManager.PropertyChanged += PlaylistManager_PropertyChanged;
+            SetupStatusBar();
         }
 
         protected override void OnActivate()
@@ -65,6 +68,18 @@ namespace Tomato.TomatoMusic.Shell.ViewModels
         public void NavigateToSettings()
         {
             _navigationService?.Navigate(typeof(Views.SettingsView));
+        }
+
+        private async void SetupStatusBar()
+        {
+            if (Windows.Foundation.Metadata.ApiInformation.IsTypePresent("Windows.UI.ViewManagement.StatusBar"))
+            {
+                var statusBar = StatusBar.GetForCurrentView();
+                statusBar.BackgroundColor = Colors.Black;
+                statusBar.ForegroundColor = Colors.White;
+                statusBar.BackgroundOpacity = 1.0;
+                await statusBar.ShowAsync();
+            }
         }
     }
 }

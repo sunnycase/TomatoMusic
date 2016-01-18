@@ -73,5 +73,17 @@ namespace Tomato.TomatoMusic.RpcPackets.IAudioController
 	{
 	}
 
+	public sealed class Void_20SetEqualizerParameter_28Single_2C_20Single_2C_20Single_29
+	{
+		public System.Single Arg0;
+		public System.Single Arg1;
+		public System.Single Arg2;
+	}
+
+	public sealed class Void_20ClearEqualizerParameter_28Single_29
+	{
+		public System.Single Arg0;
+	}
+
 }
 

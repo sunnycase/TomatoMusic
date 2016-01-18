@@ -231,6 +231,7 @@ namespace Tomato.TomatoMusic.Audio.Services
             _playerConfig = configService.Player;
             PlayMode = _playModeManager.GetProvider(_playerConfig.PlayMode);
             Volume = _playerConfig.Volume;
+            _playerConfig.EqualizerParameters.CollectionChanged += EqualizerParameters_CollectionChanged;
         }
 
         public void RequestPlay()
@@ -354,7 +355,16 @@ namespace Tomato.TomatoMusic.Audio.Services
             {
                 OnPlayModeChanged();
                 OnVolumeChanged();
+                SendAllEqualizerParams();
             });
+        }
+
+        private void SendAllEqualizerParams()
+        {
+            foreach (var param in _playerConfig.EqualizerParameters)
+            {
+                _audioController.SetEqualizerParameter(param.Frequency, param.BandWidth, param.Gain);
+            }
         }
 
         void IAudioControllerHandler.NotifyMediaOpened()
@@ -426,6 +436,29 @@ namespace Tomato.TomatoMusic.Audio.Services
             _autoPlay = true;
             if (CanPlay)
                 Play();
+        }
+
+        private void EqualizerParameters_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        {
+            switch (e.Action)
+            {
+                case System.Collections.Specialized.NotifyCollectionChangedAction.Add:
+                    e.NewItems.Cast<EqualizerParam>().Apply(o => _audioController.SetEqualizerParameter(o.Frequency, o.BandWidth, o.Gain));
+                    break;
+                case System.Collections.Specialized.NotifyCollectionChangedAction.Move:
+                    break;
+                case System.Collections.Specialized.NotifyCollectionChangedAction.Remove:
+                    e.OldItems.Cast<EqualizerParam>().Apply(o => _audioController.ClearEqualizerParameter(o.Frequency));
+                    break;
+                case System.Collections.Specialized.NotifyCollectionChangedAction.Replace:
+                    var param = _playerConfig.EqualizerParameters[e.OldStartingIndex];
+                    _audioController.SetEqualizerParameter(param.Frequency, param.BandWidth, param.Gain);
+                    break;
+                case System.Collections.Specialized.NotifyCollectionChangedAction.Reset:
+                    break;
+                default:
+                    break;
+            }
         }
 
         void IAudioControllerHandler.NotifyCurrentTrackChanged(TrackInfo track)

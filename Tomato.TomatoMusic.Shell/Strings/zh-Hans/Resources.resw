@@ -141,6 +141,12 @@
   <data name="Design.Text" xml:space="preserve">
     <value>设计</value>
   </data>
+  <data name="Effects.Header" xml:space="preserve">
+    <value>音效</value>
+  </data>
+  <data name="Lyrics.Header" xml:space="preserve">
+    <value>歌词</value>
+  </data>
   <data name="MusicLibrary" xml:space="preserve">
     <value>音乐库</value>
   </data>

@@ -62,5 +62,16 @@ namespace Tomato.TomatoMusic.Shell.ViewModels
         {
             OnSelectedPlaylistChanged();
         }
+
+        public void SwitchPlayingView()
+        {
+            if(_navigationService!=null)
+            {
+                if (_navigationService.CurrentSourcePageType == typeof(Views.Playing.PlayingView))
+                    NavigateToSelectedPlaylist();
+                else
+                    NavigateToPlayingView();
+            }
+        }
     }
 }

@@ -13,7 +13,7 @@ using Windows.UI.Xaml.Media;
 
 namespace Tomato.TomatoMusic.Shell.ViewModels.Playing
 {
-    class PlayingViewModel : Screen
+    class LyricsViewModel : Screen
     {
         private TrackInfo _track;
         public TrackInfo Track
@@ -36,7 +36,7 @@ namespace Tomato.TomatoMusic.Shell.ViewModels.Playing
         private readonly IPlaySessionService _playSession;
         private ListBox _lyricsListBox;
 
-        public PlayingViewModel(IPlaySessionService playSession)
+        public LyricsViewModel(IPlaySessionService playSession)
         {
             _playSession = playSession;
             Track = playSession.CurrentTrack;
@@ -69,13 +69,13 @@ namespace Tomato.TomatoMusic.Shell.ViewModels.Playing
             _lyricsListBox = listBox;
         }
 
-        private static readonly WeakReference<PlayingViewModel> _viewModel = new WeakReference<PlayingViewModel>(null);
-        public static PlayingViewModel Activate()
+        private static readonly WeakReference<LyricsViewModel> _viewModel = new WeakReference<LyricsViewModel>(null);
+        public static LyricsViewModel Activate()
         {
-            PlayingViewModel viewModel;
+            LyricsViewModel viewModel;
             if (!_viewModel.TryGetTarget(out viewModel))
             {
-                viewModel = IoC.Get<PlayingViewModel>();
+                viewModel = IoC.Get<LyricsViewModel>();
                 _viewModel.SetTarget(viewModel);
             }
             return viewModel;

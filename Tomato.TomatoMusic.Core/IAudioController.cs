@@ -24,5 +24,7 @@ namespace Tomato.TomatoMusic.Core
         void AskCurrentTrack();
         void AskCurrentState();
         void AskDuration();
+        void SetEqualizerParameter(float frequency, float bandWidth, float gain);
+        void ClearEqualizerParameter(float frequency);
     }
 }
