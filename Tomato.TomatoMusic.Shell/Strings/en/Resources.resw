@@ -159,6 +159,9 @@
   <data name="Program.Text" xml:space="preserve">
     <value>Program</value>
   </data>
+  <data name="ResetLyricSetting.Text" xml:space="preserve">
+    <value>Reset lyric setting</value>
+  </data>
   <data name="Review.Text" xml:space="preserve">
     <value>Review</value>
   </data>
@@ -173,6 +176,9 @@
   </data>
   <data name="Settings.Text" xml:space="preserve">
     <value>Settings</value>
+  </data>
+  <data name="SetupLocalLyric.Text" xml:space="preserve">
+    <value>Setup local lyric ...</value>
   </data>
   <data name="SpecialThanks.Text" xml:space="preserve">
     <value>Special Thanks</value>

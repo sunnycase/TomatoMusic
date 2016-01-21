@@ -65,7 +65,8 @@ namespace Tomato.TomatoMusic.Shell
             _container.UseAudio().AddBackgroundMedia(typeof(BackgroundAudioHandler));
             _container.UsePlaylist();
             _container.UsePlugins()
-                .AddLastFm(config.LastFmApiKey);
+                .AddLastFm(config.LastFmApiKey)
+                .AddLocalLyrics();
             _eventAggregator = _container.GetInstance<IEventAggregator>();
         }
 

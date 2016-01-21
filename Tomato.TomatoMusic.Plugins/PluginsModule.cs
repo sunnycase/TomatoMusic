@@ -40,5 +40,11 @@ namespace Tomato.TomatoMusic
             });
             return this;
         }
+
+        public PluginsModuleConfig AddLocalLyrics()
+        {
+            _container.Singleton<ILocalLyricsService, LocalLyricsService>();
+            return this;
+        }
     }
 }

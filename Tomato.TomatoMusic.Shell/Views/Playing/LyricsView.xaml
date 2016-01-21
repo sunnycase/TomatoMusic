@@ -19,12 +19,13 @@
         <Border.Background>
             <ImageBrush ImageSource="{x:Bind ViewModel.Metadata.Cover, Mode=OneWay}" Stretch="UniformToFill"/>
         </Border.Background>
-        <Grid Padding="0,20,0,0" Background="{ThemeResource SystemListMediumColor}">
+        <Grid Padding="0,20,0,0" Background="#55000000">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
             <TextBlock Grid.Row="0" Text="{x:Bind ViewModel.Track.Title, Mode=OneWay}" Style="{StaticResource TrackInfoTextBlockStyle}"/>
             <TextBlock Grid.Row="1" Text="{x:Bind ViewModel.Track.Album, Mode=OneWay}" Style="{StaticResource TrackInfoTextBlockStyle}"/>
@@ -122,6 +123,18 @@
                     </DataTemplate>
                 </ListBox.ItemTemplate>
             </ListBox>
+            <StackPanel Grid.Row="4" Orientation="Horizontal" HorizontalAlignment="Right"
+                        Background="#55000000">
+                <Button Style="{StaticResource TrackFunctionalButtonStyle}">
+                    <SymbolIcon Symbol="More"/>
+                    <Button.Flyout>
+                        <MenuFlyout>
+                            <MenuFlyoutItem x:Uid="SetupLocalLyric" Click="{x:Bind ViewModel.Metadata.SetupLocalLyric, Mode=OneWay}" Text="Setup local lyric ..."/>
+                            <MenuFlyoutItem x:Uid="ResetLyricSetting" Click="{x:Bind ViewModel.Metadata.ResetLyricSetting, Mode=OneWay}" Text="Reset lyric setting"/>
+                        </MenuFlyout>
+                    </Button.Flyout>
+                </Button>
+            </StackPanel>
         </Grid>
     </Border>
 </PivotItem>

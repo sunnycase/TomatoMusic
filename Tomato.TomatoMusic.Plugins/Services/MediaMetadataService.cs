@@ -31,13 +31,15 @@ namespace Tomato.TomatoMusic.Plugins.Services
         private readonly AlbumCoverCache _albumCoverCache = new AlbumCoverCache();
         private readonly LyricsCache _lyricsCache = new LyricsCache();
         private readonly MetadataConfiguration _metadataConfiguration;
+        private readonly ILocalLyricsService _localLyricsService;
 
-        public MediaMetadataService(LastFmConfig lastFmConfig, IConfigurationService configurationService)
+        public MediaMetadataService(LastFmConfig lastFmConfig, IConfigurationService configurationService, ILocalLyricsService localLyricsService)
         {
             _metadataConfiguration = configurationService.Metadata;
             _lastfm = new LastfmClient(lastFmConfig.ApiKey, null);
             _geciMe = new GeciMeClient();
             _moeAtHome = new MoeAtHomeClient();
+            _localLyricsService = localLyricsService;
 
             var packageVersion = Windows.ApplicationModel.Package.Current.Id.Version;
             _lastfm.HttpClient.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue("TomatoMusic",
@@ -48,6 +50,7 @@ namespace Tomato.TomatoMusic.Plugins.Services
         {
             var meta = TrackMediaMetadata.Default();
 
+            await TryLoadLyricsFromLocal(track, meta);
             await TryFillFromTrack(track, meta);
             if (meta.Cover == null)
                 await TryLoadCoverFromCache(track, meta);
@@ -58,6 +61,22 @@ namespace Tomato.TomatoMusic.Plugins.Services
             if (string.IsNullOrEmpty(meta.Lyrics) && EnvironmentHelper.HasInternetConnection(!_metadataConfiguration.UpdateLyricsEvenByteBasis))
                 TryFillLyrics(track, meta);
             return meta;
+        }
+
+        private async Task TryLoadLyricsFromLocal(TrackInfo track, TrackMediaMetadata meta)
+        {
+            if (_localLyricsService != null)
+            {
+                var file = await _localLyricsService.TryGetLocalLyrics(track);
+                if (file != null)
+                {
+                    try
+                    {
+                        meta.Lyrics = await FileIO.ReadTextAsync(file);
+                    }
+                    catch { }
+                }
+            }
         }
 
         private async void TryFillLyrics(TrackInfo track, TrackMediaMetadata meta)
@@ -103,7 +122,8 @@ namespace Tomato.TomatoMusic.Plugins.Services
                     var stream = new MemoryStream(cover.Data);
                     meta.Cover = await MediaHelper.CreateImage(stream.AsRandomAccessStream());
                 }
-                meta.Lyrics = provider.Lyrics;
+                if (string.IsNullOrEmpty(meta.Lyrics))
+                    meta.Lyrics = provider.Lyrics;
             }
             catch { }
         }

@@ -10,6 +10,8 @@ using Tomato.TomatoMusic.Services;
 using Tomato.Uwp.Mvvm;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
+using Windows.Storage.Pickers;
+using Windows.Storage;
 
 namespace Tomato.TomatoMusic.Shell.ViewModels.Playing
 {
@@ -104,8 +106,11 @@ namespace Tomato.TomatoMusic.Shell.ViewModels.Playing
 
         public IList<IOneLineLyric> Lyrics => _lyricModel?.Lyrics;
 
+        private readonly TrackInfo _track;
+
         public TrackMetadataViewModel(TrackInfo track)
         {
+            _track = track;
             LoadMetadata(track);
         }
 
@@ -115,7 +120,35 @@ namespace Tomato.TomatoMusic.Shell.ViewModels.Playing
             var meta = await metaService.GetMetadata(track);
             meta.PropertyChanged += Meta_PropertyChanged;
             Cover = meta.Cover;
-            TryAnalyzeLyrics(meta.Lyrics);
+            if (LyricModel == null)
+                TryAnalyzeLyrics(meta.Lyrics);
+        }
+
+        public async void SetupLocalLyric()
+        {
+            var picker = new FileOpenPicker() { ViewMode = PickerViewMode.List };
+            picker.FileTypeFilter.Add(".lrc");
+            var file = await picker.PickSingleFileAsync();
+            if (file != null)
+            {
+                try
+                {
+                    var content = await FileIO.ReadTextAsync(file);
+                    TryAnalyzeLyrics(content);
+                    var service = IoC.Get<ILocalLyricsService>();
+                    service.SetLocalLyrics(_track, file);
+                }
+                catch { }
+            }
+        }
+
+        public async void ResetLyricSetting()
+        {
+            await Task.Run(() =>
+            {
+                var service = IoC.Get<ILocalLyricsService>();
+                service.ClearLocalLyricsPath(_track);
+            });
         }
 
         private void Meta_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)

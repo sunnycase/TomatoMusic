@@ -159,6 +159,9 @@
   <data name="Program.Text" xml:space="preserve">
     <value>程序</value>
   </data>
+  <data name="ResetLyricSetting.Text" xml:space="preserve">
+    <value>重置歌词设置</value>
+  </data>
   <data name="Review.Text" xml:space="preserve">
     <value>评分</value>
   </data>
@@ -173,6 +176,9 @@
   </data>
   <data name="Settings.Text" xml:space="preserve">
     <value>设置</value>
+  </data>
+  <data name="SetupLocalLyric.Text" xml:space="preserve">
+    <value>设置本地歌词...</value>
   </data>
   <data name="SpecialThanks.Text" xml:space="preserve">
     <value>特别鸣谢</value>

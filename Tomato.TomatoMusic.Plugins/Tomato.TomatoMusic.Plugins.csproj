@@ -121,12 +121,13 @@
     <Compile Include="PlayModes\ListMode.cs" />
     <Compile Include="PluginsModule.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Providers\LocalLyricsProvider.cs" />
+    <Compile Include="Services\LocalLyricsService.cs" />
     <Compile Include="Services\MediaMetadataService.cs" />
     <Compile Include="Services\PlayModeManager.cs" />
     <Compile Include="Services\ThemeService.cs" />
     <Content Include="Properties\Tomato.TomatoMusic.Plugins.rd.xml" />
   </ItemGroup>
-  <ItemGroup />
   <ItemGroup>
     <ProjectReference Include="..\Tomato.TomatoMusic.Core\Tomato.TomatoMusic.Core.csproj">
       <Project>{3dca3f42-22c9-4d8f-9f0c-3853d54b8b32}</Project>
@@ -136,6 +137,9 @@
       <Project>{e10050ce-4def-4627-baf2-c396c2cee6ae}</Project>
       <Name>Tomato.Uwp.Mvvm</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Infrastructure\" />
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>
