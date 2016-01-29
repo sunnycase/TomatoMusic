@@ -2,12 +2,13 @@
   "dependencies": {
     "Caliburn.Micro": "3.0.0-beta2",
     "Caliburn.Micro.Core": "3.0.0-beta2",
+    "Kfstorm.LrcParser": "1.0.3",
     "Microsoft.ApplicationInsights": "1.2.3",
     "Microsoft.ApplicationInsights.PersistenceChannel": "1.2.3",
     "Microsoft.ApplicationInsights.WindowsApps": "1.1.1",
     "Microsoft.NETCore.UniversalWindowsPlatform": "5.0.0",
     "Microsoft.Xaml.Behaviors.Uwp.Managed": "1.0.3",
-    "Kfstorm.LrcParser": "1.0.3"
+    "Tomato.Uwp.Mvvm": "0.0.1-alpha2"
   },
   "frameworks": {
     "uap10.0": {}

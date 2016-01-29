@@ -154,12 +154,6 @@
     <Content Include="Properties\Tomato.TomatoMusic.Core.rd.xml" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Tomato.Uwp.Mvvm\Tomato.Uwp.Mvvm.csproj">
-      <Project>{e10050ce-4def-4627-baf2-c396c2cee6ae}</Project>
-      <Name>Tomato.Uwp.Mvvm</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">

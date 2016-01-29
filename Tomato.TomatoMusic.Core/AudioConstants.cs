@@ -15,7 +15,13 @@ namespace Tomato.TomatoMusic.Core
             ".wma",
             ".ogg",
             ".flac",
-            ".ape"
+            ".ape",
+            ".tak",
+            ".aac",
+            ".alac",
+            ".m4a",
+            ".dff",
+            ".dsf"
         };
     }
 }

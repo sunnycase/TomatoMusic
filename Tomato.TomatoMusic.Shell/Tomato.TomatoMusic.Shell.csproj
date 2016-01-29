@@ -167,6 +167,7 @@
     <PRIResource Include="Strings\en\Resources.resw" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Assets\Badage.scale-400.png" />
     <Content Include="Assets\background.jpg" />
     <Content Include="Assets\iyy.png" />
     <Content Include="Assets\SplashScreen.scale-100.png" />
@@ -255,10 +256,6 @@
     <ProjectReference Include="..\Tomato.TomatoMusic.Plugins\Tomato.TomatoMusic.Plugins.csproj">
       <Project>{9168235f-9d85-4053-8386-535114c68355}</Project>
       <Name>Tomato.TomatoMusic.Plugins</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Tomato.Uwp.Mvvm\Tomato.Uwp.Mvvm.csproj">
-      <Project>{e10050ce-4def-4627-baf2-c396c2cee6ae}</Project>
-      <Name>Tomato.Uwp.Mvvm</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
