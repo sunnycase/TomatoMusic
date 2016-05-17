@@ -74,6 +74,11 @@ namespace Tomato.TomatoMusic.Playlist.Providers
                     yield return track;
         }
 
+        public IEnumerable<StorageFolder> GetFolders()
+        {
+            return _folders.Select(o => o.Folder);
+        }
+
         private void NotifyUpdated()
         {
             Execute.BeginOnUIThread(() => Updated?.Invoke(this, EventArgs.Empty));
@@ -91,11 +96,12 @@ namespace Tomato.TomatoMusic.Playlist.Providers
         {
             try
             {
-                var folder = new WatchedFolder(_folderDispatcher, (StorageFolder)typeof(KnownFolders).GetRuntimeProperty(name).GetValue(null));
+                var folder = new WatchedFolder((StorageFolder)typeof(KnownFolders).GetRuntimeProperty(name).GetValue(null));
                 folders.Add(folder);
                 var cache = new FolderCacheProvider(_playlist.Key, name);
                 _knownFolderCaches.Add(folder, cache);
                 await cache.LoadCache();
+                folder.FileUpdateRequested += Folder_FileUpdateRequested;
                 return folder;
             }
             catch (Exception)
@@ -105,15 +111,21 @@ namespace Tomato.TomatoMusic.Playlist.Providers
             }
         }
 
+        private void Folder_FileUpdateRequested(WatchedFolder folder)
+        {
+            _folderDispatcher.RequestFileUpdate(folder);
+        }
+
         private async Task<WatchedFolder> TryAddFolder(string path, ICollection<WatchedFolder> folders)
         {
             try
             {
-                var folder = new WatchedFolder(_folderDispatcher, await StorageFolder.GetFolderFromPathAsync(path));
+                var folder = new WatchedFolder(await StorageFolder.GetFolderFromPathAsync(path));
                 folders.Add(folder);
                 var cache = new FolderCacheProvider(_playlist.Key, path);
                 _folderCaches.Add(folder, cache);
                 await cache.LoadCache();
+                folder.FileUpdateRequested += Folder_FileUpdateRequested;
                 return folder;
             }
             catch (Exception)
@@ -168,6 +180,78 @@ namespace Tomato.TomatoMusic.Playlist.Providers
                 {
                     _folderDispatcher.ResumeRefresh();
                 }
+            }
+        }
+
+        public async void AddFolders(List<StorageFolder> folders)
+        {
+            _folderDispatcher.SuspendRefresh();
+            bool updated = false;
+            try
+            {
+                foreach (var folder in folders)
+                {
+                    if (_folders.All(o => o.Folder != folder))
+                    {
+                        var watcher = await TryAddFolder(folder.Path, _folders);
+                        if (watcher != null)
+                        {
+                            updated = true;
+                            watcher.Refresh();
+                        }
+                    }
+                }
+            }
+            finally
+            {
+                if(updated)
+                    NotifyUpdated();
+                _folderDispatcher.ResumeRefresh();
+            }
+        }
+
+        public void RemoveFolder(StorageFolder folder)
+        {
+            _folderDispatcher.SuspendRefresh();
+            try
+            {
+                var watch = _folders.Find(o => o.Folder.IsEqual(folder));
+                if (watch != null)
+                {
+                    watch.FileUpdateRequested -= Folder_FileUpdateRequested;
+                    _folderDispatcher.CancelFileUpdate(watch);
+                    _folders.Remove(watch);
+                    _folderCaches.Remove(watch);
+                }
+                NotifyUpdated();
+            }
+            finally
+            {
+                _folderDispatcher.ResumeRefresh();
+            }
+        }
+
+        public void RemoveFolders(IEnumerable<StorageFolder> folders)
+        {
+            _folderDispatcher.SuspendRefresh();
+            try
+            {
+                foreach (var folder in folders)
+                {
+                    var watch = _folders.Find(o => o.Folder.IsEqual(folder));
+                    if (watch != null)
+                    {
+                        watch.FileUpdateRequested -= Folder_FileUpdateRequested;
+                        _folderDispatcher.CancelFileUpdate(watch);
+                        _folders.Remove(watch);
+                        _folderCaches.Remove(watch);
+                    }
+                }
+                NotifyUpdated();
+            }
+            finally
+            {
+                _folderDispatcher.ResumeRefresh();
             }
         }
     }

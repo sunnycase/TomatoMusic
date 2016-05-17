@@ -14,7 +14,6 @@
     <TargetPlatformVersion>10.0.10586.0</TargetPlatformVersion>
     <TargetPlatformMinVersion>10.0.10240.0</TargetPlatformMinVersion>
     <MinimumVisualStudioVersion>14</MinimumVisualStudioVersion>
-    <EnableDotNetNativeCompatibleProfile>true</EnableDotNetNativeCompatibleProfile>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{A5A43C5B-DE2A-4C0C-9213-0A381AF9435A};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <PackageCertificateKeyFile>Tomato.TomatoMusic.Shell_StoreKey.pfx</PackageCertificateKeyFile>
@@ -120,6 +119,7 @@
     <Compile Include="ViewModels\Playing\LyricsViewModel.cs" />
     <Compile Include="ViewModels\Playing\PlayingViewModel.cs" />
     <Compile Include="ViewModels\PlaylistViewModel.cs" />
+    <Compile Include="ViewModels\Playlist\ManageWatchedFoldersViewModel.cs" />
     <Compile Include="ViewModels\Playlist\MusicsViewModel.cs" />
     <Compile Include="ViewModels\SettingsViewModel.cs" />
     <Compile Include="ViewModels\ViewModelBase.cs" />
@@ -152,6 +152,9 @@
     </Compile>
     <Compile Include="Views\Playlist\AlbumsView.xaml.cs">
       <DependentUpon>AlbumsView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Playlist\ManageWatchedFoldersDialog.xaml.cs">
+      <DependentUpon>ManageWatchedFoldersDialog.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Playlist\MusicsView.xaml.cs">
       <DependentUpon>MusicsView.xaml</DependentUpon>
@@ -224,6 +227,10 @@
     <Page Include="Views\Playlist\AlbumsView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\Playlist\ManageWatchedFoldersDialog.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\Playlist\MusicsView.xaml">
       <SubType>Designer</SubType>

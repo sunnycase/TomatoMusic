@@ -103,19 +103,14 @@ namespace Tomato.TomatoMusic.Shell.ViewModels
             Anchor = IoC.Get<IPlaylistManager>().GetAnchorByKey(Key);
         }
 
-        public async void OnRequestAddFolder()
+        public async void OnRequestManageFolders()
         {
-            if (IsValid)
+            if(IsValid)
             {
-                var folder = await DefaultPickers.FolderPicker.PickSingleFolderAsync();
-                if (folder != null)
-                    _playlistContentProvider.AddFolder(folder);
+                var viewModel = new ManageWatchedFoldersViewModel(Anchor);
+                if (await viewModel.ShowAsync() == Windows.UI.Xaml.Controls.ContentDialogResult.Primary)
+                    _playlistContentProvider.UpdateFolders(viewModel.Folders);
             }
-        }
-
-        public void OnRequestAddFiles()
-        {
-
         }
     }
 }

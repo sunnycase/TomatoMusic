@@ -190,5 +190,17 @@ namespace Tomato.TomatoMusic.Playlist.Providers
                 Debug.WriteLine($"Falied to acquire track info ({file.Path}): {ex.Flatten()}");
             }
         }
+
+        public void CancelFileUpdate(WatchedFolder folder)
+        {
+            lock (_wantUpdateFolders)
+            {
+                _wantUpdateFolders.Remove(folder);
+                if (_wantUpdateFolders.Any())
+                    Execute.BeginOnUIThread(() => IsRefreshing = true);
+            }
+            if (!_refreshSuspended)
+                RestartCountdown();
+        }
     }
 }

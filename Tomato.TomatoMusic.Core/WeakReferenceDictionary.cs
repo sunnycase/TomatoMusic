@@ -53,5 +53,28 @@ namespace Tomato
                 return value;
             }
         }
+
+        public TValue GetOrAddValue(TKey key, Func<TKey, TValue> onCreate)
+        {
+            TValue value;
+            WeakReference<TValue> weak;
+            if (base.TryGetValue(key, out weak))
+            {
+                if (weak.TryGetTarget(out value))
+                    return value;
+                else
+                {
+                    value = onCreate(key);
+                    weak.SetTarget(value);
+                    return value;
+                }
+            }
+            else
+            {
+                value = onCreate(key);
+                base.Add(key, new WeakReference<TValue>(value));
+                return value;
+            }
+        }
     }
 }

@@ -17,9 +17,10 @@ namespace Tomato.TomatoMusic.Playlist.Providers
 
         public StorageFolder Folder => _folder;
 
-        public WatchedFolder(WatchedFolderDispatcher dispatcher, StorageFolder folder)
+        public event Action<WatchedFolder> FileUpdateRequested;
+
+        public WatchedFolder(StorageFolder folder)
         {
-            _dispatcher = dispatcher;
             _folder = folder;
             _fileQueryResult = _folder.CreateFileQueryWithOptions(_queryOptions);
             _fileQueryResult.ContentsChanged += _fileQueryResult_ContentsChanged;
@@ -27,7 +28,7 @@ namespace Tomato.TomatoMusic.Playlist.Providers
 
         public void Refresh()
         {
-            _dispatcher.RequestFileUpdate(this);
+            FileUpdateRequested?.Invoke(this);
         }
 
         private void _fileQueryResult_ContentsChanged(IStorageQueryResultBase sender, object args)

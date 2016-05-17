@@ -10,7 +10,7 @@
     "Microsoft.Xaml.Behaviors.Uwp.Managed": "1.1.0",
     "Tomato.Mvvm.Caliburn": "0.0.1-alpha1",
     "Tomato.Mvvm.Core": "0.0.1-alpha2",
-    "Tomato.Mvvm.Xaml": "0.0.1-alpha1"
+    "Tomato.Mvvm.Xaml": "0.0.1-alpha2"
   },
   "frameworks": {
     "uap10.0": {}

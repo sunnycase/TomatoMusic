@@ -54,7 +54,7 @@ namespace Tomato.TomatoMusic.Playlist.Models
 
         private static void HandleNullModel(ref Primitives.Playlist model, PlaylistPlaceholder placeholder)
         {
-            if(model == null)
+            if (model == null)
             {
                 if (placeholder.Key == Primitives.Playlist.MusicLibraryPlaylistKey)
                     model = Primitives.Playlist.CreateMusicLibrary();
@@ -75,6 +75,20 @@ namespace Tomato.TomatoMusic.Playlist.Models
             await Save();
         }
 
+        public async void RemoveFolder(StorageFolder folder)
+        {
+            var path = folder.Path;
+            _playlist.Folders.Remove(path);
+            await Save();
+        }
+
+        public async void RemoveFolders(IEnumerable<StorageFolder> folders)
+        {
+            foreach (var folder in folders)
+                _playlist.Folders.Remove(folder.Path);
+            await Save();
+        }
+
         private async Task<StorageFile> OpenFile()
         {
             var folder = await ApplicationData.Current.RoamingFolder.CreateFolderAsync(PlaylistFolder, CreationCollisionOption.OpenIfExists);
@@ -83,7 +97,7 @@ namespace Tomato.TomatoMusic.Playlist.Models
 
         private async Task Save()
         {
-            await _operationQueue.Queue(async() =>
+            await _operationQueue.Queue((async () =>
             {
                 string content = JsonConvert.SerializeObject(_playlist);
                 using (var writer = await (await OpenFile()).OpenTransactedWriteAsync())
@@ -98,7 +112,18 @@ namespace Tomato.TomatoMusic.Playlist.Models
                     dw.DetachStream();
                     await writer.CommitAsync();
                 }
-            });
+            }));
+        }
+
+        public async void AddFolders(IEnumerable<StorageFolder> folders)
+        {
+            foreach (var folder in folders)
+            {
+                var path = folder.Path;
+                if (!_playlist.Folders.Contains(path))
+                    _playlist.Folders.Add(path);
+            }
+            await Save();
         }
     }
 }

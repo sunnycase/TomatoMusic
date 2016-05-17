@@ -84,7 +84,7 @@ namespace Tomato.TomatoMusic.Playlist.Services
 
         private PlaylistIndexFile _playlistIndexFile;
 
-        private readonly Dictionary<IPlaylistAnchor, WeakReference<IPlaylistContentProvider>> _playlistContentProviders = new Dictionary<IPlaylistAnchor, WeakReference<IPlaylistContentProvider>>();
+        private readonly WeakReferenceDictionary<IPlaylistAnchor, IPlaylistContentProvider> _playlistContentProviders = new WeakReferenceDictionary<IPlaylistAnchor, IPlaylistContentProvider>();
         private readonly CodecManager _codecManager;
 
         public PlaylistManager()
@@ -138,18 +138,7 @@ namespace Tomato.TomatoMusic.Playlist.Services
         {
             lock (_playlistContentProviders)
             {
-                IPlaylistContentProvider target;
-                WeakReference<IPlaylistContentProvider> weak;
-                if (_playlistContentProviders.TryGetValue(anchor, out weak))
-                {
-                    if (weak.TryGetTarget(out target) && target != null)
-                        return target;
-                    else
-                        _playlistContentProviders.Remove(anchor);
-                }
-                target = new PlaylistContentProvider(anchor);
-                _playlistContentProviders.Add(anchor, new WeakReference<IPlaylistContentProvider>(target));
-                return target;
+                return _playlistContentProviders.GetOrAddValue(anchor, a => new PlaylistContentProvider(a));
             }
         }
 
@@ -248,7 +237,7 @@ namespace Tomato.TomatoMusic.Playlist.Services
                 var newTracks = _watchedProvider.GetTrackInfos().Distinct().ToList();
                 var comparer = new TrackInfo.ExistenceEqualityComparer();
                 var toAdd = newTracks.Except(_tracks, comparer).ToList();
-                var toRemove = _tracks.Except(_tracks, comparer).ToList();
+                var toRemove = _tracks.Except(newTracks, comparer).ToList();
 
                 Execute.BeginOnUIThread(() =>
                 {
@@ -257,6 +246,31 @@ namespace Tomato.TomatoMusic.Playlist.Services
                     if (toRemove.Any())
                         _tracks.RemoveRange(toRemove);
                 });
+            }
+
+            public async Task<IReadOnlyList<StorageFolder>> GetFolders()
+            {
+                await _openPlaylistTask;
+                return _watchedProvider.GetFolders().ToList();
+            }
+
+            public async void UpdateFolders(IReadOnlyList<StorageFolder> folders)
+            {
+                var futureAccessList = StorageApplicationPermissions.FutureAccessList;
+                var oldFolders = await GetFolders();
+
+                var toRemove = oldFolders.Except(folders).ToList();
+                _playlistFile.RemoveFolders(toRemove);
+                _watchedProvider.RemoveFolders(toRemove);
+
+                var toAdd = folders.Except(oldFolders).ToList();
+                foreach (var folder in toAdd)
+                {
+                    if (!futureAccessList.CheckAccess(folder))
+                        futureAccessList.Add(folder);
+                }
+                _playlistFile.AddFolders(toAdd);
+                _watchedProvider.AddFolders(toAdd);
             }
         }
     }
