@@ -16,7 +16,7 @@ using Windows.Storage;
 using Windows.Storage.Search;
 using Windows.System.Threading;
 using Windows.System.Threading.Core;
-using Tomato.Uwp.Mvvm;
+using Tomato.Mvvm;
 
 namespace Tomato.TomatoMusic.Playlist.Providers
 {

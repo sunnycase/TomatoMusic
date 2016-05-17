@@ -10,7 +10,7 @@ using Tomato.Rpc.Json;
 using Tomato.TomatoMusic.AudioTask;
 using Tomato.TomatoMusic.Core;
 using Tomato.TomatoMusic.Services;
-using Tomato.Uwp.Mvvm;
+using Tomato.Mvvm;
 using Windows.Media;
 using Windows.Media.Playback;
 using Tomato.TomatoMusic.Primitives;

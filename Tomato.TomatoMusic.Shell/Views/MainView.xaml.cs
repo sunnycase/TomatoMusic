@@ -25,7 +25,7 @@ namespace Tomato.TomatoMusic.Shell.Views
     /// </summary>
     public sealed partial class MainView : Page
     {
-        internal MainViewModel ViewModel { get; } = IoC.Get<MainViewModel>();
+        internal MainViewModel ViewModel => (MainViewModel)DataContext;
 
         public MainView()
         {

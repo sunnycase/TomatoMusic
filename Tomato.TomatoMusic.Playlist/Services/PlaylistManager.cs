@@ -8,7 +8,7 @@ using Caliburn.Micro;
 using Tomato.TomatoMusic.Primitives;
 using Tomato.TomatoMusic.Playlist.Models;
 using Tomato.TomatoMusic.Services;
-using Tomato.Uwp.Mvvm;
+using Tomato.Mvvm;
 using Windows.Storage;
 using Tomato.TomatoMusic.Playlist.Providers;
 using Windows.Storage.AccessCache;
@@ -159,6 +159,19 @@ namespace Tomato.TomatoMusic.Playlist.Services
                 SelectedPlaylist = anchor;
             else
                 OnPropertyChanged(nameof(SelectedPlaylist));
+        }
+
+        public IPlaylistAnchor GetAnchorByKey(Guid key)
+        {
+            return EnumAnchors().FirstOrDefault(o => o.Placeholder.Key == key);
+        }
+
+        private IEnumerable<IPlaylistAnchor> EnumAnchors()
+        {
+            yield return MusicLibrary;
+            yield return Default;
+            foreach (var item in CustomPlaylists)
+                yield return item;
         }
 
         class PlaylistContentProvider : BindableBase, IPlaylistContentProvider

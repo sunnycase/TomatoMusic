@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Tomato.TomatoMusic.Primitives;
 using Tomato.TomatoMusic.Services;
-using Tomato.Uwp.Mvvm;
+using Tomato.Mvvm;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
 using Windows.Storage.Pickers;
@@ -69,18 +69,6 @@ namespace Tomato.TomatoMusic.Shell.ViewModels.Playing
         public void SetLyricsListBox(ListBox listBox)
         {
             _lyricsListBox = listBox;
-        }
-
-        private static readonly WeakReference<LyricsViewModel> _viewModel = new WeakReference<LyricsViewModel>(null);
-        public static LyricsViewModel Activate()
-        {
-            LyricsViewModel viewModel;
-            if (!_viewModel.TryGetTarget(out viewModel))
-            {
-                viewModel = IoC.Get<LyricsViewModel>();
-                _viewModel.SetTarget(viewModel);
-            }
-            return viewModel;
         }
     }
 

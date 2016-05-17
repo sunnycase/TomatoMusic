@@ -1,6 +1,8 @@
 ﻿{
   "dependencies": {
-    "Microsoft.NETCore.UniversalWindowsPlatform": "5.0.0"
+    "Caliburn.Micro.Core": "3.0.0",
+    "Microsoft.NETCore.UniversalWindowsPlatform": "5.1.0",
+    "Tomato.Mvvm.Core": "0.0.1-alpha2"
   },
   "frameworks": {
     "uap10.0": {}

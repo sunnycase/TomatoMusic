@@ -14,7 +14,7 @@ using Tomato.TomatoMusic.Services;
 using Windows.Storage;
 using Tomato.Media.Codec;
 using Windows.Media;
-using Tomato.Uwp.Mvvm;
+using Tomato.Mvvm;
 using MediaPlayerState = Windows.Media.Playback.MediaPlayerState;
 using Tomato.Media.Effect;
 
@@ -192,8 +192,8 @@ namespace Tomato.TomatoMusic.AudioTask
                     file = await StorageFile.GetFileFromPathAsync(uri.LocalPath);
                 else
                     throw new NotSupportedException("Not supported uri.");
-                var stream = await file.OpenReadAsync();
-                var mediaSource = await MediaSource.CreateFromStream(stream, uri.ToString());
+                
+                var mediaSource = await MediaSource.CreateFromStream(await file.OpenReadAsync(), uri.ToString());
                 var mss = CreateMediaStreamSource(mediaSource);
                 _controllerHandler.NotifyDuration(mediaSource.Duration);
                 _mediaPlayer.SetMediaStreamSource(mss.Source);

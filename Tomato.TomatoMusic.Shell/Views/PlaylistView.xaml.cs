@@ -24,22 +24,13 @@ namespace Tomato.TomatoMusic.Shell.Views
     /// <summary>
     /// 可用于自身或导航至 Frame 内部的空白页。
     /// </summary>
-    public sealed partial class PlaylistView : Page, INotifyPropertyChanged
+    public sealed partial class PlaylistView : Page
     {
-        internal PlaylistViewModel ViewModel { get; private set; }
+        internal PlaylistViewModel ViewModel => (PlaylistViewModel)DataContext;
 
         public PlaylistView()
         {
             this.InitializeComponent();
-        }
-
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        protected override void OnNavigatedTo(NavigationEventArgs e)
-        {
-            base.OnNavigatedTo(e);
-            ViewModel = PlaylistViewModel.Activate((IPlaylistAnchor)e.Parameter);
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(ViewModel)));
         }
     }
 }

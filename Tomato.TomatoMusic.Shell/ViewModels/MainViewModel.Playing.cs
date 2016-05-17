@@ -1,8 +1,10 @@
-﻿using System;
+﻿using Caliburn.Micro;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Tomato.TomatoMusic.Shell.ViewModels.Playing;
 
 namespace Tomato.TomatoMusic.Shell.ViewModels
 {
@@ -21,7 +23,7 @@ namespace Tomato.TomatoMusic.Shell.ViewModels
 
         public void NavigateToPlayingView()
         {
-            _navigationService?.Navigate(typeof(Views.Playing.PlayingView));
+            _navigationService.For<PlayingViewModel>().Navigate();
         }
     }
 }

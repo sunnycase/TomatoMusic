@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 using Tomato.TomatoMusic.Configuration;
 using Tomato.TomatoMusic.Plugins.Cache;
 using Tomato.TomatoMusic.Services;
-using Tomato.Uwp.Mvvm;
+using Tomato.Mvvm;
 using Windows.Networking.BackgroundTransfer;
 using Windows.Networking.Connectivity;
 using Windows.Storage;

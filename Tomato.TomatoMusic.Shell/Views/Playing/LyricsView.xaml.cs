@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Caliburn.Micro;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -20,7 +21,7 @@ namespace Tomato.TomatoMusic.Shell.Views.Playing
 {
     public sealed partial class LyricsView : PivotItem
     {
-        internal LyricsViewModel ViewModel { get; } = LyricsViewModel.Activate();
+        internal LyricsViewModel ViewModel { get; } = IoC.Get<LyricsViewModel>();
 
         public LyricsView()
         {

@@ -7,12 +7,11 @@
     xmlns:primitives="using:Tomato.TomatoMusic.Primitives"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:controls="using:Tomato.Uwp.Mvvm.Controls"
-    xmlns:converters="using:Tomato.Uwp.Mvvm.Converters"
+    xmlns:controls="using:Tomato.Mvvm.Controls"
+    xmlns:converters="using:Tomato.Mvvm.Converters"
     xmlns:localConverters="using:Tomato.TomatoMusic.Shell.Converters"
     xmlns:cal="using:Caliburn.Micro"
-    mc:Ignorable="d"
-    cal:Bind.Model="{x:Bind ViewModel}">
+    mc:Ignorable="d">
     <Page.Resources>
         <ResourceDictionary>
             <localConverters:PlaylistToIconConverter x:Name="PlaylistToIconConverter"/>
@@ -125,7 +124,7 @@
                     <RowDefinition Height="*"/>
                     <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
-                <Frame x:Name="ContentFrame" Loaded="{x:Bind ViewModel.SetupNavigationService}" Padding="10"/>
+                <Frame x:Name="ContentFrame" Loaded="{x:Bind ViewModel.SetupNavigationService}" Padding="10" DataContext="{x:Null}"/>
                 <!-- 音乐控制面板 -->
                 <local:PlayControlView Grid.Row="1" PlaySession="{x:Bind ViewModel.PlaySession}" Padding="15"
                                        HamburgerMenu="{x:Bind hm_Menu}"/>

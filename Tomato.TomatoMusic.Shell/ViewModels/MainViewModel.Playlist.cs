@@ -48,14 +48,15 @@ namespace Tomato.TomatoMusic.Shell.ViewModels
 
         public void NavigateToAbout()
         {
-            _navigationService?.Navigate(typeof(Views.AboutView));
+            _navigationService?.Navigate<Views.AboutView>();
         }
 
         public void OnSelectedPlaylistChanged()
         {
             var playlist = PlaylistManager.SelectedPlaylist;
             if (playlist != null)
-                _navigationService?.Navigate(typeof(Views.PlaylistView), playlist);
+                _navigationService?.For<PlaylistViewModel>()
+                    .WithParam(o => o.Key, playlist.Placeholder.Key).Navigate();
         }
 
         private void NavigateToSelectedPlaylist()
@@ -65,7 +66,7 @@ namespace Tomato.TomatoMusic.Shell.ViewModels
 
         public void SwitchPlayingView()
         {
-            if(_navigationService!=null)
+            if (_navigationService != null)
             {
                 if (_navigationService.CurrentSourcePageType == typeof(Views.Playing.PlayingView))
                     NavigateToSelectedPlaylist();

@@ -16,7 +16,7 @@ using Windows.Storage;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Imaging;
 using System.IO;
-using Tomato.Uwp.Mvvm;
+using Tomato.Mvvm;
 using Tomato.TomatoMusic.Plugins.Cache;
 using Windows.Storage.Streams;
 

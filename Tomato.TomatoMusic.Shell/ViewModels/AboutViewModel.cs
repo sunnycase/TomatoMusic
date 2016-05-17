@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Tomato.TomatoMusic.Services;
-using Tomato.Uwp.Mvvm;
+using Tomato.Mvvm;
 using Windows.System;
 
 namespace Tomato.TomatoMusic.Shell.ViewModels

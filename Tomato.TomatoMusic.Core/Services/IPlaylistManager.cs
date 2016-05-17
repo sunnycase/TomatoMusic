@@ -21,5 +21,7 @@ namespace Tomato.TomatoMusic.Services
         IPlaylistContentProvider GetPlaylistContentProvider(IPlaylistAnchor anchor);
 
         IPlaylistAnchor SelectedPlaylist { get; }
+
+        IPlaylistAnchor GetAnchorByKey(Guid key);
     }
 }

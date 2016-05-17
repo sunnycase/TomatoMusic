@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Tomato.TomatoMusic.Configuration;
 using Tomato.TomatoMusic.Services;
-using Tomato.Uwp.Mvvm;
+using Tomato.Mvvm;
 
 namespace Tomato.TomatoMusic.Shell.ViewModels.Playing
 {

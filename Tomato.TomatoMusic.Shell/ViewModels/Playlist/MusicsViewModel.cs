@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Caliburn.Micro;
 using Tomato.TomatoMusic.Primitives;
 using Tomato.TomatoMusic.Services;
-using Tomato.Uwp.Mvvm;
+using Tomato.Mvvm;
 
 namespace Tomato.TomatoMusic.Shell.ViewModels.Playlist
 {

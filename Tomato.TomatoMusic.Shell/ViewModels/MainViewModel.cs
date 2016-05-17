@@ -16,7 +16,7 @@ namespace Tomato.TomatoMusic.Shell.ViewModels
     {
         private readonly WinRTContainer _container;
         private readonly IEventAggregator _eventAggregator;
-        private Frame _navigationService;
+        private INavigationService _navigationService;
 
         public IPlaySessionService PlaySession { get; }
         public IPlaylistManager PlaylistManager { get; }
@@ -49,7 +49,7 @@ namespace Tomato.TomatoMusic.Shell.ViewModels
 
         public void SetupNavigationService(object sender, object e)
         {
-            _navigationService = (Frame)sender;
+            _navigationService = _container.RegisterNavigationService((Frame)sender, false, true);
             NavigateToSelectedPlaylist();
         }
 
@@ -67,7 +67,7 @@ namespace Tomato.TomatoMusic.Shell.ViewModels
 
         public void NavigateToSettings()
         {
-            _navigationService?.Navigate(typeof(Views.SettingsView));
+            _navigationService?.For<SettingsViewModel>()?.Navigate();
         }
 
         private async void SetupStatusBar()

@@ -7,24 +7,45 @@ using Caliburn.Micro;
 using Tomato.TomatoMusic.Primitives;
 using Tomato.TomatoMusic.Services;
 using Tomato.TomatoMusic.Shell.ViewModels.Playlist;
-using Tomato.Uwp.Mvvm;
+using Tomato.Mvvm;
 using Windows.Storage;
 using Windows.Storage.AccessCache;
 using Windows.Storage.Pickers;
 
 namespace Tomato.TomatoMusic.Shell.ViewModels
 {
-    class PlaylistViewModel : BindableBase
+    public class PlaylistViewModel : BindableBase
     {
-        public IPlaylistAnchor Anchor { get; }
+        private IPlaylistAnchor _anchor;
+        public IPlaylistAnchor Anchor
+        {
+            get { return _anchor; }
+            private set
+            {
+                if (SetProperty(ref _anchor, value))
+                    OnAnchorChanged();
+            }
+        }
+
+        private Guid _key;
+        public Guid Key
+        {
+            get { return _key; }
+            set
+            {
+                if (SetProperty(ref _key, value))
+                    OnKeyChanged();
+            }
+        }
+
+        public bool IsValid => Anchor != null;
 
         private MusicsViewModel _musicsViewModel;
-        public MusicsViewModel MusicsViewModel
+        internal MusicsViewModel MusicsViewModel
         {
             get { return _musicsViewModel; }
             private set { SetProperty(ref _musicsViewModel, value); }
         }
-
 
         private bool _isRefreshing;
         public bool IsRefreshing
@@ -33,84 +54,68 @@ namespace Tomato.TomatoMusic.Shell.ViewModels
             private set { SetProperty(ref _isRefreshing, value); }
         }
 
-        public bool CanEditName => Anchor.Placeholder.Key != Primitives.Playlist.DefaultPlaylistKey &&
-            Anchor.Placeholder.Key != Primitives.Playlist.MusicLibraryPlaylistKey;
-        public bool CanEditContent => Anchor.Placeholder.Key != Primitives.Playlist.DefaultPlaylistKey;
+        public bool CanEditName => IsValid ? Anchor.Placeholder.Key != Primitives.Playlist.DefaultPlaylistKey &&
+            Anchor.Placeholder.Key != Primitives.Playlist.MusicLibraryPlaylistKey : false;
+        public bool CanEditContent => IsValid ? Anchor.Placeholder.Key != Primitives.Playlist.DefaultPlaylistKey : false;
 
         private IPlaylistContentProvider _playlistContentProvider;
 
-        public PlaylistViewModel(IPlaylistAnchor anchor)
+        public PlaylistViewModel()
         {
-            Anchor = anchor;
-            MusicsViewModel = new MusicsViewModel(anchor);
-            _playlistContentProvider = IoC.Get<IPlaylistManager>().GetPlaylistContentProvider(anchor);
-            IsRefreshing = _playlistContentProvider.IsRefreshing;
-            _playlistContentProvider.PropertyChanged += Provider_PropertyChanged;
         }
 
         private void Provider_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
-            switch (e.PropertyName)
+            if (IsValid)
             {
-                case nameof(IPlaylistContentProvider.IsRefreshing):
-                    IsRefreshing = _playlistContentProvider?.IsRefreshing ?? false;
-                    break;
-                default:
-                    break;
+                switch (e.PropertyName)
+                {
+                    case nameof(IPlaylistContentProvider.IsRefreshing):
+                        IsRefreshing = _playlistContentProvider.IsRefreshing;
+                        break;
+                    default:
+                        break;
+                }
             }
+        }
+
+        private void OnAnchorChanged()
+        {
+            if (_playlistContentProvider != null)
+                _playlistContentProvider.PropertyChanged -= Provider_PropertyChanged;
+
+            if (Anchor != null)
+            {
+                MusicsViewModel = new MusicsViewModel(Anchor);
+                _playlistContentProvider = IoC.Get<IPlaylistManager>().GetPlaylistContentProvider(Anchor);
+                IsRefreshing = _playlistContentProvider.IsRefreshing;
+                _playlistContentProvider.PropertyChanged += Provider_PropertyChanged;
+            }
+            else
+            {
+                MusicsViewModel = null;
+                IsRefreshing = false;
+            }
+        }
+
+        private void OnKeyChanged()
+        {
+            Anchor = IoC.Get<IPlaylistManager>().GetAnchorByKey(Key);
         }
 
         public async void OnRequestAddFolder()
         {
-            if(_playlistContentProvider != null)
+            if (IsValid)
             {
-                var folder = await FolderPicker.PickSingleFolderAsync();
+                var folder = await DefaultPickers.FolderPicker.PickSingleFolderAsync();
                 if (folder != null)
-                {
                     _playlistContentProvider.AddFolder(folder);
-                }
             }
         }
 
         public void OnRequestAddFiles()
         {
 
-        }
-
-        private static readonly Lazy<FolderPicker> _folderPicker = new Lazy<FolderPicker>(() =>
-        {
-            var picker = new FolderPicker()
-            {
-                ViewMode = PickerViewMode.List
-            };
-            picker.FileTypeFilter.Add("*");
-            return picker;
-        });
-
-        private FolderPicker FolderPicker => _folderPicker.Value;
-
-        private static readonly Dictionary<IPlaylistAnchor, WeakReference<PlaylistViewModel>> _viewModels = new Dictionary<IPlaylistAnchor, WeakReference<PlaylistViewModel>>();
-        public static PlaylistViewModel Activate(IPlaylistAnchor anchor)
-        {
-            PlaylistViewModel viewModel;
-            WeakReference<PlaylistViewModel> weak;
-            if(_viewModels.TryGetValue(anchor, out weak))
-            {
-                if (weak.TryGetTarget(out viewModel))
-                    return viewModel;
-                else
-                {
-                    viewModel = new PlaylistViewModel(anchor);
-                    weak.SetTarget(viewModel);
-                    return viewModel;
-                }
-            }
-            else
-            {
-                viewModel = new PlaylistViewModel(anchor);
-                _viewModels.Add(anchor, new WeakReference<PlaylistViewModel>(viewModel));
-                return viewModel;
-            }
         }
     }
 }

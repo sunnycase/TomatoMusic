@@ -5,7 +5,7 @@ using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
 using Tomato.TomatoMusic.Services;
 using Tomato.TomatoMusic.Shell.ViewModels;
-using Tomato.Uwp.Mvvm.Controls;
+using Tomato.Mvvm.Controls;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.UI.Xaml;

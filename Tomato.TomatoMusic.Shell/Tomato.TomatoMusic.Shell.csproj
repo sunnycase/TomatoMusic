@@ -11,7 +11,7 @@
     <AssemblyName>Tomato.TomatoMusic.Shell</AssemblyName>
     <DefaultLanguage>zh-CN</DefaultLanguage>
     <TargetPlatformIdentifier>UAP</TargetPlatformIdentifier>
-    <TargetPlatformVersion>10.0.10240.0</TargetPlatformVersion>
+    <TargetPlatformVersion>10.0.10586.0</TargetPlatformVersion>
     <TargetPlatformMinVersion>10.0.10240.0</TargetPlatformMinVersion>
     <MinimumVisualStudioVersion>14</MinimumVisualStudioVersion>
     <EnableDotNetNativeCompatibleProfile>true</EnableDotNetNativeCompatibleProfile>
@@ -90,7 +90,7 @@
     <UseVSHostingProcess>false</UseVSHostingProcess>
     <ErrorReport>prompt</ErrorReport>
     <Prefer32Bit>true</Prefer32Bit>
-    <UseDotNetNativeToolchain>true</UseDotNetNativeToolchain>
+    <UseDotNetNativeToolchain>false</UseDotNetNativeToolchain>
   </PropertyGroup>
   <ItemGroup Condition="Exists('ApplicationInsights.config')">
     <Content Include="ApplicationInsights.config">
@@ -118,6 +118,7 @@
     <Compile Include="ViewModels\MainViewModel.Playlist.cs" />
     <Compile Include="ViewModels\Playing\EffectsViewModel.cs" />
     <Compile Include="ViewModels\Playing\LyricsViewModel.cs" />
+    <Compile Include="ViewModels\Playing\PlayingViewModel.cs" />
     <Compile Include="ViewModels\PlaylistViewModel.cs" />
     <Compile Include="ViewModels\Playlist\MusicsViewModel.cs" />
     <Compile Include="ViewModels\SettingsViewModel.cs" />
@@ -259,7 +260,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <SDKReference Include="WindowsMobile, Version=10.0.10240.0">
+    <SDKReference Include="WindowsMobile, Version=10.0.10586.0">
       <Name>Windows Mobile Extensions for the UWP</Name>
     </SDKReference>
   </ItemGroup>

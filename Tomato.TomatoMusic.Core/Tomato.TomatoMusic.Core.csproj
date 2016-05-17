@@ -7,11 +7,11 @@
     <ProjectGuid>{3DCA3F42-22C9-4D8F-9F0C-3853D54B8B32}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Tomato.TomatoMusic.Core</RootNamespace>
+    <RootNamespace>Tomato.TomatoMusic</RootNamespace>
     <AssemblyName>Tomato.TomatoMusic.Core</AssemblyName>
     <DefaultLanguage>zh-CN</DefaultLanguage>
     <TargetPlatformIdentifier>UAP</TargetPlatformIdentifier>
-    <TargetPlatformVersion>10.0.10240.0</TargetPlatformVersion>
+    <TargetPlatformVersion>10.0.10586.0</TargetPlatformVersion>
     <TargetPlatformMinVersion>10.0.10240.0</TargetPlatformMinVersion>
     <MinimumVisualStudioVersion>14</MinimumVisualStudioVersion>
     <FileAlignment>512</FileAlignment>
@@ -109,9 +109,11 @@
   <ItemGroup>
     <Compile Include="AudioConstants.cs" />
     <Compile Include="AudioRpc.cs" />
-    <Compile Include="Configuration\MetadataConfiguration.cs" />
+    <Compile Include="Configuration\ConfigurationBase.cs" />
+    <Compile Include="MetadataConfiguration.cs" />
     <Compile Include="Configuration\PlayerConfiguration.cs" />
     <Compile Include="Configuration\ThemeConfiguration.cs" />
+    <Compile Include="DefaultPickers.cs" />
     <Compile Include="EnvironmentHelper.cs" />
     <Compile Include="IAudioController.cs" />
     <Compile Include="IAudioControllerHandler.cs" />
@@ -143,6 +145,7 @@
     <Compile Include="Services\IPlaySessionService.cs" />
     <Compile Include="Services\IThemeService.cs" />
     <Compile Include="Services\MediaTransportService.cs" />
+    <Compile Include="WeakReferenceDictionary.cs" />
     <None Include="RpcPackets\IAudioControllerHandler.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>IAudioControllerHandler.cs</LastGenOutput>
@@ -158,6 +161,9 @@
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>
+  </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject />
   </PropertyGroup>
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\WindowsXaml\v$(VisualStudioVersion)\Microsoft.Windows.UI.Xaml.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

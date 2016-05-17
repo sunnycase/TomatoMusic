@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Tomato.TomatoMusic.Primitives;
 using Tomato.TomatoMusic.Services;
-using Tomato.Uwp.Mvvm;
+using Tomato.Mvvm;
 using Windows.Media;
 
 namespace Tomato.TomatoMusic.Services

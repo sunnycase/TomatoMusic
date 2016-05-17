@@ -8,10 +8,10 @@
     xmlns:cal="using:Caliburn.Micro"
     xmlns:primitives="using:Tomato.TomatoMusic.Primitives"
     xmlns:localViewModels="using:Tomato.TomatoMusic.Shell.ViewModels.Playlist"
-    xmlns:converters="using:Tomato.Uwp.Mvvm.Converters"
+    xmlns:converters="using:Tomato.Mvvm.Converters"
     xmlns:localConverters="using:Tomato.TomatoMusic.Shell.Converters"
     xmlns:i="using:Microsoft.Xaml.Interactivity"
-    xmlns:behaviors="using:Tomato.Uwp.Mvvm.Behaviors"
+    xmlns:behaviors="using:Tomato.Mvvm.Behaviors"
     cal:Bind.Model="{x:Bind ViewModel, Mode=OneWay}"
     mc:Ignorable="d" x:Uid="Musics" Header="Musics">
     <PivotItem.Resources>

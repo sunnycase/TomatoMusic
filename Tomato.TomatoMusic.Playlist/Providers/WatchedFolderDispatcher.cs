@@ -10,8 +10,8 @@ using System.Threading.Tasks;
 using Caliburn.Micro;
 using Tomato.Media;
 using Tomato.TomatoMusic.Primitives;
-using Tomato.Uwp.Mvvm;
-using Tomato.Uwp.Mvvm.Threading;
+using Tomato.Mvvm;
+using Tomato.Threading;
 using Windows.Foundation;
 using Windows.Storage;
 using Windows.System.Threading;
@@ -125,7 +125,6 @@ namespace Tomato.TomatoMusic.Playlist.Providers
                     _wantUpdateFolders.Clear();
                     Execute.BeginOnUIThread(() => IsRefreshing = _wantUpdateFolders.Any());
                 }
-                GC.Collect();
                 Debug.WriteLine($"WatchedFolderDispatcher: Update Completed.");
             }
             catch (OperationCanceledException)
@@ -151,7 +150,6 @@ namespace Tomato.TomatoMusic.Playlist.Providers
         private async Task<Dictionary<WatchedFolder, IReadOnlyCollection<TrackInfo>>> FindTrackInfos(IEnumerable<WatchedFolder> folders, CancellationToken cancelToken)
         {
             var folderContents = new Dictionary<WatchedFolder, IReadOnlyCollection<TrackInfo>>();
-            int i = 0;
             foreach (var folder in folders)
             {
                 var tracks = new List<TrackInfo>();
@@ -160,11 +158,7 @@ namespace Tomato.TomatoMusic.Playlist.Providers
                 {
                     cancelToken.ThrowIfCancellationRequested();
                     await TryAddTrackInfo(file, tracks);
-                    if (i++ >= 10)
-                    {
-                        i = 0;
-                        GC.Collect();
-                    }
+                    await Task.Yield();
                 }
                 folderContents.Add(folder, tracks);
             }
@@ -177,16 +171,16 @@ namespace Tomato.TomatoMusic.Playlist.Providers
             {
                 using (var stream = await file.OpenReadAsync())
                 {
-                    var mediaSource = await MediaSource.CreateFromStream(stream);
-                    var title = mediaSource.Title;
+                    var metadata = await MediaMetadataProvider.CreateFromStream(stream, true);
+                    var title = metadata.Title;
                     var trackInfo = new TrackInfo
                     {
                         Source = new Uri(file.Path),
                         Title = string.IsNullOrWhiteSpace(title) ? Path.GetFileNameWithoutExtension(file.Path) : title,
-                        Album = mediaSource.Album,
-                        Artist = mediaSource.Artist,
-                        AlbumArtist = mediaSource.AlbumArtist,
-                        Duration = mediaSource.Duration
+                        Album = metadata.Album,
+                        Artist = metadata.Artist,
+                        AlbumArtist = metadata.AlbumArtist,
+                        Duration = metadata.Duration
                     };
                     tracks.Add(trackInfo);
                 }

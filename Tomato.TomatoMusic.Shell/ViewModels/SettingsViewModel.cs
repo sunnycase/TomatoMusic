@@ -5,12 +5,12 @@ using System.Text;
 using System.Threading.Tasks;
 using Tomato.TomatoMusic.Configuration;
 using Tomato.TomatoMusic.Services;
-using Tomato.Uwp.Mvvm;
+using Tomato.Mvvm;
 using Windows.System;
 
 namespace Tomato.TomatoMusic.Shell.ViewModels
 {
-    class SettingsViewModel : BindableBase
+    public class SettingsViewModel : BindableBase
     {
         public ThemeConfiguration ThemeConfiguration { get; }
         public MetadataConfiguration MetadataConfiguration { get; }

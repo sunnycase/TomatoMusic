@@ -16,12 +16,13 @@ namespace Tomato.TomatoMusic
     {
         public static void UseShell(this SimpleContainer container)
         {
-            container.PerRequest<MainViewModel>();
+            container.Singleton<MainViewModel>();
             container.PerRequest<PlaylistViewModel>();
-            container.PerRequest<LyricsViewModel>();
-            container.PerRequest<EffectsViewModel>();
-            container.PerRequest<SettingsViewModel>();
-            container.PerRequest<AboutViewModel>();
+            container.Singleton<PlayingViewModel>();
+            container.Singleton<LyricsViewModel>();
+            container.Singleton<EffectsViewModel>();
+            container.Singleton<SettingsViewModel>();
+            container.Singleton<AboutViewModel>();
             container.Instance(ResourceLoader.GetForCurrentView());
             container.Singleton<IConfigurationService, ConfigurationService>();
         }

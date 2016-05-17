@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using Caliburn.Micro;
 using Windows.ApplicationModel.Activation;
 using Windows.UI.Xaml.Controls;
-using Tomato.TomatoMusic.Shell.Views;
 using System.Threading.Tasks;
 using System.IO;
 using Newtonsoft.Json;
@@ -68,6 +67,7 @@ namespace Tomato.TomatoMusic.Shell
                 .AddLastFm(config.LastFmApiKey)
                 .AddLocalLyrics();
             _eventAggregator = _container.GetInstance<IEventAggregator>();
+            ViewModelBinder.ApplyConventionsByDefault = false;
         }
 
         protected override object GetInstance(Type service, string key)
@@ -85,11 +85,6 @@ namespace Tomato.TomatoMusic.Shell
             _container.BuildUp(instance);
         }
 
-        protected override void PrepareViewFirst(Frame rootFrame)
-        {
-            _container.RegisterNavigationService(rootFrame);
-        }
-
         protected override void OnLaunched(LaunchActivatedEventArgs args)
         {
 #if DEBUG
@@ -98,7 +93,7 @@ namespace Tomato.TomatoMusic.Shell
                 this.DebugSettings.EnableFrameRateCounter = true;
             }
 #endif
-            DisplayRootView<MainView>();
+            DisplayRootViewFor<ViewModels.MainViewModel>();
             if (args.PreviousExecutionState == ApplicationExecutionState.Terminated)
             {
                 //_eventAggregator.PublishOnUIThread(new ResumeStateMessage());

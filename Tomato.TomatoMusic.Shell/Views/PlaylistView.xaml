@@ -7,8 +7,7 @@
     xmlns:cal="using:Caliburn.Micro"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:playlistViews="using:Tomato.TomatoMusic.Shell.Views.Playlist"
-    mc:Ignorable="d"
-    cal:Bind.Model="{x:Bind ViewModel}">
+    mc:Ignorable="d">
     <Page.Resources>
         <cal:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
     </Page.Resources>

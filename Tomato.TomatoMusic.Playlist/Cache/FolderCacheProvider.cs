@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Tomato.TomatoMusic.Primitives;
-using Tomato.Uwp.Mvvm.Threading;
+using Tomato.Threading;
 using Windows.Foundation;
 using Windows.Security.Cryptography;
 using Windows.Security.Cryptography.Core;
@@ -103,11 +103,13 @@ namespace Tomato.TomatoMusic.Playlist.Cache
                     var stream = writer.Stream;
                     stream.Size = 0;
                     stream.Seek(0);
-                    var dw = new DataWriter(stream);
-                    dw.WriteString(content);
-                    await dw.StoreAsync();
-                    await dw.FlushAsync();
-                    dw.DetachStream();
+                    using (var dw = new DataWriter(stream))
+                    {
+                        dw.WriteString(content);
+                        await dw.StoreAsync();
+                        await dw.FlushAsync();
+                        dw.DetachStream();
+                    }
                     await writer.CommitAsync();
                 }
             });

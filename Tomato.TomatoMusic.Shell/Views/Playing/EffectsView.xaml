@@ -5,7 +5,7 @@
     xmlns:local="using:Tomato.TomatoMusic.Shell.Views.Playing"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:converters="using:Tomato.Uwp.Mvvm.Converters"
+    xmlns:converters="using:Tomato.Mvvm.Converters"
     mc:Ignorable="d" x:Uid="Effects" Header="Effects">
     <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
         <Grid Margin="20,0">

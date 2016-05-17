@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Tomato.TomatoMusic.Primitives;
-using Tomato.Uwp.Mvvm.Threading;
+using Tomato.Threading;
 using Windows.Storage;
 using Windows.Storage.Streams;
 

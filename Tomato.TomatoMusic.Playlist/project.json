@@ -1,10 +1,11 @@
 ﻿{
   "dependencies": {
-    "Caliburn.Micro.Core": "3.0.0-beta2",
-    "Microsoft.NETCore.UniversalWindowsPlatform": "5.0.0",
-    "Newtonsoft.Json": "8.0.1",
+    "Caliburn.Micro.Core": "3.0.0",
+    "Microsoft.NETCore.UniversalWindowsPlatform": "5.1.0",
+    "Newtonsoft.Json": "8.0.3",
     "Tomato.Media": "0.0.4-alpha2",
-    "Tomato.Media.Codec": "0.0.4-alpha2"
+    "Tomato.Media.Codec": "0.0.4-alpha2",
+    "Tomato.Threading": "0.0.1-alpha2"
   },
   "frameworks": {
     "uap10.0": {}

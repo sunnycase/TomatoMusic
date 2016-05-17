@@ -24,7 +24,7 @@ namespace Tomato.TomatoMusic.Shell.Views
     /// </summary>
     public sealed partial class SettingsView : Page
     {
-        internal SettingsViewModel ViewModel { get; } = IoC.Get<SettingsViewModel>();
+        internal SettingsViewModel ViewModel => (SettingsViewModel)DataContext;
 
         public SettingsView()
         {
