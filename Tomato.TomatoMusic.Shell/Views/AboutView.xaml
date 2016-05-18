@@ -20,7 +20,7 @@
                 <TextBlock x:Uid="Program" Style="{ThemeResource SubtitleTextBlockStyle}" TextAlignment="Center">Program</TextBlock>
                 <TextBlock Margin="0,5" TextAlignment="Center">SunnyCase</TextBlock>
                 <TextBlock x:Uid="Design" Margin="0,15" Style="{ThemeResource SubtitleTextBlockStyle}" TextAlignment="Center">Design</TextBlock>
-                <TextBlock TextAlignment="Center">啊昊</TextBlock>
+                <TextBlock TextAlignment="Center">布忍直士</TextBlock>
                 <TextBlock x:Uid="SpecialThanks" Margin="0,15" Style="{ThemeResource SubtitleTextBlockStyle}" TextAlignment="Center">Special Thanks</TextBlock>
                 <Button Background="Transparent" Margin="0,15" HorizontalAlignment="Center" Click="{x:Bind ViewModel.LaunchIYinYong}">
                     <StackPanel>

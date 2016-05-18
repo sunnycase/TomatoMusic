@@ -4,7 +4,7 @@
     "Inflatable.Lastfm": "0.2.3.263",
     "Lex.Db": "1.2.6",
     "Microsoft.NETCore.UniversalWindowsPlatform": "5.1.0",
-    "Tomato.Media": "0.0.4-alpha2",
+    "Tomato.Media": "0.0.4-alpha4",
     "Tomato.Mvvm.Core": "0.0.1-alpha2"
   },
   "frameworks": {

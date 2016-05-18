@@ -215,3 +215,4 @@ ModelManifest.xml
 /Tomato.TomatoMusic.Shell/ApplicationInsights.config
 /Tomato.TomatoMusic.Shell/config.json
 *.diagsession
+*.appx

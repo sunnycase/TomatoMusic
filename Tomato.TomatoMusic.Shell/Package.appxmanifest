@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Package xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10" xmlns:mp="http://schemas.microsoft.com/appx/2014/phone/manifest" xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10" IgnorableNamespaces="uap mp">
-  <Identity Name="10874Tomato.TomatoMusic" Publisher="CN=054DD4F6-0572-4A2D-AF34-B9CF23FCCE83" Version="1.1.8.0" />
+  <Identity Name="10874Tomato.TomatoMusic" Publisher="CN=054DD4F6-0572-4A2D-AF34-B9CF23FCCE83" Version="1.1.9.0" />
   <mp:PhoneIdentity PhoneProductId="0a423cf2-2085-4807-9c41-42b6bdbf3257" PhonePublisherId="00000000-0000-0000-0000-000000000000" />
   <Properties>
     <DisplayName>ms-resource:AppName</DisplayName>
@@ -15,14 +15,13 @@
   </Resources>
   <Applications>
     <Application Id="App" Executable="$targetnametoken$.exe" EntryPoint="Tomato.TomatoMusic.Shell.App">
-      <uap:VisualElements DisplayName="ms-resource:AppName" Square150x150Logo="Assets\Square150x150Logo.png" Square44x44Logo="Assets\Square44x44Logo.png" Description="Tomato.TomatoMusic.Shell" BackgroundColor="#f8f651">
-        <uap:LockScreen Notification="badge" BadgeLogo="Assets\badage.png" />
-        <uap:DefaultTile Wide310x150Logo="Assets\Wide310x150Logo.png" ShortName="Tomato Music">
+      <uap:VisualElements DisplayName="ms-resource:AppName" Square150x150Logo="Assets\Square150x150Logo.png" Square44x44Logo="Assets\Square44x44Logo.png" Description="Tomato.TomatoMusic.Shell" BackgroundColor="#007acc">
+        <uap:DefaultTile Wide310x150Logo="Assets\Wide310x150Logo.png" ShortName="ms-resource:AppName">
           <uap:ShowNameOnTiles>
             <uap:ShowOn Tile="square150x150Logo" />
           </uap:ShowNameOnTiles>
         </uap:DefaultTile>
-        <uap:SplashScreen Image="Assets\SplashScreen.png" BackgroundColor="#f8f651" />
+        <uap:SplashScreen Image="Assets\SplashScreen.png" BackgroundColor="#007acc" />
         <uap:InitialRotationPreference>
           <uap:Rotation Preference="portrait" />
           <uap:Rotation Preference="landscape" />

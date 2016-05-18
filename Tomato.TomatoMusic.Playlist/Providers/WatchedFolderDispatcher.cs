@@ -171,18 +171,21 @@ namespace Tomato.TomatoMusic.Playlist.Providers
             {
                 using (var stream = await file.OpenReadAsync())
                 {
-                    var metadata = await MediaMetadataProvider.CreateFromStream(stream, true);
-                    var title = metadata.Title;
-                    var trackInfo = new TrackInfo
+                    var metadata = await MediaMetadataProvider.TryCreateFromStream(stream, file.Path, true);
+                    if (metadata != null)
                     {
-                        Source = new Uri(file.Path),
-                        Title = string.IsNullOrWhiteSpace(title) ? Path.GetFileNameWithoutExtension(file.Path) : title,
-                        Album = metadata.Album,
-                        Artist = metadata.Artist,
-                        AlbumArtist = metadata.AlbumArtist,
-                        Duration = metadata.Duration
-                    };
-                    tracks.Add(trackInfo);
+                        var title = metadata.Title;
+                        var trackInfo = new TrackInfo
+                        {
+                            Source = new Uri(file.Path),
+                            Title = string.IsNullOrWhiteSpace(title) ? Path.GetFileNameWithoutExtension(file.Path) : title,
+                            Album = metadata.Album,
+                            Artist = metadata.Artist,
+                            AlbumArtist = metadata.AlbumArtist,
+                            Duration = metadata.Duration
+                        };
+                        tracks.Add(trackInfo);
+                    }
                 }
             }
             catch (Exception ex)

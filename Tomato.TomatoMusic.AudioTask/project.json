@@ -1,7 +1,7 @@
 ﻿{
   "dependencies": {
     "Microsoft.NETCore.UniversalWindowsPlatform": "5.1.0",
-    "Tomato.Media": "0.0.4-alpha2"
+    "Tomato.Media": "0.0.4-alpha4"
   },
   "frameworks": {
     "uap10.0": {}

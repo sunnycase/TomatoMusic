@@ -111,7 +111,7 @@ namespace Tomato.TomatoMusic.Playlist.Services
             _playlistIndexFile.PlaylistIndex.Playlists.Apply(o => _customPlaylists.Add(WrapPlaylistAnchor(o)));
         }
 
-        public async Task AddCustomPlaylist(string name)
+        public Task AddCustomPlaylist(string name)
         {
             var newPlaylist = new PlaylistPlaceholder
             {
@@ -119,6 +119,7 @@ namespace Tomato.TomatoMusic.Playlist.Services
                 Name = name
             };
             _customPlaylists.Add(WrapPlaylistAnchor(newPlaylist));
+            return Task.FromResult<object>(null);
         }
 
         private IPlaylistAnchor WrapPlaylistAnchor(PlaylistPlaceholder placeholder)
