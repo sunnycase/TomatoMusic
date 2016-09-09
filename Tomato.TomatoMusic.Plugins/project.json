@@ -1,10 +1,10 @@
 ﻿{
   "dependencies": {
-    "Caliburn.Micro.Core": "3.0.0",
-    "Inflatable.Lastfm": "0.2.3.263",
+    "Caliburn.Micro.Core": "3.0.1",
+    "Inflatable.Lastfm": "0.2.4.274",
     "Lex.Db": "1.2.6",
-    "Microsoft.NETCore.UniversalWindowsPlatform": "5.1.0",
-    "Tomato.Media": "0.0.4-alpha4",
+    "Microsoft.NETCore.UniversalWindowsPlatform": "5.2.2",
+    "Tomato.Media.Toolkit": "1.0.0-beta2",
     "Tomato.Mvvm.Core": "0.0.1-alpha2"
   },
   "frameworks": {

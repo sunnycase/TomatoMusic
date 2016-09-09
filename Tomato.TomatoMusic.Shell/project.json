@@ -1,16 +1,14 @@
 ﻿{
   "dependencies": {
-    "Caliburn.Micro": "3.0.0",
-    "Caliburn.Micro.Core": "3.0.0",
+    "Caliburn.Micro": "3.0.1",
+    "Caliburn.Micro.Core": "3.0.1",
+    "HockeySDK.UWP": "4.1.4",
     "Kfstorm.LrcParser": "1.0.3",
-    "Microsoft.ApplicationInsights": "2.0.1",
-    "Microsoft.ApplicationInsights.PersistenceChannel": "1.2.3",
-    "Microsoft.ApplicationInsights.WindowsApps": "1.1.1",
-    "Microsoft.NETCore.UniversalWindowsPlatform": "5.1.0",
+    "Microsoft.NETCore.UniversalWindowsPlatform": "5.2.2",
     "Microsoft.Xaml.Behaviors.Uwp.Managed": "1.1.0",
-    "Tomato.Mvvm.Caliburn": "0.0.1-alpha1",
+    "Tomato.Mvvm.Caliburn": "0.0.1-alpha2",
     "Tomato.Mvvm.Core": "0.0.1-alpha2",
-    "Tomato.Mvvm.Xaml": "0.0.1-alpha2"
+    "Tomato.Mvvm.Xaml": "0.0.1-alpha5"
   },
   "frameworks": {
     "uap10.0": {}

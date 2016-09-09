@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using System.IO;
 using Newtonsoft.Json;
 using Tomato.TomatoMusic.AudioTask;
+using Microsoft.HockeyApp;
 
 namespace Tomato.TomatoMusic.Shell
 {
@@ -17,7 +18,7 @@ namespace Tomato.TomatoMusic.Shell
     {
         private WinRTContainer _container;
         private IEventAggregator _eventAggregator;
-        private ILog _logger;
+        private Caliburn.Micro.ILog _logger;
 
         /// <summary>
         /// 初始化单一实例应用程序对象。这是执行的创作代码的第一行，
@@ -28,11 +29,11 @@ namespace Tomato.TomatoMusic.Shell
             LogManager.GetLog = type => new DebugLog(type);
             _logger = LogManager.GetLog(typeof(App));
 
-            Microsoft.ApplicationInsights.WindowsAppInitializer.InitializeAsync(
-                Microsoft.ApplicationInsights.WindowsCollectors.Metadata |
-                Microsoft.ApplicationInsights.WindowsCollectors.Session |
-                Microsoft.ApplicationInsights.WindowsCollectors.PageView |
-                Microsoft.ApplicationInsights.WindowsCollectors.UnhandledException);
+            HockeyClient.Current.Configure("d6df9da09fd74e0a8df588ba0afffa56", new TelemetryConfiguration
+            {
+                Collectors = WindowsCollectors.UnhandledException | WindowsCollectors.Metadata |
+                 WindowsCollectors.Session
+            });
             TaskScheduler.UnobservedTaskException += TaskScheduler_UnobservedTaskException;
             this.UnhandledException += App_UnhandledException;
             this.InitializeComponent();
@@ -40,16 +41,14 @@ namespace Tomato.TomatoMusic.Shell
 
         private void App_UnhandledException(object sender, Windows.UI.Xaml.UnhandledExceptionEventArgs e)
         {
-            var client = new Microsoft.ApplicationInsights.TelemetryClient();
-            client.TrackException(e.Exception);
+            HockeyClient.Current.TrackEvent(e.Exception.Flatten());
             _logger.Error(e.Exception);
             e.Handled = true;
         }
 
         private void TaskScheduler_UnobservedTaskException(object sender, UnobservedTaskExceptionEventArgs e)
         {
-            var client = new Microsoft.ApplicationInsights.TelemetryClient();
-            client.TrackException(e.Exception);
+            HockeyClient.Current.TrackEvent(ExceptionExtensions.Flatten(e.Exception.Flatten()));
             _logger.Error(e.Exception);
             e.SetObserved();
         }
@@ -61,7 +60,7 @@ namespace Tomato.TomatoMusic.Shell
             _container.RegisterWinRTServices();
 
             _container.UseShell();
-            _container.UseAudio().AddBackgroundMedia(typeof(BackgroundAudioHandler));
+            _container.UseAudio();
             _container.UsePlaylist();
             _container.UsePlugins()
                 .AddLastFm(config.LastFmApiKey)
@@ -110,7 +109,7 @@ namespace Tomato.TomatoMusic.Shell
             public string LastFmApiKey { get; set; }
         }
 
-        class MyLogger : ILog
+        class MyLogger : Caliburn.Micro.ILog
         {
             private readonly DebugLog _debug;
             private static StreamWriter _file = new StreamWriter(new FileStream(Path.Combine(Windows.Storage.ApplicationData.Current.LocalCacheFolder.Path,

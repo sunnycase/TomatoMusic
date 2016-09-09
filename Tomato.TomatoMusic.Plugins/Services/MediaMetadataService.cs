@@ -5,7 +5,6 @@ using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 using IF.Lastfm.Core.Api;
-using Tomato.Media;
 using Tomato.TomatoMusic.Configuration;
 using Tomato.TomatoMusic.Plugins.Client;
 using Tomato.TomatoMusic.Plugins.Config;
@@ -19,6 +18,7 @@ using System.IO;
 using Tomato.Mvvm;
 using Tomato.TomatoMusic.Plugins.Cache;
 using Windows.Storage.Streams;
+using Tomato.Media.Toolkit;
 
 namespace Tomato.TomatoMusic.Plugins.Services
 {
@@ -113,7 +113,7 @@ namespace Tomato.TomatoMusic.Plugins.Services
                     file = await StorageFile.GetFileFromPathAsync(uri.LocalPath);
                 else
                     throw new NotSupportedException("not supported uri.");
-                var provider = await MediaMetadataProvider.CreateFromStream(await file.OpenReadAsync(), false);
+                var provider = await MediaMetadataProvider.CreateFromStream(await file.OpenReadAsync(), uri.ToString(), false);
                 var cover = provider.Pictures.FirstOrDefault(o => o.PictureType.Contains("Cover"));
                 if (cover == null)
                     cover = provider.Pictures.FirstOrDefault();

@@ -108,13 +108,17 @@
     <None Include="project.json" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BackgroundAudioHandler.cs" />
+    <Compile Include="BackgroundAudioTask.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Tomato.TomatoMusic.Audio\Tomato.TomatoMusic.Audio.csproj">
       <Project>{0b7bee46-ad1b-4dd4-9ba2-7698bd30ed87}</Project>
       <Name>Tomato.TomatoMusic.Audio</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Tomato.TomatoMusic.Core\Tomato.TomatoMusic.Core.csproj">
+      <Project>{3DCA3F42-22C9-4D8F-9F0C-3853D54B8B32}</Project>
+      <Name>Tomato.TomatoMusic.Core</Name>
     </ProjectReference>
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">

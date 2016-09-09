@@ -5,62 +5,50 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Caliburn.Micro;
-using Tomato.Media;
 using Tomato.Rpc.Json;
 using Tomato.TomatoMusic.Core;
 using Tomato.TomatoMusic.Plugins;
 using Tomato.TomatoMusic.Primitives;
 using Tomato.TomatoMusic.Services;
 using Windows.Storage;
-using Tomato.Media.Codec;
 using Windows.Media;
 using Tomato.Mvvm;
-using MediaPlayerState = Windows.Media.Playback.MediaPlayerState;
-using Tomato.Media.Effect;
+using Windows.Media.Playback;
+using Tomato.Media.Toolkit;
 
 namespace Tomato.TomatoMusic.AudioTask
 {
-    class AudioController : BindableBase, IAudioController
+    public class AudioController : BindableBase, IAudioController
     {
-        private readonly BackgroundMediaPlayer _mediaPlayer;
+        private readonly MediaPlayer _mediaPlayer;
         private readonly IPlayModeManager _playModeManager;
-        private readonly CodecManager _codecManager;
+        private readonly MediaEnvironment _mediaEnvironment = new MediaEnvironment();
         private IPlayModeProvider _currentPlayMode;
 
         private IList<TrackInfo> _playlist;
         private TrackInfo _currentTrack;
 
         private bool _autoPlay;
-        private readonly ILog _logger;
+        private readonly ILog _logger = LogManager.GetLog(typeof(AudioController));
         private readonly MediaTransportService _mtService;
-        private EffectMediaStreamSource _mss;
-        private EqualizerEffectTransform _equalizerEffect;
 
-        #region Rpc
-        private readonly JsonServer<IAudioController> _audioControllerServer;
-        private readonly JsonClient<IAudioControllerHandler> _controllerHandlerClient;
+        private readonly AudioControllerDispatcher _controllerDisp;
         private readonly IAudioControllerHandler _controllerHandler;
-        #endregion
 
-        public AudioController(BackgroundMediaPlayer mediaPlayer)
+        public AudioController()
         {
-            _logger = LogManager.GetLog(typeof(AudioController));
-            #region Rpc
-            _audioControllerServer = new JsonServer<IAudioController>(s => new RpcCalledProxies.IAudioControllerRpcCalledProxy(s), this);
-            _controllerHandlerClient = new JsonClient<IAudioControllerHandler>(s => new RpcCallingProxies.IAudioControllerHandlerRpcCallingProxy(s));
-            _controllerHandler = _controllerHandlerClient.Proxy;
-            #endregion
-            _mediaPlayer = mediaPlayer;
-            _codecManager = new CodecManager();
-            _codecManager.RegisterDefaultCodecs();
+            _controllerDisp = new AudioControllerDispatcher(this);
+            _controllerHandler = _controllerDisp.ControllerHandler;
+            _mediaEnvironment.RegisterDefaultCodecs();
             _playModeManager = IoC.Get<IPlayModeManager>();
 
-            mediaPlayer.MediaOpened += MediaPlayer_MediaOpened;
-            mediaPlayer.MediaEnded += MediaPlayer_MediaEnded;
-            mediaPlayer.CurrentStateChanged += MediaPlayer_CurrentStateChanged;
-            mediaPlayer.SeekCompleted += MediaPlayer_SeekCompleted;
-            mediaPlayer.MediaFailed += MediaPlayer_MediaFailed;
-            _mtService = new MediaTransportService(mediaPlayer.SystemMediaTransportControls);
+            _mediaPlayer = BackgroundMediaPlayer.Current;
+            _mediaPlayer.MediaOpened += MediaPlayer_MediaOpened;
+            _mediaPlayer.MediaEnded += MediaPlayer_MediaEnded;
+            _mediaPlayer.CurrentStateChanged += MediaPlayer_CurrentStateChanged;
+            _mediaPlayer.SeekCompleted += MediaPlayer_SeekCompleted;
+            _mediaPlayer.MediaFailed += MediaPlayer_MediaFailed;
+            _mtService = new MediaTransportService(_mediaPlayer.SystemMediaTransportControls);
             _mtService.IsEnabled = _mtService.IsPauseEnabled = _mtService.IsPlayEnabled = true;
             _mtService.ButtonPressed += _mtService_ButtonPressed;
             InitializeEffects();
@@ -68,10 +56,10 @@ namespace Tomato.TomatoMusic.AudioTask
 
         private void InitializeEffects()
         {
-            _equalizerEffect = new EqualizerEffectTransform();
+            //_equalizerEffect = new EqualizerEffectTransform();
         }
 
-        private void MediaPlayer_MediaFailed(IMediaPlayer sender, Windows.Media.Playback.MediaPlayerFailedEventArgs args)
+        private void MediaPlayer_MediaFailed(MediaPlayer sender, Windows.Media.Playback.MediaPlayerFailedEventArgs args)
         {
             _logger.Warn(args.Error.ToString());
             _logger.Error(args.ExtendedErrorCode);
@@ -84,12 +72,12 @@ namespace Tomato.TomatoMusic.AudioTask
             }
         }
 
-        private void MediaPlayer_SeekCompleted(IMediaPlayer sender, object args)
+        private void MediaPlayer_SeekCompleted(MediaPlayer sender, object args)
         {
             _controllerHandler.NotifySeekCompleted();
         }
 
-        private void MediaPlayer_MediaEnded(IMediaPlayer sender, object args)
+        private void MediaPlayer_MediaEnded(MediaPlayer sender, object args)
         {
             var currentTrack = _currentTrack;
             var nextTrack = GetNextTrack();
@@ -117,11 +105,11 @@ namespace Tomato.TomatoMusic.AudioTask
             return currentTrack;
         }
 
-        private void MediaPlayer_CurrentStateChanged(IMediaPlayer sender, object args)
+        private void MediaPlayer_CurrentStateChanged(MediaPlayer sender, object args)
         {
-            _controllerHandler.NotifyControllerStateChanged(_mediaPlayer.State);
+            _controllerHandler.NotifyControllerStateChanged(_mediaPlayer.CurrentState);
 
-            switch (_mediaPlayer.State)
+            switch (_mediaPlayer.CurrentState)
             {
                 case MediaPlayerState.Closed:
                     CanPlay = CanPause = false;
@@ -163,7 +151,7 @@ namespace Tomato.TomatoMusic.AudioTask
             }
         }
 
-        private void MediaPlayer_MediaOpened(IMediaPlayer sender, object args)
+        private void MediaPlayer_MediaOpened(MediaPlayer sender, object args)
         {
             if (_autoPlay)
             {
@@ -171,6 +159,7 @@ namespace Tomato.TomatoMusic.AudioTask
                 Play();
             }
             _controllerHandler.NotifyMediaOpened();
+            _controllerHandler.NotifyDuration(_mediaPlayer.NaturalDuration);
         }
 
         public void Play()
@@ -193,23 +182,12 @@ namespace Tomato.TomatoMusic.AudioTask
                 else
                     throw new NotSupportedException("Not supported uri.");
                 
-                var mediaSource = await MediaSource.CreateFromStream(await file.OpenReadAsync(), uri.ToString());
-                var mss = CreateMediaStreamSource(mediaSource);
-                _controllerHandler.NotifyDuration(mediaSource.Duration);
-                _mediaPlayer.SetMediaStreamSource(mss.Source);
-                _mss = mss;
+                _mediaPlayer.SetFileSource(file);
             }
             catch
             {
                 PlaybackStatus = MediaPlaybackStatus.Closed;
             }
-        }
-
-        private EffectMediaStreamSource CreateMediaStreamSource(MediaSource mediaSource)
-        {
-            var mss = new EffectMediaStreamSource(mediaSource);
-            mss.AddTransform(_equalizerEffect);
-            return mss;
         }
 
         public void Pause()
@@ -438,56 +416,44 @@ namespace Tomato.TomatoMusic.AudioTask
 
         public void OnCanceled()
         {
+            _controllerDisp.OnCanceled();
             _mtService.Dispose();
         }
 
         public void AskPlaylist()
         {
             if (_playlist != null)
-                _controllerHandler?.NotifyPlaylist(_playlist);
+                _controllerHandler.NotifyPlaylist(_playlist);
         }
 
         public void AskCurrentTrack()
         {
-            _controllerHandler?.NotifyCurrentTrackChanged(_currentTrack);
+            _controllerHandler.NotifyCurrentTrackChanged(_currentTrack);
         }
 
         public void AskCurrentState()
         {
-            _controllerHandler?.NotifyControllerStateChanged(_mediaPlayer?.State ?? MediaPlayerState.Closed);
+            _controllerHandler.NotifyControllerStateChanged(_mediaPlayer?.CurrentState ?? MediaPlayerState.Closed);
         }
 
         public void AskDuration()
         {
-            _controllerHandler?.NotifyDuration(_currentTrack?.Duration);
+            _controllerHandler.NotifyDuration(_currentTrack?.Duration);
         }
 
         public void SetEqualizerParameter(float frequency, float bandWidth, float gain)
         {
-            _equalizerEffect.AddOrUpdateFilter(frequency, bandWidth, gain);
+            //_equalizerEffect.AddOrUpdateFilter(frequency, bandWidth, gain);
         }
 
         public void ClearEqualizerParameter(float frequency)
         {
-            _equalizerEffect.RemoveFilter(frequency);
+            //_equalizerEffect.RemoveFilter(frequency);
         }
-
-        #region Rpc
-        public void OnReceiveMessage(string message)
-        {
-            _audioControllerServer.OnReceive(message);
-        }
-
-        private readonly object _messageLocker = new object();
+        
         public void SetupHandler()
         {
-            _controllerHandlerClient.OnSendMessage = m =>
-            {
-                lock (_messageLocker)
-                _mediaPlayer.SendMessage(AudioRpc.RpcMessageTag, m);
-            };
             _controllerHandler.NotifyControllerReady();
         }
-        #endregion
     }
 }

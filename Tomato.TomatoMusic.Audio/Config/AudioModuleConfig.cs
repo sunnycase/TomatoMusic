@@ -8,6 +8,6 @@ namespace Tomato.TomatoMusic.Audio.Config
 {
     sealed class AudioModuleConfig
     {
-        public Type BackgroundMediaHandlerType { get; set; }
+
     }
 }

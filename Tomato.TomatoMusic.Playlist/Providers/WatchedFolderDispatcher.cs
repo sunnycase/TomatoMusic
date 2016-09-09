@@ -17,6 +17,7 @@ using Windows.Storage;
 using Windows.System.Threading;
 using Windows.System.Threading.Core;
 using Windows.UI.Core;
+using Tomato.Media.Toolkit;
 
 namespace Tomato.TomatoMusic.Playlist.Providers
 {
@@ -171,7 +172,7 @@ namespace Tomato.TomatoMusic.Playlist.Providers
             {
                 using (var stream = await file.OpenReadAsync())
                 {
-                    var metadata = await MediaMetadataProvider.TryCreateFromStream(stream, file.Path, true);
+                    var metadata = await MediaMetadataProvider.CreateFromStream(stream, file.Path, true);
                     if (metadata != null)
                     {
                         var title = metadata.Title;

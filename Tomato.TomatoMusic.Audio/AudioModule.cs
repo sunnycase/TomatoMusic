@@ -27,14 +27,5 @@ namespace Tomato.TomatoMusic
         {
             _container = container;
         }
-
-        public AudioModuleFluentConfig AddBackgroundMedia(Type backgroundMediaHandlerType)
-        {
-            _container.Instance(new AudioModuleConfig
-            {
-                BackgroundMediaHandlerType = backgroundMediaHandlerType
-            });
-            return this;
-        }
     }
 }

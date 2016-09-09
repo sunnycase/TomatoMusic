@@ -12,7 +12,7 @@ using Tomato.Mvvm;
 using Windows.Storage;
 using Tomato.TomatoMusic.Playlist.Providers;
 using Windows.Storage.AccessCache;
-using Tomato.Media.Codec;
+using Tomato.Media.Toolkit;
 
 namespace Tomato.TomatoMusic.Playlist.Services
 {
@@ -85,12 +85,12 @@ namespace Tomato.TomatoMusic.Playlist.Services
         private PlaylistIndexFile _playlistIndexFile;
 
         private readonly WeakReferenceDictionary<IPlaylistAnchor, IPlaylistContentProvider> _playlistContentProviders = new WeakReferenceDictionary<IPlaylistAnchor, IPlaylistContentProvider>();
-        private readonly CodecManager _codecManager;
+        private readonly MediaEnvironment _mediaEnvironment;
 
         public PlaylistManager()
         {
-            _codecManager = new CodecManager();
-            _codecManager.RegisterDefaultCodecs();
+            _mediaEnvironment = new MediaEnvironment();
+            _mediaEnvironment.RegisterDefaultCodecs();
             Initialize();
         }
 
@@ -261,7 +261,6 @@ namespace Tomato.TomatoMusic.Playlist.Services
                 var oldFolders = await GetFolders();
 
                 var toRemove = oldFolders.Except(folders).ToList();
-                _playlistFile.RemoveFolders(toRemove);
                 _watchedProvider.RemoveFolders(toRemove);
 
                 var toAdd = folders.Except(oldFolders).ToList();
@@ -270,8 +269,8 @@ namespace Tomato.TomatoMusic.Playlist.Services
                     if (!futureAccessList.CheckAccess(folder))
                         futureAccessList.Add(folder);
                 }
-                _playlistFile.AddFolders(toAdd);
                 _watchedProvider.AddFolders(toAdd);
+                _playlistFile.SetFolders(folders);
             }
         }
     }

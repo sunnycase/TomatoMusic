@@ -111,7 +111,7 @@
     <Compile Include="AudioTask\App.cs" />
     <Compile Include="AudioTask\AudioController.cs" />
     <Compile Include="AudioTask\AudioTaskModule.cs" />
-    <Compile Include="AudioTask\BackgroundAudioPlayerDispatcher.cs" />
+    <Compile Include="AudioTask\AudioControllerDispatcher.cs" />
     <Compile Include="AudioTask\MinimalApplication.cs" />
     <Compile Include="AudioTask\MinimalPlatformProvider.cs" />
     <Compile Include="Config\AudioModuleConfig.cs" />
@@ -135,6 +135,7 @@
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
     </Compile>
+    <Compile Include="Services\AudioControllerHandlerDispatcher.cs" />
     <Compile Include="Services\PlaySessionService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Content Include="Properties\Tomato.TomatoMusic.AudioServices.rd.xml" />

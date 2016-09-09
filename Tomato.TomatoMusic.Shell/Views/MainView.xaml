@@ -126,8 +126,7 @@
                 </Grid.RowDefinitions>
                 <Frame x:Name="ContentFrame" Loaded="{x:Bind ViewModel.SetupNavigationService}" Padding="10" DataContext="{x:Null}"/>
                 <!-- 音乐控制面板 -->
-                <local:PlayControlView Grid.Row="1" PlaySession="{x:Bind ViewModel.PlaySession}" Padding="15"
-                                       HamburgerMenu="{x:Bind hm_Menu}"/>
+                <local:PlayControlView Grid.Row="1" Padding="15" HamburgerMenu="{x:Bind hm_Menu}"/>
             </Grid>
         </controls:HamburgerMenu>
     </Grid>

@@ -161,39 +161,21 @@ namespace Tomato.TomatoMusic.Audio.Services
         }
 
         private bool _autoPlay = false;
-
-        private readonly BackgroundMediaPlayerClient _client;
+        
         private readonly IMediaTransportService _mtService;
         private readonly IPlayModeManager _playModeManager;
         private readonly Timer _askPositionTimer;
         private static readonly TimeSpan _askPositionPeriod = TimeSpan.FromSeconds(0.25);
         private PlayerConfiguration _playerConfig;
         private readonly ILog _logger;
-
-        #region Rpc
-        private readonly JsonServer<IAudioControllerHandler> _audioControllerHandlerServer;
-        private readonly JsonClient<IAudioController> _audioControllerClient;
+        private readonly AudioControllerHandlerDispatcher _audioHandlerDisp;
         private readonly IAudioController _audioController;
-        private readonly object _messageLocker = new object();
-        #endregion
 
         public PlaySessionService(AudioModuleConfig config)
         {
             _logger = LogManager.GetLog(typeof(PlaySessionService));
-            #region Rpc
-            _audioControllerHandlerServer = new JsonServer<IAudioControllerHandler>(s => new RpcCalledProxies.IAudioControllerHandlerRpcCalledProxy(s), this);
-            _audioControllerClient = new JsonClient<IAudioController>(s => new RpcCallingProxies.IAudioControllerRpcCallingProxy(s));
-            _audioControllerClient.OnSendMessage = m =>
-            {
-                try
-                {
-                    lock (_messageLocker)
-                    _client?.SendMessage(AudioRpc.RpcMessageTag, m);
-                }
-                catch { }
-            };
-            _audioController = _audioControllerClient.Proxy;
-            #endregion
+            _audioHandlerDisp = new AudioControllerHandlerDispatcher(this);
+            _audioController = _audioHandlerDisp.AudioController;
             _playModeManager = IoC.Get<IPlayModeManager>();
 
             _mtService = new MediaTransportService();
@@ -202,9 +184,6 @@ namespace Tomato.TomatoMusic.Audio.Services
             _askPositionTimer = new Timer(OnAskPosition, null, Timeout.InfiniteTimeSpan, _askPositionPeriod);
 
             LoadState();
-            _client = new BackgroundMediaPlayerClient(config.BackgroundMediaHandlerType);
-            _client.MessageReceived += _client_MessageReceived;
-            _client.PlayerActivated += _client_PlayerActivated;
             TryAskPreviousStates();
         }
 
@@ -381,7 +360,7 @@ namespace Tomato.TomatoMusic.Audio.Services
 
         void IAudioControllerHandler.NotifyControllerStateChanged(MediaPlayerState state)
         {
-            PlatformProvider.Current.BeginOnUIThread(() =>
+            Execute.BeginOnUIThread(() =>
             {
                 switch (state)
                 {
@@ -553,22 +532,5 @@ namespace Tomato.TomatoMusic.Audio.Services
                 SetProperty(ref _playlist, playlist ?? new List<TrackInfo>(), nameof(Playlist));
             });
         }
-
-        #region Rpc
-        private void _client_MessageReceived(object sender, MessageReceivedEventArgs e)
-        {
-            if (e.Tag == AudioRpc.RpcMessageTag)
-                OnReceiveMessage(e.Message);
-            else
-            {
-                Debug.WriteLine($"Player Message:{e.Tag}, {e.Message}");
-            }
-        }
-
-        private void OnReceiveMessage(string message)
-        {
-            _audioControllerHandlerServer.OnReceive(message);
-        }
-        #endregion
     }
 }

@@ -115,14 +115,10 @@ namespace Tomato.TomatoMusic.Playlist.Models
             }));
         }
 
-        public async void AddFolders(IEnumerable<StorageFolder> folders)
+        public async void SetFolders(IEnumerable<StorageFolder> folders)
         {
-            foreach (var folder in folders)
-            {
-                var path = folder.Path;
-                if (!_playlist.Folders.Contains(path))
-                    _playlist.Folders.Add(path);
-            }
+            _playlist.Folders.Clear();
+            _playlist.Folders.AddRange(folders.Select(o => o.Path));
             await Save();
         }
     }

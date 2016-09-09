@@ -15,6 +15,7 @@ using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
+using Caliburn.Micro;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
@@ -22,17 +23,10 @@ namespace Tomato.TomatoMusic.Shell.Views
 {
     public sealed partial class PlayControlView : UserControl
     {
-        public static DependencyProperty PlaySessionProperty { get; } = DependencyProperty.Register(nameof(PlaySession),
-            typeof(IPlaySessionService), typeof(PlayControlView), new PropertyMetadata(DependencyProperty.UnsetValue));
-
         public static DependencyProperty HamburgerMenuProperty { get; } = DependencyProperty.Register(nameof(HamburgerMenu),
             typeof(HamburgerMenu), typeof(PlayControlView), new PropertyMetadata(DependencyProperty.UnsetValue));
 
-        public IPlaySessionService PlaySession
-        {
-            get { return (IPlaySessionService)GetValue(PlaySessionProperty); }
-            set { SetValue(PlaySessionProperty, value); }
-        }
+        public IPlaySessionService PlaySession => Execute.InDesignMode ? null : IoC.Get<IPlaySessionService>();
 
         public HamburgerMenu HamburgerMenu
         {
