@@ -5,6 +5,8 @@
     "HockeySDK.UWP": "4.1.4",
     "Kfstorm.LrcParser": "1.0.3",
     "Microsoft.NETCore.UniversalWindowsPlatform": "5.2.2",
+    "Microsoft.Toolkit.Uwp.UI": "1.0.0",
+    "Microsoft.Toolkit.Uwp.UI.Controls": "1.0.0",
     "Microsoft.Xaml.Behaviors.Uwp.Managed": "1.1.0",
     "Tomato.Mvvm.Caliburn": "0.0.1-alpha2",
     "Tomato.Mvvm.Core": "0.0.1-alpha2",

@@ -7,7 +7,7 @@
     xmlns:primitives="using:Tomato.TomatoMusic.Primitives"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:controls="using:Tomato.Mvvm.Controls"
+    xmlns:controls="using:Microsoft.Toolkit.Uwp.UI.Controls"
     xmlns:converters="using:Tomato.Mvvm.Converters"
     xmlns:localConverters="using:Tomato.TomatoMusic.Shell.Converters"
     xmlns:cal="using:Caliburn.Micro"
@@ -15,12 +15,29 @@
     <Page.Resources>
         <ResourceDictionary>
             <localConverters:PlaylistToIconConverter x:Name="PlaylistToIconConverter"/>
+
+            <DataTemplate x:Key="OptionTemplate" x:DataType="localViewModels:OptionMenuItem">
+                <Grid Width="240" Height="48">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="48" />
+                        <ColumnDefinition />
+                    </Grid.ColumnDefinitions>
+                    <FontIcon Grid.Column="0" Margin="12,12,11,12" FontFamily="Segoe MDL2 Assets" Glyph="{Binding Glyph}" Foreground="White" />
+                    <TextBlock Grid.Column="1" Text="{x:Bind Text}" Foreground="White" FontSize="16" VerticalAlignment="Center" />
+                </Grid>
+            </DataTemplate>
+
+            <localViewModels:OptionMenuItemCollection x:Key="OptionMenuItems">
+                <localViewModels:OptionMenuItem Glyph="&#xE713;" x:Uid="Settings" Text="Settings"/>
+            </localViewModels:OptionMenuItemCollection>
         </ResourceDictionary>
     </Page.Resources>
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-        <controls:HamburgerMenu x:Name="hm_Menu">
-            <controls:HamburgerMenu.Pane>
+        <controls:HamburgerMenu x:Name="hm_Menu"
+                                OptionsItemTemplate="{StaticResource OptionTemplate}" OptionsItemsSource="{StaticResource OptionMenuItems}"
+                                >
+            <!--<controls:HamburgerMenu.ItemsSource>
                 <Grid Margin="0,5">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
@@ -44,8 +61,6 @@
                     <StackPanel>
                         <ContentPresenter Content="{x:Bind ViewModel.PlaylistManager.MusicLibrary}"
                                           ContentTemplate="{StaticResource PlaylistLabelTemplate}"/>
-                        <!--<ContentPresenter Content="{x:Bind ViewModel.PlaylistManager.Default}"
-                                          ContentTemplate="{StaticResource PlaylistLabelTemplate}"/>-->
                         <RadioButton Background="Transparent" GroupName="Playlist" Style="{StaticResource PlaylistLabelStyle}"
                                      IsChecked="{x:Bind ViewModel.IsPlayingViewSelected, Mode=TwoWay}"
                                      Click="{x:Bind ViewModel.NavigateToPlayingView}">
@@ -115,7 +130,7 @@
                         </Button>
                     </StackPanel>
                 </Grid>
-            </controls:HamburgerMenu.Pane>
+            </controls:HamburgerMenu.ItemsSource>-->
             <Grid>
                 <Grid.Background>
                     <ImageBrush ImageSource="{x:Bind ViewModel.ThemeService.Background, Mode=OneWay}" Opacity="0.2" Stretch="UniformToFill"/>
@@ -126,7 +141,7 @@
                 </Grid.RowDefinitions>
                 <Frame x:Name="ContentFrame" Loaded="{x:Bind ViewModel.SetupNavigationService}" Padding="10" DataContext="{x:Null}"/>
                 <!-- 音乐控制面板 -->
-                <local:PlayControlView Grid.Row="1" Padding="15" HamburgerMenu="{x:Bind hm_Menu}"/>
+                <!--<local:PlayControlView Grid.Row="1" Padding="15" HamburgerMenu="{x:Bind hm_Menu}"/>-->
             </Grid>
         </controls:HamburgerMenu>
     </Grid>
