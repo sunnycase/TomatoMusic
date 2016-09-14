@@ -8,6 +8,5 @@
     mc:Ignorable="d">
     <Pivot>
         <local:LyricsView/>
-        <local:EffectsView/>
     </Pivot>
 </Page>

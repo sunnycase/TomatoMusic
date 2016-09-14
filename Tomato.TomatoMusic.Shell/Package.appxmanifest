@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Package xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10" xmlns:mp="http://schemas.microsoft.com/appx/2014/phone/manifest" xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10" IgnorableNamespaces="uap mp">
-  <Identity Name="10874Tomato.TomatoMusic" Publisher="CN=054DD4F6-0572-4A2D-AF34-B9CF23FCCE83" Version="1.1.10.0" />
+  <Identity Name="10874Tomato.TomatoMusic" Publisher="CN=054DD4F6-0572-4A2D-AF34-B9CF23FCCE83" Version="1.1.11.0" />
   <mp:PhoneIdentity PhoneProductId="0a423cf2-2085-4807-9c41-42b6bdbf3257" PhonePublisherId="00000000-0000-0000-0000-000000000000" />
   <Properties>
     <DisplayName>ms-resource:AppName</DisplayName>
@@ -35,6 +35,23 @@
             <Task Type="audio" />
           </BackgroundTasks>
         </Extension>
+        <uap:Extension Category="windows.fileTypeAssociation">
+          <uap:FileTypeAssociation Name="tomato.tomatomusic">
+            <uap:DisplayName>ms-resource:AppName</uap:DisplayName>
+            <uap:Logo>Assets\StoreLogo.scale.png</uap:Logo>
+            <uap:SupportedFileTypes>
+              <uap:FileType ContentType="audio/mp3">.mp3</uap:FileType>
+              <uap:FileType ContentType="audio/wma">.wma</uap:FileType>
+              <uap:FileType ContentType="audio/wav">.wav</uap:FileType>
+              <uap:FileType ContentType="audio/ogg">.ogg</uap:FileType>
+              <uap:FileType ContentType="audio/flac">.flac</uap:FileType>
+              <uap:FileType ContentType="audio/tak">.tak</uap:FileType>
+              <uap:FileType ContentType="audio/aac">.aac</uap:FileType>
+              <uap:FileType ContentType="audio/alac">.alac</uap:FileType>
+              <uap:FileType ContentType="audio/m4a">.m4a</uap:FileType>
+            </uap:SupportedFileTypes>
+          </uap:FileTypeAssociation>
+        </uap:Extension>
       </Extensions>
     </Application>
   </Applications>

@@ -86,6 +86,7 @@ namespace Tomato.TomatoMusic.Shell
 
         protected override void OnLaunched(LaunchActivatedEventArgs args)
         {
+            if (args.PrelaunchActivated) return;
 #if DEBUG
             if (System.Diagnostics.Debugger.IsAttached)
             {

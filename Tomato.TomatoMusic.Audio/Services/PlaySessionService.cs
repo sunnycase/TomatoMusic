@@ -210,7 +210,7 @@ namespace Tomato.TomatoMusic.Audio.Services
             _playerConfig = configService.Player;
             PlayMode = _playModeManager.GetProvider(_playerConfig.PlayMode);
             Volume = _playerConfig.Volume;
-            _playerConfig.EqualizerParameters.CollectionChanged += EqualizerParameters_CollectionChanged;
+            //_playerConfig.EqualizerParameters.CollectionChanged += EqualizerParameters_CollectionChanged;
         }
 
         public void RequestPlay()

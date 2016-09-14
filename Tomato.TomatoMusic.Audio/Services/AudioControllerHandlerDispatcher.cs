@@ -14,7 +14,6 @@ namespace Tomato.TomatoMusic.Audio.Services
     {
         private readonly JsonServer<IAudioControllerHandler> _audioControllerHandlerServer;
         private readonly JsonClient<IAudioController> _audioControllerClient;
-        private readonly IAudioController _audioController;
         private readonly object _messageLocker = new object();
 
         public IAudioController AudioController => _audioControllerClient.Proxy;
