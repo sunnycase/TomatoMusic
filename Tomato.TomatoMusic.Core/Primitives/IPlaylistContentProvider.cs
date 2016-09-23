@@ -7,16 +7,18 @@ using Caliburn.Micro;
 using Windows.Storage;
 using System.ComponentModel;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 
 namespace Tomato.TomatoMusic.Primitives
 {
     public interface IPlaylistContentProvider : INotifyPropertyChanged
     {
-        Task<IObservableCollection<TrackInfo>> Result { get; }
+        IReadOnlyCollection<TrackInfo> Tracks { get; }
+        event NotifyCollectionChangedEventHandler TracksChanged;
+
         void AddFolder(StorageFolder folder);
         Task<IReadOnlyList<StorageFolder>> GetFolders();
         bool IsRefreshing { get; }
-
         void UpdateFolders(IReadOnlyList<StorageFolder> folders);
     }
 }

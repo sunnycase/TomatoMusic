@@ -16,14 +16,14 @@ namespace Tomato.TomatoMusic.Shell.ViewModels
 {
     public class PlaylistViewModel : BindableBase
     {
-        private IPlaylistAnchor _anchor;
-        public IPlaylistAnchor Anchor
+        private PlaylistPlaceholder _playlist;
+        public PlaylistPlaceholder Playlist
         {
-            get { return _anchor; }
+            get { return _playlist; }
             private set
             {
-                if (SetProperty(ref _anchor, value))
-                    OnAnchorChanged();
+                if (SetProperty(ref _playlist, value))
+                    OnPlaylistChanged();
             }
         }
 
@@ -38,13 +38,13 @@ namespace Tomato.TomatoMusic.Shell.ViewModels
             }
         }
 
-        public bool IsValid => Anchor != null;
+        public bool IsValid => Playlist != null;
 
-        private MusicsViewModel _musicsViewModel;
-        internal MusicsViewModel MusicsViewModel
+        private object _musicsPresenterViewModel;
+        public object MusicsPresenterViewModel
         {
-            get { return _musicsViewModel; }
-            private set { SetProperty(ref _musicsViewModel, value); }
+            get { return _musicsPresenterViewModel; }
+            private set { SetProperty(ref _musicsPresenterViewModel, value); }
         }
 
         private bool _isRefreshing;
@@ -54,11 +54,24 @@ namespace Tomato.TomatoMusic.Shell.ViewModels
             private set { SetProperty(ref _isRefreshing, value); }
         }
 
-        public bool CanEditName => IsValid ? Anchor.Placeholder.Key != Primitives.Playlist.DefaultPlaylistKey &&
-            Anchor.Placeholder.Key != Primitives.Playlist.MusicLibraryPlaylistKey : false;
-        public bool CanEditContent => IsValid ? Anchor.Placeholder.Key != Primitives.Playlist.DefaultPlaylistKey : false;
+        public bool CanEditName => IsValid ? Playlist.Key != Primitives.Playlist.DefaultPlaylistKey &&
+            Playlist.Key != Primitives.Playlist.MusicLibraryPlaylistKey : false;
+        public bool CanEditContent => IsValid ? Playlist.Key != Primitives.Playlist.DefaultPlaylistKey : false;
 
         private IPlaylistContentProvider _playlistContentProvider;
+
+        public MusicsViewType[] MusicsViewTypes { get; } = new MusicsViewType[]
+        {
+            MusicsViewType.Musics,
+            MusicsViewType.Albums
+        };
+
+        private MusicsViewType _selectedMusicsViewType;
+        public MusicsViewType SelectedMusicsViewType
+        {
+            get { return _selectedMusicsViewType; }
+            set { SetProperty(ref _selectedMusicsViewType, value); }
+        }
 
         public PlaylistViewModel()
         {
@@ -79,35 +92,46 @@ namespace Tomato.TomatoMusic.Shell.ViewModels
             }
         }
 
-        private void OnAnchorChanged()
+        private void OnPlaylistChanged()
         {
             if (_playlistContentProvider != null)
                 _playlistContentProvider.PropertyChanged -= Provider_PropertyChanged;
 
-            if (Anchor != null)
+            if (Playlist != null)
             {
-                MusicsViewModel = new MusicsViewModel(Anchor);
-                _playlistContentProvider = IoC.Get<IPlaylistManager>().GetPlaylistContentProvider(Anchor);
+                _playlistContentProvider = IoC.Get<IPlaylistManager>().GetPlaylistContentProvider(Playlist);
                 IsRefreshing = _playlistContentProvider.IsRefreshing;
                 _playlistContentProvider.PropertyChanged += Provider_PropertyChanged;
             }
             else
             {
-                MusicsViewModel = null;
                 IsRefreshing = false;
+            }
+            OnMusicsViewChanged();
+        }
+
+        private void OnMusicsViewChanged()
+        {
+            if (Playlist != null)
+            {
+                MusicsPresenterViewModel = new MusicsViewModel(Playlist);
+            }
+            else
+            {
+                MusicsPresenterViewModel = null;
             }
         }
 
         private void OnKeyChanged()
         {
-            Anchor = IoC.Get<IPlaylistManager>().GetAnchorByKey(Key);
+            Playlist = IoC.Get<IPlaylistManager>().GetPlaylistByKey(Key);
         }
 
         public async void OnRequestManageFolders()
         {
             if(IsValid)
             {
-                var viewModel = new ManageWatchedFoldersViewModel(Anchor);
+                var viewModel = new ManageWatchedFoldersViewModel(Playlist);
                 if (await viewModel.ShowAsync() == Windows.UI.Xaml.Controls.ContentDialogResult.Primary)
                     _playlistContentProvider.UpdateFolders(viewModel.Folders);
             }

@@ -23,31 +23,11 @@ namespace Tomato.TomatoMusic.Shell.Views
 {
     public sealed partial class PlayControlView : UserControl
     {
-        public static DependencyProperty HamburgerMenuProperty { get; } = DependencyProperty.Register(nameof(HamburgerMenu),
-            typeof(HamburgerMenu), typeof(PlayControlView), new PropertyMetadata(DependencyProperty.UnsetValue));
-
-        public IPlaySessionService PlaySession => Execute.InDesignMode ? null : IoC.Get<IPlaySessionService>();
-
-        public HamburgerMenu HamburgerMenu
-        {
-            get { return (HamburgerMenu)GetValue(HamburgerMenuProperty); }
-            set { SetValue(HamburgerMenuProperty, value); }
-        }
+        public IPlaySessionService PlaySession { get; } = Execute.InDesignMode ? null : IoC.Get<IPlaySessionService>();
 
         public PlayControlView()
         {
             this.InitializeComponent();
-        }
-
-        public void SwitchHamburger()
-        {
-            HamburgerMenu?.SwitchPane();
-        }
-
-        public void SwitchPlayingView()
-        {
-            var mainViewModel = MainViewModel.Current;
-            mainViewModel?.SwitchPlayingView();
         }
     }
 }

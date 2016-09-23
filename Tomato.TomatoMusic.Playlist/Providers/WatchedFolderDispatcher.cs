@@ -124,13 +124,16 @@ namespace Tomato.TomatoMusic.Playlist.Providers
                 lock (_wantUpdateFolders)
                 {
                     _wantUpdateFolders.Clear();
-                    Execute.BeginOnUIThread(() => IsRefreshing = _wantUpdateFolders.Any());
                 }
                 Debug.WriteLine($"WatchedFolderDispatcher: Update Completed.");
             }
             catch (OperationCanceledException)
             {
                 Debug.WriteLine($"WatchedFolderDispatcher: Cancel Update.");
+            }
+            finally
+            {
+                Execute.BeginOnUIThread(() => IsRefreshing = false);
             }
         }
 

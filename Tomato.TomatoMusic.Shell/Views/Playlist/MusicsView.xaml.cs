@@ -18,20 +18,12 @@ using Windows.UI.Xaml.Navigation;
 
 namespace Tomato.TomatoMusic.Shell.Views.Playlist
 {
-    public sealed partial class MusicsView : PivotItem
+    public sealed partial class MusicsView : UserControl
     {
-        internal static readonly DependencyProperty ViewModelProperty = DependencyProperty.Register(nameof(ViewModel), typeof(MusicsViewModel),
-            typeof(MusicsView), new PropertyMetadata(null));
-
-        internal MusicsViewModel ViewModel
-        {
-            get { return (MusicsViewModel)GetValue(ViewModelProperty); }
-            set { SetValue(ViewModelProperty, value); }
-        }
+        internal MusicsViewModel ViewModel => (MusicsViewModel)DataContext;
 
         public MusicsView()
         {
-            RegisterPropertyChangedCallback(ViewModelProperty, OnViewModelPropertyChanged);
             this.InitializeComponent();
         }
 

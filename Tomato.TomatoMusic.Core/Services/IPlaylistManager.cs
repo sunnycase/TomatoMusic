@@ -6,22 +6,21 @@ using System.Text;
 using System.Threading.Tasks;
 using Caliburn.Micro;
 using Tomato.TomatoMusic.Primitives;
+using System.Collections.Specialized;
 
 namespace Tomato.TomatoMusic.Services
 {
-    public interface IPlaylistManager : INotifyPropertyChanged
+    public interface IPlaylistManager
     {
-        IReadOnlyCollection<IPlaylistAnchor> CustomPlaylists { get; }
+        IReadOnlyList<PlaylistPlaceholder> CustomPlaylists { get; }
+        event NotifyCollectionChangedEventHandler CustomPlaylistsChanged;
 
         Task AddCustomPlaylist(string name);
 
-        IPlaylistAnchor MusicLibrary { get; }
-        IPlaylistAnchor Default { get; }
+        PlaylistPlaceholder MusicLibrary { get; }
 
-        IPlaylistContentProvider GetPlaylistContentProvider(IPlaylistAnchor anchor);
+        IPlaylistContentProvider GetPlaylistContentProvider(PlaylistPlaceholder playlist);
 
-        IPlaylistAnchor SelectedPlaylist { get; }
-
-        IPlaylistAnchor GetAnchorByKey(Guid key);
+        PlaylistPlaceholder GetPlaylistByKey(Guid key);
     }
 }

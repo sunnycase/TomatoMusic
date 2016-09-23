@@ -47,9 +47,9 @@ namespace Tomato.TomatoMusic.Shell.ViewModels.Playlist
         private readonly IPlaylistContentProvider _contentProvider;
         private ListView _foldersList;
 
-        public ManageWatchedFoldersViewModel(IPlaylistAnchor anchor)
+        public ManageWatchedFoldersViewModel(PlaylistPlaceholder playlist)
         {
-            _contentProvider = IoC.Get<IPlaylistManager>().GetPlaylistContentProvider(anchor);
+            _contentProvider = IoC.Get<IPlaylistManager>().GetPlaylistContentProvider(playlist);
             LoadData();
         }
 

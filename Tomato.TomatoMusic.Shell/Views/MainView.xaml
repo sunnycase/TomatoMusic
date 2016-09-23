@@ -10,6 +10,7 @@
     xmlns:controls="using:Microsoft.Toolkit.Uwp.UI.Controls"
     xmlns:converters="using:Tomato.Mvvm.Converters"
     xmlns:localConverters="using:Tomato.TomatoMusic.Shell.Converters"
+    xmlns:localControls="using:Tomato.TomatoMusic.Shell.Controls"
     xmlns:cal="using:Caliburn.Micro"
     mc:Ignorable="d">
     <Page.Resources>
@@ -22,21 +23,38 @@
                         <ColumnDefinition Width="48" />
                         <ColumnDefinition />
                     </Grid.ColumnDefinitions>
-                    <FontIcon Grid.Column="0" Margin="12,12,11,12" FontFamily="Segoe MDL2 Assets" Glyph="{Binding Glyph}" Foreground="White" />
+                    <FontIcon Grid.Column="0" Margin="12,12,11,12" FontFamily="Segoe MDL2 Assets" Glyph="{x:Bind Glyph}" Foreground="White" />
+                    <TextBlock Grid.Column="1" Text="{x:Bind Text}" Foreground="White" FontSize="16" VerticalAlignment="Center" />
+                </Grid>
+            </DataTemplate>
+            
+            <DataTemplate x:Key="MenuItemTemplate" x:DataType="localViewModels:MenuItem">
+                <Grid Width="240" Height="48">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="48" />
+                        <ColumnDefinition />
+                    </Grid.ColumnDefinitions>
+                    <FontIcon Grid.Column="0" Margin="12,12,11,12" FontFamily="Segoe MDL2 Assets" Glyph="{x:Bind Glyph}" Foreground="White" />
                     <TextBlock Grid.Column="1" Text="{x:Bind Text}" Foreground="White" FontSize="16" VerticalAlignment="Center" />
                 </Grid>
             </DataTemplate>
 
             <localViewModels:OptionMenuItemCollection x:Key="OptionMenuItems">
-                <localViewModels:OptionMenuItem Glyph="&#xE713;" x:Uid="Settings" Text="Settings"/>
+                <localViewModels:OptionMenuItem Glyph="&#xE713;" x:Uid="Settings" Text="Settings" Kind="Settings"/>
             </localViewModels:OptionMenuItemCollection>
         </ResourceDictionary>
     </Page.Resources>
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-        <controls:HamburgerMenu x:Name="hm_Menu"
-                                OptionsItemTemplate="{StaticResource OptionTemplate}" OptionsItemsSource="{StaticResource OptionMenuItems}"
-                                >
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <localControls:HamburgerMenu x:Name="hm_Menu"
+                                     OptionsItemTemplate="{StaticResource OptionTemplate}" OptionsItemsSource="{StaticResource OptionMenuItems}"
+                                     ItemsSource="{x:Bind ViewModel.SolidMenuItems}" ItemTemplate="{StaticResource MenuItemTemplate}"
+                                     ItemClick="hm_Menu_ItemClick" OptionsItemClick="hm_Menu_OptionsItemClick" 
+                                     Template="{StaticResource AppHamburgerMenuControlTemplate}">
             <!--<controls:HamburgerMenu.ItemsSource>
                 <Grid Margin="0,5">
                     <Grid.RowDefinitions>
@@ -140,9 +158,9 @@
                     <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
                 <Frame x:Name="ContentFrame" Loaded="{x:Bind ViewModel.SetupNavigationService}" Padding="10" DataContext="{x:Null}"/>
-                <!-- 音乐控制面板 -->
-                <!--<local:PlayControlView Grid.Row="1" Padding="15" HamburgerMenu="{x:Bind hm_Menu}"/>-->
             </Grid>
-        </controls:HamburgerMenu>
+        </localControls:HamburgerMenu>
+        <!-- 音乐控制面板 -->
+        <local:PlayControlView Grid.Row="1" Padding="15"/>
     </Grid>
 </Page>

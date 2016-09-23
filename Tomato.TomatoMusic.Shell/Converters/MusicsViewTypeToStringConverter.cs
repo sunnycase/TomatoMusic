@@ -1,23 +1,20 @@
-﻿using System;
+﻿using Caliburn.Micro;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Tomato.TomatoMusic.Primitives;
-using Windows.UI.Xaml.Controls;
+using Windows.ApplicationModel.Resources;
 using Windows.UI.Xaml.Data;
 
 namespace Tomato.TomatoMusic.Shell.Converters
 {
-    class PlaylistToIconConverter : IValueConverter
+    class MusicsViewTypeToStringConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, string language)
         {
-            var playlist = value as PlaylistPlaceholder;
-            var guid = playlist?.Key;
-            if (guid == Primitives.Playlist.MusicLibraryPlaylistKey)
-                return Symbol.Library;
-            return Symbol.MusicInfo;
+            return IoC.Get<ResourceLoader>().GetString($"MusicsViewType/{((MusicsViewType)value).ToString()}");
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, string language)

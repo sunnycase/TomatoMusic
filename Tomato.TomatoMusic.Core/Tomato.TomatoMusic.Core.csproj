@@ -119,6 +119,7 @@
     <Compile Include="IAudioControllerHandler.cs" />
     <Compile Include="MediaHelper.cs" />
     <Compile Include="Primitives\IMediaMetadata.cs" />
+    <Compile Include="Primitives\MusicsViewType.cs" />
     <Compile Include="RpcPackets\IAudioControllerHandler.cs">
       <DependentUpon>IAudioControllerHandler.tt</DependentUpon>
       <AutoGen>True</AutoGen>
@@ -130,7 +131,6 @@
       <DependentUpon>IAudioController.tt</DependentUpon>
     </Compile>
     <Compile Include="Primitives\IHasKey.cs" />
-    <Compile Include="Primitives\IPlaylistAnchor.cs" />
     <Compile Include="Primitives\IPlaylistContentProvider.cs" />
     <Compile Include="Primitives\Playlist.cs" />
     <Compile Include="Primitives\PlaylistPlaceholder.cs" />

@@ -195,4 +195,10 @@
   <data name="SpecialThanks.Text" xml:space="preserve">
     <value>Special Thanks</value>
   </data>
+  <data name="MusicsViewType.Albums" xml:space="preserve">
+    <value>Albums</value>
+  </data>
+  <data name="MusicsViewType.Musics" xml:space="preserve">
+    <value>Musics</value>
+  </data>
 </root>

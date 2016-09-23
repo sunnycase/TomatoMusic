@@ -3,6 +3,8 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:Tomato.TomatoMusic.Shell.Views"
+    xmlns:localConverters="using:Tomato.TomatoMusic.Shell.Converters"
+    xmlns:converters="using:Tomato.Mvvm.Converters"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:cal="using:Caliburn.Micro"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -10,6 +12,8 @@
     mc:Ignorable="d">
     <Page.Resources>
         <cal:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
+        <localConverters:MusicsViewTypeToStringConverter x:Key="MusicsViewTypeToStringConverter"/>
+        <converters:DummyConverter x:Key="DummyConverter"/>
     </Page.Resources>
 
     <Grid>
@@ -19,31 +23,34 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         <StackPanel Orientation="Horizontal">
-            <TextBlock x:Name="tb_Title" Text="{x:Bind ViewModel.Anchor.Placeholder.Name}" FontSize="25" Padding="0,5"/>
+            <TextBlock x:Name="tb_Title" Text="{x:Bind ViewModel.Playlist.Name}" FontSize="25" Padding="0,5"/>
             <Button Style="{StaticResource TrackFunctionalButtonStyle}"
                     Visibility="{x:Bind ViewModel.CanEditName, Converter={StaticResource BooleanToVisibilityConverter}, Mode=OneWay}">
                 <SymbolIcon Symbol="Edit"/>
             </Button>
         </StackPanel>
-        <Border Grid.Row="1" BorderBrush="#777" BorderThickness="0,1,0,1" Margin="5">
+        <Border Grid.Row="1" BorderBrush="#777" BorderThickness="0,1,0,1" Margin="0 5">
             <StackPanel Orientation="Horizontal">
-                <!--<HyperlinkButton x:Uid="AddFolder" Content="Add Folder" Style="{StaticResource PlaylistHyperlinkButtonStyle}"
-                                 Click="{x:Bind ViewModel.OnRequestAddFolder}"
-                                 Visibility="{x:Bind ViewModel.CanEditContent, Converter={StaticResource BooleanToVisibilityConverter}}"/>-->
-                <!--<HyperlinkButton x:Uid="AddFiles" Content="Add Files" Style="{StaticResource PlaylistHyperlinkButtonStyle}"
-                                 Click="{x:Bind ViewModel.OnRequestAddFiles}"
-                                 Visibility="{x:Bind ViewModel.CanEditContent, Converter={StaticResource BooleanToVisibilityConverter}, Mode=OneWay}"/>-->
                 <HyperlinkButton x:Uid="ManagerFolders" Content="ManageFolders" Style="{StaticResource PlaylistHyperlinkButtonStyle}"
                                  Click="{x:Bind ViewModel.OnRequestManageFolders}"
                                  Visibility="{x:Bind ViewModel.CanEditContent, Converter={StaticResource BooleanToVisibilityConverter}}"/>
 
                 <ProgressRing Margin="5,0" IsActive="{x:Bind ViewModel.IsRefreshing, Mode=OneWay}"/>
+                <TextBlock Text="View: " Style="{StaticResource PlaylistToolbarTextBlockStyle}"/>
+                <ComboBox Style="{StaticResource PlaylistToolbarComboboxStyle}"
+                          ItemsSource="{x:Bind ViewModel.MusicsViewTypes}" SelectedItem="{x:Bind ViewModel.SelectedMusicsViewType, Mode=TwoWay, Converter={StaticResource DummyConverter}}">
+                    <ComboBox.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding Converter={StaticResource MusicsViewTypeToStringConverter}}"/>
+                        </DataTemplate>
+                    </ComboBox.ItemTemplate>
+                </ComboBox>
+                          
+                <TextBlock Text="Order by: " Style="{StaticResource PlaylistToolbarTextBlockStyle}"/>
+                <ComboBox Style="{StaticResource PlaylistToolbarComboboxStyle}"/>
             </StackPanel>
         </Border>
-        <Pivot Grid.Row="2">
-            <playlistViews:MusicsView ViewModel="{x:Bind ViewModel.MusicsViewModel}"/>
-            <!--<playlistViews:AlbumsView/>
-            <playlistViews:ArtistsView/>-->
-        </Pivot>
+        <ContentControl Grid.Row="2" cal:View.Model="{x:Bind ViewModel.MusicsPresenterViewModel, Mode=OneWay}"
+                        HorizontalContentAlignment="Stretch"/>
     </Grid>
 </Page>

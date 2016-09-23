@@ -38,12 +38,11 @@ namespace Tomato.TomatoMusic.Shell.ViewModels.Playlist
 
     class MusicsViewModel : Screen
     {
-        private readonly IPlaylistAnchor _anchor;
+        private readonly PlaylistPlaceholder _playlist;
         private IPlaylistContentProvider _playlistContentProvider;
-        private IObservableCollection<TrackInfo> _tracksSource;
         private readonly IPlaySessionService _playSession;
 
-        public BindableCollection<MusicsTrackViewModel> Tracks { get; private set; }
+        public BindableCollection<MusicsTrackViewModel> Tracks { get; } = new BindableCollection<MusicsTrackViewModel>();
 
         private bool _isRefreshing;
         public bool IsRefreshing
@@ -53,12 +52,13 @@ namespace Tomato.TomatoMusic.Shell.ViewModels.Playlist
         }
 
         private bool _loadStarted;
+        private IReadOnlyCollection<TrackInfo> TracksSource => _playlistContentProvider.Tracks;
 
         public event Action<MusicsTrackViewModel> RequestViewSelect;
 
-        public MusicsViewModel(IPlaylistAnchor anchor)
+        public MusicsViewModel(PlaylistPlaceholder playlist)
         {
-            _anchor = anchor;
+            _playlist = playlist;
             _playSession = IoC.Get<IPlaySessionService>();
             _playSession.PropertyChanged += _playSession_PropertyChanged;
         }
@@ -72,17 +72,15 @@ namespace Tomato.TomatoMusic.Shell.ViewModels.Playlist
             }
         }
 
-        private async void LoadData()
+        private void LoadData()
         {
             IsRefreshing = true;
             try
             {
-                _playlistContentProvider = IoC.Get<IPlaylistManager>().GetPlaylistContentProvider(_anchor);
-                _tracksSource = await _playlistContentProvider.Result;
-                Tracks = new BindableCollection<MusicsTrackViewModel>(_tracksSource.Select(WrapTrackInfo));
+                _playlistContentProvider = IoC.Get<IPlaylistManager>().GetPlaylistContentProvider(_playlist);
+                _playlistContentProvider.TracksChanged += tracksSource_CollectionChanged;
+                Tracks.AddRange(TracksSource.Select(WrapTrackInfo));
                 RefreshIndex();
-                NotifyOfPropertyChange(nameof(Tracks));
-                _tracksSource.CollectionChanged += tracksSource_CollectionChanged;
                 OnPlaySessionCurrentTrackChanged();
             }
             finally
@@ -112,7 +110,7 @@ namespace Tomato.TomatoMusic.Shell.ViewModels.Playlist
         private void OnPlaySessionCurrentTrackChanged()
         {
             var track = _playSession.CurrentTrack;
-            var trackVM = Tracks?.FirstOrDefault(o => o.Track == track);
+            var trackVM = Tracks.FirstOrDefault(o => o.Track == track);
             if (trackVM != null)
                 RequestViewSelect?.Invoke(trackVM);
         }
@@ -130,7 +128,7 @@ namespace Tomato.TomatoMusic.Shell.ViewModels.Playlist
         private void TrackViewModel_PlayRequested(object sender, EventArgs e)
         {
             var trackVM = (MusicsTrackViewModel)sender;
-            _playSession.SetPlaylist(_tracksSource.ToList(), trackVM.Track);
+            _playSession.SetPlaylist(TracksSource.ToList(), trackVM.Track);
             _playSession.PlayWhenOpened();
         }
 
@@ -150,7 +148,7 @@ namespace Tomato.TomatoMusic.Shell.ViewModels.Playlist
                     break;
                 case System.Collections.Specialized.NotifyCollectionChangedAction.Reset:
                     Tracks.Clear();
-                    Tracks.AddRange(_tracksSource.Select(WrapTrackInfo));
+                    Tracks.AddRange(TracksSource.Select(WrapTrackInfo));
                     break;
                 default:
                     break;

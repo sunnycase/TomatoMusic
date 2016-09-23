@@ -31,5 +31,15 @@ namespace Tomato.TomatoMusic.Shell.Views
         {
             this.InitializeComponent();
         }
+
+        private void hm_Menu_ItemClick(object sender, ItemClickEventArgs e)
+        {
+            ((MenuItem)e.ClickedItem).OnClick();
+        }
+
+        private void hm_Menu_OptionsItemClick(object sender, ItemClickEventArgs e)
+        {
+
+        }
     }
 }

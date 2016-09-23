@@ -5,11 +5,37 @@ using System.Text;
 using System.Threading.Tasks;
 using Caliburn.Micro;
 using Windows.UI.Xaml.Controls;
+using Windows.ApplicationModel.Resources;
 
 namespace Tomato.TomatoMusic.Shell.ViewModels
 {
     partial class MainViewModel
     {
+        public BindableCollection<MenuItem> PlaylistMenuItems { get; }
+        public IReadOnlyList<MenuItem> SolidMenuItems { get; }
+
+        private async void LoadPlaylistMenuItems()
+        {
+        }
+
+        private IReadOnlyList<MenuItem> LoadSolidMenuItems()
+        {
+            var resourceLoader = IoC.Get<ResourceLoader>();
+            return new List<MenuItem>
+            {
+                new MenuItem(n => n.For<PlaylistViewModel>().WithParam(o => o.Key, PlaylistManager.MusicLibrary.Key).Navigate())
+                {
+                    Glyph = "\uE8F1",
+                    Text = resourceLoader.GetString("MusicLibrary")
+                },
+                new MenuItem(n => n.For<Playing.PlayingViewModel>().Navigate())
+                {
+                    Glyph = "\uE904",
+                    Text = resourceLoader.GetString("Playing/Text")
+                }
+            };
+        }
+
         private Button _addPlaylistButton;
         public void SetupAddPlaylistButton(object sender, object e)
         {
@@ -49,30 +75,6 @@ namespace Tomato.TomatoMusic.Shell.ViewModels
         public void NavigateToAbout()
         {
             _navigationService?.Navigate<Views.AboutView>();
-        }
-
-        public void OnSelectedPlaylistChanged()
-        {
-            var playlist = PlaylistManager.SelectedPlaylist;
-            if (playlist != null)
-                _navigationService?.For<PlaylistViewModel>()
-                    .WithParam(o => o.Key, playlist.Placeholder.Key).Navigate();
-        }
-
-        private void NavigateToSelectedPlaylist()
-        {
-            OnSelectedPlaylistChanged();
-        }
-
-        public void SwitchPlayingView()
-        {
-            if (_navigationService != null)
-            {
-                if (_navigationService.CurrentSourcePageType == typeof(Views.Playing.PlayingView))
-                    NavigateToSelectedPlaylist();
-                else
-                    NavigateToPlayingView();
-            }
         }
     }
 }

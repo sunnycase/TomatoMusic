@@ -106,7 +106,9 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Controls\HamburgerMenu.cs" />
     <Compile Include="Converters\IndexToBrushConverter.cs" />
+    <Compile Include="Converters\MusicsViewTypeToStringConverter.cs" />
     <Compile Include="Converters\PlaylistToIconConverter.cs" />
     <Compile Include="Services\ConfigurationService.cs" />
     <Compile Include="ViewModels\AboutViewModel.cs" />

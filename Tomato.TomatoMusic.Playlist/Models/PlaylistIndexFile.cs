@@ -52,5 +52,18 @@ namespace Tomato.TomatoMusic.Playlist.Models
             }
             return new PlaylistIndexFile(model ?? new PlaylistIndex());
         }
+
+        public async Task Save()
+        {
+            try
+            {
+                var file = await OpenPlaylistIndexFile();
+                await FileIO.WriteTextAsync(file, JsonConvert.SerializeObject(PlaylistIndex));
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(ex.Flatten());
+            }
+        }
     }
 }

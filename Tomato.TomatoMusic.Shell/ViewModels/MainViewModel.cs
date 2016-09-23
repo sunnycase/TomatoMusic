@@ -33,7 +33,7 @@ namespace Tomato.TomatoMusic.Shell.ViewModels
             PlaySession = playSessionService;
             PlaylistManager = playlistManager;
             ThemeService = themeService;
-            PlaylistManager.PropertyChanged += PlaylistManager_PropertyChanged;
+            SolidMenuItems = LoadSolidMenuItems();
             SetupStatusBar();
         }
 
@@ -50,19 +50,6 @@ namespace Tomato.TomatoMusic.Shell.ViewModels
         public void SetupNavigationService(object sender, object e)
         {
             _navigationService = _container.RegisterNavigationService((Frame)sender, false, true);
-            NavigateToSelectedPlaylist();
-        }
-
-        private void PlaylistManager_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
-        {
-            switch (e.PropertyName)
-            {
-                case nameof(IPlaylistManager.SelectedPlaylist):
-                    OnSelectedPlaylistChanged();
-                    break;
-                default:
-                    break;
-            }
         }
 
         public void NavigateToSettings()
