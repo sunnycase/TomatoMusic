@@ -8,6 +8,8 @@
     "Microsoft.Toolkit.Uwp.UI": "1.0.0",
     "Microsoft.Toolkit.Uwp.UI.Controls": "1.0.0",
     "Microsoft.Xaml.Behaviors.Uwp.Managed": "1.1.0",
+    "reactiveui": "6.5.2",
+    "Splat": "1.6.2",
     "Tomato.Mvvm.Caliburn": "0.0.1-alpha2",
     "Tomato.Mvvm.Core": "0.0.1-alpha2",
     "Tomato.Mvvm.Xaml": "0.0.1-alpha5"

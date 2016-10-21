@@ -119,6 +119,7 @@
     <Compile Include="IAudioControllerHandler.cs" />
     <Compile Include="MediaHelper.cs" />
     <Compile Include="Primitives\IMediaMetadata.cs" />
+    <Compile Include="Primitives\MusicsOrderRule.cs" />
     <Compile Include="Primitives\MusicsViewType.cs" />
     <Compile Include="RpcPackets\IAudioControllerHandler.cs">
       <DependentUpon>IAudioControllerHandler.tt</DependentUpon>

@@ -10,16 +10,15 @@
     xmlns:localViewModels="using:Tomato.TomatoMusic.Shell.ViewModels.Playlist"
     xmlns:converters="using:Tomato.Mvvm.Converters"
     xmlns:localConverters="using:Tomato.TomatoMusic.Shell.Converters"
+    xmlns:localControls="using:Tomato.TomatoMusic.Shell.Controls"
     xmlns:i="using:Microsoft.Xaml.Interactivity"
+    xmlns:ic="using:Microsoft.Xaml.Interactions.Core"
+    xmlns:localBehaviors="using:Tomato.TomatoMusic.Shell.Behaviors"
     xmlns:behaviors="using:Tomato.Mvvm.Behaviors"
     mc:Ignorable="d">
     <UserControl.Resources>
         <converters:TimeSpanToStringConverter x:Key="TimeSpanToStringConverter" Format="hh\:mm\:ss"/>
         <cal:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
-        <localConverters:IndexToBrushConverter x:Key="IndexToBrushConverter">
-            <SolidColorBrush Color="{ThemeResource SystemListLowColor}"/>
-            <SolidColorBrush Color="{ThemeResource SystemListMediumColor}"/>
-        </localConverters:IndexToBrushConverter>
         <DataTemplate x:Key="MusicsTrackDataTemplate" x:DataType="localViewModels:MusicsTrackViewModel">
             <Grid>
                 <Grid.ColumnDefinitions>
@@ -31,12 +30,12 @@
                 </Grid.ColumnDefinitions>
                 <TextBlock Text="{x:Bind Track.Title}" Style="{StaticResource TrackInfoTextStyle}"/>
                 <StackPanel Grid.Column="1" Orientation="Horizontal" Visibility="{x:Bind IsSelected, Converter={StaticResource BooleanToVisibilityConverter}, Mode=OneWay}">
-                    <Button Click="{x:Bind OnRequestPlay}" Style="{StaticResource TrackFunctionalButtonStyle}">
+                    <Button Click="{x:Bind Play}" Style="{StaticResource TrackFunctionalButtonStyle}">
                         <SymbolIcon Symbol="Play"/>
                     </Button>
-                    <Button Style="{StaticResource TrackFunctionalButtonStyle}">
+                    <!--<Button Style="{StaticResource TrackFunctionalButtonStyle}">
                         <SymbolIcon Symbol="More"/>
-                    </Button>
+                    </Button>-->
                 </StackPanel>
                 <TextBlock Grid.Column="2" Margin="15,0,0,0" Text="{x:Bind Track.Album}" Style="{StaticResource TrackInfoTextStyle}"/>
                 <TextBlock Grid.Column="3" Margin="15,0,0,0" Text="{x:Bind Track.Artist}" Style="{StaticResource TrackInfoTextStyle}"/>
@@ -45,8 +44,15 @@
         </DataTemplate>
     </UserControl.Resources>
     <Grid>
-        <ListView x:Name="lv_Tracks" ItemsSource="{x:Bind ViewModel.Tracks, Mode=OneWay}"
+        <ListView x:Name="lv_Tracks" ItemsSource="{x:Bind ViewModel.Tracks}"
                   ItemTemplate="{StaticResource MusicsTrackDataTemplate}">
+            <i:Interaction.Behaviors>
+                <localBehaviors:BindItemBackgroundWithIndexBehavior>
+                    <SolidColorBrush Color="{ThemeResource SystemListLowColor}"/>
+                    <SolidColorBrush Color="{ThemeResource SystemListMediumColor}"/>
+                </localBehaviors:BindItemBackgroundWithIndexBehavior>
+                <behaviors:SelectorIsSelectedToSourceBindingBehavior Setter="{x:Bind TrackViewModelIsSelectedSetter}"/>
+            </i:Interaction.Behaviors>
             <ListView.Resources>
                 <Style TargetType="ListViewItem">
                     <Setter Property="FontFamily" Value="{ThemeResource ContentControlThemeFontFamily}" />
@@ -59,11 +65,13 @@
                     <Setter Property="VerticalContentAlignment" Value="Center"/>
                     <Setter Property="MinWidth" Value="{ThemeResource ListViewItemMinWidth}"/>
                     <Setter Property="MinHeight" Value="{ThemeResource ListViewItemMinHeight}"/>
+                    <Setter Property="localControls:ActionExtension.TargetWithoutContextPath" Value="Content"/>
+                    <Setter Property="cal:Message.Attach" Value="[Event DoubleTapped] = [Action Play]"/>
                     <Setter Property="Template">
                         <Setter.Value>
                             <ControlTemplate TargetType="ListViewItem">
                                 <Grid x:Name="ContentBorder"
-                                            Background="{Binding Content.Index, RelativeSource={RelativeSource Mode=TemplatedParent}, Converter={StaticResource IndexToBrushConverter}, Mode=OneWay}"
+                                      Background="{TemplateBinding Background}"
                             BorderBrush="{TemplateBinding BorderBrush}"
                             BorderThickness="{TemplateBinding BorderThickness}">
                                     <VisualStateManager.VisualStateGroups>
@@ -398,9 +406,6 @@
                     </Setter>
                 </Style>
             </ListView.Resources>
-            <i:Interaction.Behaviors>
-                <behaviors:SelectorIsSelectedToSourceBindingBehavior Setter="{x:Bind TrackViewModelIsSelectedSetter}"/>
-            </i:Interaction.Behaviors>
         </ListView>
     </Grid>
 </UserControl>

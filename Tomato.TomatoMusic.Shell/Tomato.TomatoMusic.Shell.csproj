@@ -106,10 +106,13 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Behaviors\BindItemBackgroundWithIndexBehavior.cs" />
+    <Compile Include="Controls\ActionExtension.cs" />
     <Compile Include="Controls\HamburgerMenu.cs" />
     <Compile Include="Converters\IndexToBrushConverter.cs" />
     <Compile Include="Converters\MusicsViewTypeToStringConverter.cs" />
     <Compile Include="Converters\PlaylistToIconConverter.cs" />
+    <Compile Include="Models\ChangeCurrentMenuItemMessage.cs" />
     <Compile Include="Services\ConfigurationService.cs" />
     <Compile Include="ViewModels\AboutViewModel.cs" />
     <Compile Include="ViewModels\MainViewModel.Playing.cs" />
@@ -120,6 +123,8 @@
     <Compile Include="ViewModels\Playing\LyricsViewModel.cs" />
     <Compile Include="ViewModels\Playing\PlayingViewModel.cs" />
     <Compile Include="ViewModels\PlaylistViewModel.cs" />
+    <Compile Include="ViewModels\Playlist\AlbumsViewModel.cs" />
+    <Compile Include="ViewModels\Playlist\IMusicsPresenterViewModel.cs" />
     <Compile Include="ViewModels\Playlist\ManageWatchedFoldersViewModel.cs" />
     <Compile Include="ViewModels\Playlist\MusicsViewModel.cs" />
     <Compile Include="ViewModels\SettingsViewModel.cs" />
@@ -242,9 +247,7 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Models\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <ProjectReference Include="..\Tomato.TomatoMusic.AudioTask\Tomato.TomatoMusic.AudioTask.csproj">
       <Project>{bbc0e494-65f4-4666-b91f-5c8a02b9a88c}</Project>

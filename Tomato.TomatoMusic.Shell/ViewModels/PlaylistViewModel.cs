@@ -8,9 +8,6 @@ using Tomato.TomatoMusic.Primitives;
 using Tomato.TomatoMusic.Services;
 using Tomato.TomatoMusic.Shell.ViewModels.Playlist;
 using Tomato.Mvvm;
-using Windows.Storage;
-using Windows.Storage.AccessCache;
-using Windows.Storage.Pickers;
 
 namespace Tomato.TomatoMusic.Shell.ViewModels
 {
@@ -40,8 +37,8 @@ namespace Tomato.TomatoMusic.Shell.ViewModels
 
         public bool IsValid => Playlist != null;
 
-        private object _musicsPresenterViewModel;
-        public object MusicsPresenterViewModel
+        private IMusicsPresenterViewModel _musicsPresenterViewModel;
+        public IMusicsPresenterViewModel MusicsPresenterViewModel
         {
             get { return _musicsPresenterViewModel; }
             private set { SetProperty(ref _musicsPresenterViewModel, value); }
@@ -70,7 +67,11 @@ namespace Tomato.TomatoMusic.Shell.ViewModels
         public MusicsViewType SelectedMusicsViewType
         {
             get { return _selectedMusicsViewType; }
-            set { SetProperty(ref _selectedMusicsViewType, value); }
+            set
+            {
+                if (SetProperty(ref _selectedMusicsViewType, value))
+                    OnSelectedMusicsViewType(value);
+            }
         }
 
         public PlaylistViewModel()
@@ -107,18 +108,26 @@ namespace Tomato.TomatoMusic.Shell.ViewModels
             {
                 IsRefreshing = false;
             }
-            OnMusicsViewChanged();
+            LoadMusicsViewSetting();
         }
 
-        private void OnMusicsViewChanged()
+        private void LoadMusicsViewSetting()
         {
-            if (Playlist != null)
+            MusicsPresenterViewModel = new MusicsViewModel(Playlist);
+        }
+
+        private void OnSelectedMusicsViewType(MusicsViewType value)
+        {
+            switch (value)
             {
-                MusicsPresenterViewModel = new MusicsViewModel(Playlist);
-            }
-            else
-            {
-                MusicsPresenterViewModel = null;
+                case MusicsViewType.Musics:
+                    MusicsPresenterViewModel = new MusicsViewModel(Playlist);
+                    break;
+                case MusicsViewType.Albums:
+                    MusicsPresenterViewModel = new AlbumsViewModel();
+                    break;
+                default:
+                    break;
             }
         }
 
@@ -129,7 +138,7 @@ namespace Tomato.TomatoMusic.Shell.ViewModels
 
         public async void OnRequestManageFolders()
         {
-            if(IsValid)
+            if (IsValid)
             {
                 var viewModel = new ManageWatchedFoldersViewModel(Playlist);
                 if (await viewModel.ShowAsync() == Windows.UI.Xaml.Controls.ContentDialogResult.Primary)

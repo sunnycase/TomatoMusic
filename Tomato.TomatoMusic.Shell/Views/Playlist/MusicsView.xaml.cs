@@ -6,6 +6,7 @@ using System.Runtime.InteropServices.WindowsRuntime;
 using Tomato.TomatoMusic.Shell.ViewModels.Playlist;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.UI;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;

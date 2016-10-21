@@ -15,7 +15,7 @@ using Windows.UI.Xaml.Navigation;
 
 namespace Tomato.TomatoMusic.Shell.Views.Playlist
 {
-    public sealed partial class ArtistsView : PivotItem
+    public sealed partial class ArtistsView : UserControl
     {
         public ArtistsView()
         {

@@ -102,12 +102,7 @@ namespace Tomato.TomatoMusic.Playlist.Services
         class PlaylistContentProvider : BindableBase, IPlaylistContentProvider
         {
             private readonly BindableCollection<TrackInfo> _tracks = new BindableCollection<TrackInfo>();
-            public IReadOnlyCollection<TrackInfo> Tracks => _tracks;
-            public event NotifyCollectionChangedEventHandler TracksChanged
-            {
-                add { _tracks.CollectionChanged += value; }
-                remove { _tracks.CollectionChanged -= value; }
-            }
+            public ReadOnlyObservableCollection<TrackInfo> Tracks { get; }
 
             private WatchedPlaylistProvider _watchedProvider;
             private PlaylistFile _playlistFile;
@@ -123,6 +118,7 @@ namespace Tomato.TomatoMusic.Playlist.Services
 
             public PlaylistContentProvider(PlaylistPlaceholder playlist)
             {
+                Tracks = new ReadOnlyObservableCollection<TrackInfo>(_tracks);
                 _openPlaylistTask = OpenPlaylist(playlist);
                 LoadContent();
             }

@@ -36,6 +36,28 @@ namespace Tomato.TomatoMusic.Shell.Controls
 
         }
 
+        public void SelectMenuItem(object item)
+        {
+            if (_buttonsListView.Items.Any(o => o == item))
+            {
+                _buttonsListView.SelectedItem = item;
+                _optionsListView.SelectedIndex = -1;
+                _playlistsButtonsListView.SelectedIndex = -1;
+            }
+            if (_optionsListView.Items.Any(o => o == item))
+            {
+                _optionsListView.SelectedItem = item;
+                _buttonsListView.SelectedIndex = -1;
+                _playlistsButtonsListView.SelectedIndex = -1;
+            }
+            if (_playlistsButtonsListView.Items.Any(o => o == item))
+            {
+                _playlistsButtonsListView.SelectedItem = item;
+                _optionsListView.SelectedIndex = -1;
+                _buttonsListView.SelectedIndex = -1;
+            }
+        }
+
         private ListViewBase _buttonsListView;
         private ListViewBase _optionsListView;
         private ListViewBase _playlistsButtonsListView;

@@ -9,6 +9,7 @@ using Tomato.TomatoMusic.Services;
 using Windows.UI.ApplicationSettings;
 using Windows.UI.ViewManagement;
 using Windows.UI;
+using Tomato.TomatoMusic.Shell.Models;
 
 namespace Tomato.TomatoMusic.Shell.ViewModels
 {
@@ -50,6 +51,15 @@ namespace Tomato.TomatoMusic.Shell.ViewModels
         public void SetupNavigationService(object sender, object e)
         {
             _navigationService = _container.RegisterNavigationService((Frame)sender, false, true);
+            ResumeLastSession();
+        }
+
+        private void ResumeLastSession()
+        {
+            _eventAggregator.BeginPublishOnUIThread(new ChangeCurrentMenuItemMessage
+            {
+                MenuItem = SolidMenuItems.First()
+            });
         }
 
         public void NavigateToSettings()

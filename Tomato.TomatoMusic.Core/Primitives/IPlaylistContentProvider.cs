@@ -13,8 +13,7 @@ namespace Tomato.TomatoMusic.Primitives
 {
     public interface IPlaylistContentProvider : INotifyPropertyChanged
     {
-        IReadOnlyCollection<TrackInfo> Tracks { get; }
-        event NotifyCollectionChangedEventHandler TracksChanged;
+        ReadOnlyObservableCollection<TrackInfo> Tracks { get; }
 
         void AddFolder(StorageFolder folder);
         Task<IReadOnlyList<StorageFolder>> GetFolders();

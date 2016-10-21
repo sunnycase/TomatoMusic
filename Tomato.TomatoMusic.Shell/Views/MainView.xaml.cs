@@ -15,6 +15,7 @@ using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 using System.Reflection.Emit;
+using Tomato.TomatoMusic.Shell.Models;
 
 //“空白页”项模板在 http://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409 上有介绍
 
@@ -23,13 +24,14 @@ namespace Tomato.TomatoMusic.Shell.Views
     /// <summary>
     /// 可用于自身或导航至 Frame 内部的空白页。
     /// </summary>
-    public sealed partial class MainView : Page
+    public sealed partial class MainView : Page, IHandle<ChangeCurrentMenuItemMessage>
     {
         internal MainViewModel ViewModel => (MainViewModel)DataContext;
 
         public MainView()
         {
             this.InitializeComponent();
+            IoC.Get<IEventAggregator>().Subscribe(this);
         }
 
         private void hm_Menu_ItemClick(object sender, ItemClickEventArgs e)
@@ -39,7 +41,13 @@ namespace Tomato.TomatoMusic.Shell.Views
 
         private void hm_Menu_OptionsItemClick(object sender, ItemClickEventArgs e)
         {
+            ((OptionMenuItem)e.ClickedItem).OnClick();
+        }
 
+        public void Handle(ChangeCurrentMenuItemMessage message)
+        {
+            hm_Menu.SelectMenuItem(message.MenuItem);
+            message.MenuItem.OnClick();
         }
     }
 }

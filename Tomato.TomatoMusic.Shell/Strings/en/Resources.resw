@@ -201,4 +201,10 @@
   <data name="MusicsViewType.Musics" xml:space="preserve">
     <value>Musics</value>
   </data>
+  <data name="OrderBy.Text" xml:space="preserve">
+    <value>Order by: </value>
+  </data>
+  <data name="View.Text" xml:space="preserve">
+    <value>View: </value>
+  </data>
 </root>

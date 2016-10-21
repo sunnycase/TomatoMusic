@@ -36,8 +36,8 @@
                                  Visibility="{x:Bind ViewModel.CanEditContent, Converter={StaticResource BooleanToVisibilityConverter}}"/>
 
                 <ProgressRing Margin="5,0" IsActive="{x:Bind ViewModel.IsRefreshing, Mode=OneWay}"/>
-                <TextBlock Text="View: " Style="{StaticResource PlaylistToolbarTextBlockStyle}"/>
-                <ComboBox Style="{StaticResource PlaylistToolbarComboboxStyle}"
+                <TextBlock x:Uid="View" Text="View: " Style="{StaticResource PlaylistToolbarTextBlockStyle}"/>
+                <ComboBox Style="{StaticResource PlaylistToolbarComboboxStyle}" Width="100"
                           ItemsSource="{x:Bind ViewModel.MusicsViewTypes}" SelectedItem="{x:Bind ViewModel.SelectedMusicsViewType, Mode=TwoWay, Converter={StaticResource DummyConverter}}">
                     <ComboBox.ItemTemplate>
                         <DataTemplate>
@@ -46,8 +46,9 @@
                     </ComboBox.ItemTemplate>
                 </ComboBox>
                           
-                <TextBlock Text="Order by: " Style="{StaticResource PlaylistToolbarTextBlockStyle}"/>
-                <ComboBox Style="{StaticResource PlaylistToolbarComboboxStyle}"/>
+                <TextBlock x:Uid="OrderBy" Text="Order by: " Style="{StaticResource PlaylistToolbarTextBlockStyle}"/>
+                <ComboBox Style="{StaticResource PlaylistToolbarComboboxStyle}" Width="100"
+                          ItemsSource="{x:Bind ViewModel.MusicsPresenterViewModel.OrderRules, Mode=OneWay}"/>
             </StackPanel>
         </Border>
         <ContentControl Grid.Row="2" cal:View.Model="{x:Bind ViewModel.MusicsPresenterViewModel, Mode=OneWay}"
