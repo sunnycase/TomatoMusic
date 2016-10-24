@@ -109,7 +109,9 @@
     <Compile Include="Behaviors\BindItemBackgroundWithIndexBehavior.cs" />
     <Compile Include="Controls\ActionExtension.cs" />
     <Compile Include="Controls\HamburgerMenu.cs" />
+    <Compile Include="Controls\ListViewEx.cs" />
     <Compile Include="Converters\IndexToBrushConverter.cs" />
+    <Compile Include="Converters\MusicsOrderRuleToStringConverter.cs" />
     <Compile Include="Converters\MusicsViewTypeToStringConverter.cs" />
     <Compile Include="Converters\PlaylistToIconConverter.cs" />
     <Compile Include="Models\ChangeCurrentMenuItemMessage.cs" />
@@ -126,6 +128,7 @@
     <Compile Include="ViewModels\Playlist\AlbumsViewModel.cs" />
     <Compile Include="ViewModels\Playlist\IMusicsPresenterViewModel.cs" />
     <Compile Include="ViewModels\Playlist\ManageWatchedFoldersViewModel.cs" />
+    <Compile Include="ViewModels\Playlist\MusicsPresenterViewModelBase.cs" />
     <Compile Include="ViewModels\Playlist\MusicsViewModel.cs" />
     <Compile Include="ViewModels\SettingsViewModel.cs" />
     <Compile Include="ViewModels\ViewModelBase.cs" />

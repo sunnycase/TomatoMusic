@@ -13,6 +13,7 @@
     <Page.Resources>
         <cal:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
         <localConverters:MusicsViewTypeToStringConverter x:Key="MusicsViewTypeToStringConverter"/>
+        <localConverters:MusicsOrderRuleToStringConverter x:Key="MusicsOrderRuleToStringConverter"/>
         <converters:DummyConverter x:Key="DummyConverter"/>
     </Page.Resources>
 
@@ -47,8 +48,14 @@
                 </ComboBox>
                           
                 <TextBlock x:Uid="OrderBy" Text="Order by: " Style="{StaticResource PlaylistToolbarTextBlockStyle}"/>
-                <ComboBox Style="{StaticResource PlaylistToolbarComboboxStyle}" Width="100"
-                          ItemsSource="{x:Bind ViewModel.MusicsPresenterViewModel.OrderRules, Mode=OneWay}"/>
+                <ComboBox Style="{StaticResource PlaylistToolbarComboboxStyle}" Width="120"
+                          ItemsSource="{x:Bind ViewModel.MusicsPresenterViewModel.OrderRules, Mode=OneWay}" SelectedItem="{x:Bind ViewModel.MusicsPresenterViewModel.SelectedOrderRule, Mode=TwoWay, Converter={StaticResource DummyConverter}}">
+                    <ComboBox.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding Converter={StaticResource MusicsOrderRuleToStringConverter}}"/>
+                        </DataTemplate>
+                    </ComboBox.ItemTemplate>
+                </ComboBox>
             </StackPanel>
         </Border>
         <ContentControl Grid.Row="2" cal:View.Model="{x:Bind ViewModel.MusicsPresenterViewModel, Mode=OneWay}"

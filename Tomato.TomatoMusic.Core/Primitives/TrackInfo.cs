@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Tomato.TomatoMusic.Primitives
 {
-    public class TrackInfo : IEquatable<TrackInfo>
+    public class TrackInfo : IEquatable<TrackInfo>, IComparable<TrackInfo>
     {
         public Uri Source { get; set; }
 
@@ -21,6 +21,8 @@ namespace Tomato.TomatoMusic.Primitives
         public string Artist { get; set; }
 
         public TimeSpan? Duration { get; set; }
+
+        public DateTime AddTime { get; set; }
 
         public class ExistenceEqualityComparer : EqualityComparer<TrackInfo>
         {
@@ -80,6 +82,11 @@ namespace Tomato.TomatoMusic.Primitives
         public override int GetHashCode()
         {
             return Source?.GetHashCode() ?? 0;
+        }
+
+        public int CompareTo(TrackInfo other)
+        {
+            return AddTime.CompareTo(other.AddTime);
         }
     }
 }

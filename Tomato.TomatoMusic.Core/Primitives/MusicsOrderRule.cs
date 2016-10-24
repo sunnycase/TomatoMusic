@@ -8,5 +8,8 @@ namespace Tomato.TomatoMusic.Primitives
 {
     public enum MusicsOrderRule
     {
+        AddTime,
+        Title,
+        Album
     }
 }

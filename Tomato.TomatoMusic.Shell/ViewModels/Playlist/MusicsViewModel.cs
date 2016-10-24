@@ -9,13 +9,14 @@ using Tomato.TomatoMusic.Services;
 using Tomato.Mvvm;
 using System.Collections.ObjectModel;
 using ReactiveUI;
+using Windows.UI.Xaml.Data;
 
 namespace Tomato.TomatoMusic.Shell.ViewModels.Playlist
 {
-    class MusicsTrackViewModel : BindableBase
+    class MusicsTrackViewModel : BindableBase, IComparable<MusicsTrackViewModel>
     {
         public TrackInfo Track { get; set; }
-        
+
         private bool _isSelected;
         public bool IsSelected
         {
@@ -29,38 +30,39 @@ namespace Tomato.TomatoMusic.Shell.ViewModels.Playlist
         {
             PlayRequested?.Invoke(this, EventArgs.Empty);
         }
+
+        public int CompareTo(MusicsTrackViewModel other)
+        {
+            return Track.CompareTo(other.Track);
+        }
     }
 
-    class MusicsViewModel : Screen, IMusicsPresenterViewModel
+    class MusicsViewModel : MusicsPresenterViewModelBase<MusicsTrackViewModel>, IMusicsPresenterViewModel
     {
-        private readonly PlaylistPlaceholder _playlist;
-        private readonly IPlaylistContentProvider _playlistContentProvider;
-        private readonly IPlaySessionService _playSession;
-
-        private bool _isRefreshing;
-        public bool IsRefreshing
-        {
-            get { return _isRefreshing; }
-            private set { this.SetProperty(ref _isRefreshing, value); }
-        }
-
-        public IReadOnlyReactiveCollection<MusicsTrackViewModel> Tracks { get; }
+        private IReadOnlyReactiveCollection<MusicsTrackViewModel> _tracks;
 
         public MusicsOrderRule[] OrderRules { get; } = new MusicsOrderRule[]
         {
-
+            MusicsOrderRule.AddTime,
+            MusicsOrderRule.Title,
+            MusicsOrderRule.Album
         };
 
-        public event Action<MusicsTrackViewModel> RequestViewSelect;
+        private MusicsOrderRule _selectedOrderRule;
+        public MusicsOrderRule SelectedOrderRule
+        {
+            get { return _selectedOrderRule; }
+            set
+            {
+                if (this.SetProperty(ref _selectedOrderRule, value))
+                    UpdateTracksCollection();
+            }
+        }
 
         public MusicsViewModel(PlaylistPlaceholder playlist)
+            : base(playlist)
         {
-            _playlist = playlist;
-            _playlistContentProvider = IoC.Get<IPlaylistManager>().GetPlaylistContentProvider(_playlist);
-            _playlistContentProvider.PropertyChanged += playlistContentProvider_PropertyChanged;
-            Tracks = _playlistContentProvider.Tracks.CreateDerivedCollection(WrapTrackInfo);
-            _playSession = IoC.Get<IPlaySessionService>();
-            _playSession.PropertyChanged += _playSession_PropertyChanged;
+            PlaySession.PropertyChanged += _playSession_PropertyChanged;
         }
 
         protected override void OnViewLoaded(object view)
@@ -70,7 +72,46 @@ namespace Tomato.TomatoMusic.Shell.ViewModels.Playlist
 
         private void LoadData()
         {
-            OnPlaySessionCurrentTrackChanged();
+            UpdateTracksCollection();
+        }
+
+        private void UpdateTracksCollection()
+        {
+            Func<MusicsTrackViewModel, MusicsTrackViewModel, int> order = null;
+            switch (SelectedOrderRule)
+            {
+                case MusicsOrderRule.AddTime:
+                    order = (x, y) => Comparer<DateTime>.Default.Compare(x.Track.AddTime, y.Track.AddTime);
+                    break;
+                case MusicsOrderRule.Title:
+                    order = (x, y) => Comparer<string>.Default.Compare(x.Track.Title, y.Track.Title);
+                    break;
+                case MusicsOrderRule.Album:
+                    order = (x, y) => Comparer<string>.Default.Compare(x.Track.Album, y.Track.Album);
+                    break;
+            }
+            _tracks = PlaylistContentProvider.Tracks.CreateDerivedCollection(WrapTrackInfo, orderer: order);
+
+            switch (SelectedOrderRule)
+            {
+                case MusicsOrderRule.AddTime:
+                    ItemsSource = _tracks;
+                    IsItemsSourceGrouped = false;
+                    break;
+                case MusicsOrderRule.Title:
+                    IsItemsSourceGrouped = true;
+                    ItemsSource = new ObservableGroupingCollection<string, MusicsTrackViewModel>((IReadOnlyList<MusicsTrackViewModel>)_tracks, o => o.Track.Title,
+                        Comparer<string>.Default, Comparer<MusicsTrackViewModel>.Default);
+                    break;
+                case MusicsOrderRule.Album:
+                    IsItemsSourceGrouped = true;
+                    ItemsSource = new ObservableGroupingCollection<string, MusicsTrackViewModel>((IReadOnlyList<MusicsTrackViewModel>)_tracks, o => o.Track.Album,
+                        Comparer<string>.Default, Comparer<MusicsTrackViewModel>.Default);
+                    break;
+                default:
+                    break;
+            }
+
         }
 
         private void _playSession_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
@@ -78,31 +119,11 @@ namespace Tomato.TomatoMusic.Shell.ViewModels.Playlist
             switch (e.PropertyName)
             {
                 case nameof(IPlaySessionService.CurrentTrack):
-                    Execute.BeginOnUIThread(OnPlaySessionCurrentTrackChanged);
+                    //Execute.BeginOnUIThread(OnPlaySessionCurrentTrackChanged);
                     break;
                 default:
                     break;
             }
-        }
-
-        private void playlistContentProvider_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
-        {
-            switch (e.PropertyName)
-            {
-                case nameof(IPlaylistContentProvider.IsRefreshing):
-                    IsRefreshing = _playlistContentProvider.IsRefreshing;
-                    break;
-                default:
-                    break;
-            }
-        }
-
-        private void OnPlaySessionCurrentTrackChanged()
-        {
-            var track = _playSession.CurrentTrack;
-            var trackVM = Tracks.FirstOrDefault(o => o.Track == track);
-            if (trackVM != null)
-                RequestViewSelect?.Invoke(trackVM);
         }
 
         private MusicsTrackViewModel WrapTrackInfo(TrackInfo track)
@@ -118,8 +139,8 @@ namespace Tomato.TomatoMusic.Shell.ViewModels.Playlist
         private void TrackViewModel_PlayRequested(object sender, EventArgs e)
         {
             var trackVM = (MusicsTrackViewModel)sender;
-            _playSession.SetPlaylist(_playlistContentProvider.Tracks.ToList(), trackVM.Track);
-            _playSession.PlayWhenOpened();
+            PlaySession.SetPlaylist(PlaylistContentProvider.Tracks.ToList(), trackVM.Track);
+            PlaySession.PlayWhenOpened();
         }
     }
 }

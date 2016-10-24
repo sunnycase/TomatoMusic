@@ -10,5 +10,6 @@ namespace Tomato.TomatoMusic.Shell.ViewModels.Playlist
     public interface IMusicsPresenterViewModel
     {
         MusicsOrderRule[] OrderRules { get; }
+        MusicsOrderRule SelectedOrderRule { get; set; }
     }
 }

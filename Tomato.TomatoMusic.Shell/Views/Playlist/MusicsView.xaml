@@ -42,10 +42,15 @@
                 <TextBlock Grid.Column="4" Margin="15,0,0,0" Text="{x:Bind Track.Duration, Converter={StaticResource TimeSpanToStringConverter}}" Style="{StaticResource TrackInfoTextStyle}"/>
             </Grid>
         </DataTemplate>
+
+        <CollectionViewSource x:Key="TracksViewSource"
+                              Source="{x:Bind ViewModel.ItemsSource, Mode=OneWay}"
+                              IsSourceGrouped="{x:Bind ViewModel.IsItemsSourceGrouped, Mode=OneWay}"/>
     </UserControl.Resources>
     <Grid>
-        <ListView x:Name="lv_Tracks" ItemsSource="{x:Bind ViewModel.Tracks}"
-                  ItemTemplate="{StaticResource MusicsTrackDataTemplate}">
+        <localControls:ListViewEx x:Name="lv_Tracks" ItemsSource="{Binding Source={StaticResource TracksViewSource}}"
+                                  ItemTemplate="{StaticResource MusicsTrackDataTemplate}"
+                                  PrepareContainerForItem="lv_Tracks_PrepareContainerForItem">
             <i:Interaction.Behaviors>
                 <localBehaviors:BindItemBackgroundWithIndexBehavior>
                     <SolidColorBrush Color="{ThemeResource SystemListLowColor}"/>
@@ -53,6 +58,15 @@
                 </localBehaviors:BindItemBackgroundWithIndexBehavior>
                 <behaviors:SelectorIsSelectedToSourceBindingBehavior Setter="{x:Bind TrackViewModelIsSelectedSetter}"/>
             </i:Interaction.Behaviors>
+            <ListView.GroupStyle>
+                <GroupStyle>
+                    <GroupStyle.HeaderTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding Key}" Foreground="{ThemeResource SystemControlForegroundAccentBrush}"/>
+                        </DataTemplate>
+                    </GroupStyle.HeaderTemplate>
+                </GroupStyle>
+            </ListView.GroupStyle>
             <ListView.Resources>
                 <Style TargetType="ListViewItem">
                     <Setter Property="FontFamily" Value="{ThemeResource ContentControlThemeFontFamily}" />
@@ -65,8 +79,6 @@
                     <Setter Property="VerticalContentAlignment" Value="Center"/>
                     <Setter Property="MinWidth" Value="{ThemeResource ListViewItemMinWidth}"/>
                     <Setter Property="MinHeight" Value="{ThemeResource ListViewItemMinHeight}"/>
-                    <Setter Property="localControls:ActionExtension.TargetWithoutContextPath" Value="Content"/>
-                    <Setter Property="cal:Message.Attach" Value="[Event DoubleTapped] = [Action Play]"/>
                     <Setter Property="Template">
                         <Setter.Value>
                             <ControlTemplate TargetType="ListViewItem">
@@ -406,6 +418,6 @@
                     </Setter>
                 </Style>
             </ListView.Resources>
-        </ListView>
+        </localControls:ListViewEx>
     </Grid>
 </UserControl>

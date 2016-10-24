@@ -15,5 +15,18 @@ namespace Tomato.TomatoMusic.Shell.ViewModels.Playlist
         {
 
         };
+
+        public MusicsOrderRule SelectedOrderRule
+        {
+            get
+            {
+                throw new NotImplementedException();
+            }
+
+            set
+            {
+                throw new NotImplementedException();
+            }
+        }
     }
 }

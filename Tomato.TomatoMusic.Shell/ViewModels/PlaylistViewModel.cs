@@ -60,7 +60,7 @@ namespace Tomato.TomatoMusic.Shell.ViewModels
         public MusicsViewType[] MusicsViewTypes { get; } = new MusicsViewType[]
         {
             MusicsViewType.Musics,
-            MusicsViewType.Albums
+            //MusicsViewType.Albums
         };
 
         private MusicsViewType _selectedMusicsViewType;

@@ -28,19 +28,19 @@ namespace Tomato.TomatoMusic.Shell.Views.Playlist
             this.InitializeComponent();
         }
 
-        private void OnViewModelPropertyChanged(DependencyObject sender, DependencyProperty dp)
-        {
-            ViewModel.RequestViewSelect += ViewModel_RequestViewSelect;
-        }
-
-        private void ViewModel_RequestViewSelect(MusicsTrackViewModel obj)
-        {
-            lv_Tracks.SelectedItem = obj;
-        }
-
         public void TrackViewModelIsSelectedSetter(object model, bool value)
         {
-            ((MusicsTrackViewModel)model).IsSelected = value;
+            //((MusicsTrackViewModel)model).IsSelected = value;
+        }
+
+        private void lv_Tracks_PrepareContainerForItem(object sender, Controls.PrepareContainerForItemEventArgs e)
+        {
+            ((ListViewItem)e.Element).DoubleTapped += trackItem_DoubleTapped;
+        }
+
+        private void trackItem_DoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
+        {
+            ((MusicsTrackViewModel)((ListViewItem)sender).Content)?.Play();
         }
     }
 }

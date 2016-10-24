@@ -118,6 +118,7 @@
     <Compile Include="IAudioController.cs" />
     <Compile Include="IAudioControllerHandler.cs" />
     <Compile Include="MediaHelper.cs" />
+    <Compile Include="ObservableGroupingCollection.cs" />
     <Compile Include="Primitives\IMediaMetadata.cs" />
     <Compile Include="Primitives\MusicsOrderRule.cs" />
     <Compile Include="Primitives\MusicsViewType.cs" />

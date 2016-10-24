@@ -207,4 +207,13 @@
   <data name="View.Text" xml:space="preserve">
     <value>View: </value>
   </data>
+  <data name="MusicsOrderRule.AddTime" xml:space="preserve">
+    <value>Add Time</value>
+  </data>
+  <data name="MusicsOrderRule.Title" xml:space="preserve">
+    <value>Title</value>
+  </data>
+  <data name="MusicsOrderRule.Album" xml:space="preserve">
+    <value>Album</value>
+  </data>
 </root>
