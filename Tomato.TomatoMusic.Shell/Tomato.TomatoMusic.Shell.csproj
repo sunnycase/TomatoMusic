@@ -113,6 +113,7 @@
     <Compile Include="Converters\IndexToBrushConverter.cs" />
     <Compile Include="Converters\MusicsOrderRuleToStringConverter.cs" />
     <Compile Include="Converters\MusicsViewTypeToStringConverter.cs" />
+    <Compile Include="Converters\OrderRuleToTrackTemplateConverter.cs" />
     <Compile Include="Converters\PlaylistToIconConverter.cs" />
     <Compile Include="Models\ChangeCurrentMenuItemMessage.cs" />
     <Compile Include="Services\ConfigurationService.cs" />

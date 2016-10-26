@@ -19,37 +19,85 @@
     <UserControl.Resources>
         <converters:TimeSpanToStringConverter x:Key="TimeSpanToStringConverter" Format="hh\:mm\:ss"/>
         <cal:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
-        <DataTemplate x:Key="MusicsTrackDataTemplate" x:DataType="localViewModels:MusicsTrackViewModel">
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="1.5*"/>
-                    <ColumnDefinition Width="80"/>
-                    <ColumnDefinition Width="2*"/>
-                    <ColumnDefinition Width="1.5*"/>
-                    <ColumnDefinition Width="80"/>
-                </Grid.ColumnDefinitions>
-                <TextBlock Text="{x:Bind Track.Title}" Style="{StaticResource TrackInfoTextStyle}"/>
-                <StackPanel Grid.Column="1" Orientation="Horizontal" Visibility="{x:Bind IsSelected, Converter={StaticResource BooleanToVisibilityConverter}, Mode=OneWay}">
-                    <Button Click="{x:Bind Play}" Style="{StaticResource TrackFunctionalButtonStyle}">
-                        <SymbolIcon Symbol="Play"/>
-                    </Button>
-                    <!--<Button Style="{StaticResource TrackFunctionalButtonStyle}">
-                        <SymbolIcon Symbol="More"/>
-                    </Button>-->
-                </StackPanel>
-                <TextBlock Grid.Column="2" Margin="15,0,0,0" Text="{x:Bind Track.Album}" Style="{StaticResource TrackInfoTextStyle}"/>
-                <TextBlock Grid.Column="3" Margin="15,0,0,0" Text="{x:Bind Track.Artist}" Style="{StaticResource TrackInfoTextStyle}"/>
-                <TextBlock Grid.Column="4" Margin="15,0,0,0" Text="{x:Bind Track.Duration, Converter={StaticResource TimeSpanToStringConverter}}" Style="{StaticResource TrackInfoTextStyle}"/>
-            </Grid>
-        </DataTemplate>
 
         <CollectionViewSource x:Key="TracksViewSource"
                               Source="{x:Bind ViewModel.ItemsSource, Mode=OneWay}"
                               IsSourceGrouped="{x:Bind ViewModel.IsItemsSourceGrouped, Mode=OneWay}"/>
+        <localConverters:OrderRuleToTrackTemplateConverter x:Key="OrderRuleToTrackTemplateConverter">
+            <localConverters:OrderRuleToTrackTemplateConverter.Default>
+                <DataTemplate x:DataType="localViewModels:MusicsTrackViewModel">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="1.5*"/>
+                            <ColumnDefinition Width="80"/>
+                            <ColumnDefinition Width="2*"/>
+                            <ColumnDefinition Width="1.5*"/>
+                            <ColumnDefinition Width="80"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="{x:Bind Track.Title}" Style="{StaticResource TrackInfoTextStyle}"/>
+                        <StackPanel Grid.Column="1" Orientation="Horizontal" Visibility="{x:Bind IsSelected, Converter={StaticResource BooleanToVisibilityConverter}, Mode=OneWay}">
+                            <Button Click="{x:Bind Play}" Style="{StaticResource TrackFunctionalButtonStyle}">
+                                <SymbolIcon Symbol="Play"/>
+                            </Button>
+                            <!--<Button Style="{StaticResource TrackFunctionalButtonStyle}">
+                        <SymbolIcon Symbol="More"/>
+                    </Button>-->
+                        </StackPanel>
+                        <TextBlock Grid.Column="2" Margin="15,0,0,0" Text="{x:Bind Track.Album}" Style="{StaticResource TrackInfoTextStyle}"/>
+                        <TextBlock Grid.Column="3" Margin="15,0,0,0" Text="{x:Bind Track.Artist}" Style="{StaticResource TrackInfoTextStyle}"/>
+                        <TextBlock Grid.Column="4" Margin="15,0,0,0" Text="{x:Bind Track.Duration, Converter={StaticResource TimeSpanToStringConverter}}" Style="{StaticResource TrackInfoTextStyle}"/>
+                    </Grid>
+                </DataTemplate>
+            </localConverters:OrderRuleToTrackTemplateConverter.Default>
+            <localConverters:OrderRuleToTrackTemplateConverter.Entries>
+                <DataTemplate x:Key="Album" x:DataType="localViewModels:MusicsTrackViewModel">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="1.5*"/>
+                            <ColumnDefinition Width="80"/>
+                            <ColumnDefinition Width="1.5*"/>
+                            <ColumnDefinition Width="80"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="{x:Bind Track.Title}" Style="{StaticResource TrackInfoTextStyle}"/>
+                        <StackPanel Grid.Column="1" Orientation="Horizontal" Visibility="{x:Bind IsSelected, Converter={StaticResource BooleanToVisibilityConverter}, Mode=OneWay}">
+                            <Button Click="{x:Bind Play}" Style="{StaticResource TrackFunctionalButtonStyle}">
+                                <SymbolIcon Symbol="Play"/>
+                            </Button>
+                            <!--<Button Style="{StaticResource TrackFunctionalButtonStyle}">
+                        <SymbolIcon Symbol="More"/>
+                    </Button>-->
+                        </StackPanel>
+                        <TextBlock Grid.Column="2" Margin="15,0,0,0" Text="{x:Bind Track.Artist}" Style="{StaticResource TrackInfoTextStyle}"/>
+                        <TextBlock Grid.Column="3" Margin="15,0,0,0" Text="{x:Bind Track.Duration, Converter={StaticResource TimeSpanToStringConverter}}" Style="{StaticResource TrackInfoTextStyle}"/>
+                    </Grid>
+                </DataTemplate>
+                <DataTemplate x:Key="Artist" x:DataType="localViewModels:MusicsTrackViewModel">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="1.5*"/>
+                            <ColumnDefinition Width="80"/>
+                            <ColumnDefinition Width="1.5*"/>
+                            <ColumnDefinition Width="80"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="{x:Bind Track.Title}" Style="{StaticResource TrackInfoTextStyle}"/>
+                        <StackPanel Grid.Column="1" Orientation="Horizontal" Visibility="{x:Bind IsSelected, Converter={StaticResource BooleanToVisibilityConverter}, Mode=OneWay}">
+                            <Button Click="{x:Bind Play}" Style="{StaticResource TrackFunctionalButtonStyle}">
+                                <SymbolIcon Symbol="Play"/>
+                            </Button>
+                            <!--<Button Style="{StaticResource TrackFunctionalButtonStyle}">
+                        <SymbolIcon Symbol="More"/>
+                    </Button>-->
+                        </StackPanel>
+                        <TextBlock Grid.Column="2" Margin="15,0,0,0" Text="{x:Bind Track.Album}" Style="{StaticResource TrackInfoTextStyle}"/>
+                        <TextBlock Grid.Column="3" Margin="15,0,0,0" Text="{x:Bind Track.Duration, Converter={StaticResource TimeSpanToStringConverter}}" Style="{StaticResource TrackInfoTextStyle}"/>
+                    </Grid>
+                </DataTemplate>
+            </localConverters:OrderRuleToTrackTemplateConverter.Entries>
+        </localConverters:OrderRuleToTrackTemplateConverter>
     </UserControl.Resources>
     <Grid>
         <localControls:ListViewEx x:Name="lv_Tracks" ItemsSource="{Binding Source={StaticResource TracksViewSource}}"
-                                  ItemTemplate="{StaticResource MusicsTrackDataTemplate}"
+                                  ItemTemplate="{x:Bind ViewModel.SelectedOrderRule, Converter={StaticResource OrderRuleToTrackTemplateConverter}, Mode=OneWay}"
                                   PrepareContainerForItem="lv_Tracks_PrepareContainerForItem">
             <i:Interaction.Behaviors>
                 <localBehaviors:BindItemBackgroundWithIndexBehavior>

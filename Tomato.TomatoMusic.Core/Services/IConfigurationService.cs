@@ -12,5 +12,7 @@ namespace Tomato.TomatoMusic.Services
         PlayerConfiguration Player { get; }
         ThemeConfiguration Theme { get; }
         MetadataConfiguration Metadata { get; }
+
+        void TryPopulate(ConfigurationBase config, bool attachSaveEvent);
     }
 }

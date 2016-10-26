@@ -110,6 +110,7 @@
     <Compile Include="AudioConstants.cs" />
     <Compile Include="AudioRpc.cs" />
     <Compile Include="Configuration\ConfigurationBase.cs" />
+    <Compile Include="Configuration\PlaylistViewConfiguration.cs" />
     <Compile Include="MetadataConfiguration.cs" />
     <Compile Include="Configuration\PlayerConfiguration.cs" />
     <Compile Include="Configuration\ThemeConfiguration.cs" />

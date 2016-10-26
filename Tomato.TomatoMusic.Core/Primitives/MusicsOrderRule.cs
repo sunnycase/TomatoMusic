@@ -10,6 +10,7 @@ namespace Tomato.TomatoMusic.Primitives
     {
         AddTime,
         Title,
-        Album
+        Album,
+        Artist
     }
 }

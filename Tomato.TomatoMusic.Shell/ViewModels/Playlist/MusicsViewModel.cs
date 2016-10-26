@@ -10,6 +10,7 @@ using Tomato.Mvvm;
 using System.Collections.ObjectModel;
 using ReactiveUI;
 using Windows.UI.Xaml.Data;
+using Tomato.TomatoMusic.Configuration;
 
 namespace Tomato.TomatoMusic.Shell.ViewModels.Playlist
 {
@@ -41,26 +42,16 @@ namespace Tomato.TomatoMusic.Shell.ViewModels.Playlist
     {
         private IReadOnlyReactiveCollection<MusicsTrackViewModel> _tracks;
 
-        public MusicsOrderRule[] OrderRules { get; } = new MusicsOrderRule[]
+        public override MusicsOrderRule[] OrderRules { get; } = new MusicsOrderRule[]
         {
             MusicsOrderRule.AddTime,
             MusicsOrderRule.Title,
-            MusicsOrderRule.Album
+            MusicsOrderRule.Album,
+            MusicsOrderRule.Artist
         };
 
-        private MusicsOrderRule _selectedOrderRule;
-        public MusicsOrderRule SelectedOrderRule
-        {
-            get { return _selectedOrderRule; }
-            set
-            {
-                if (this.SetProperty(ref _selectedOrderRule, value))
-                    UpdateTracksCollection();
-            }
-        }
-
-        public MusicsViewModel(PlaylistPlaceholder playlist)
-            : base(playlist)
+        public MusicsViewModel(PlaylistPlaceholder playlist, PlaylistViewConfiguration playlistViewConfig)
+            : base(playlist, playlistViewConfig)
         {
             PlaySession.PropertyChanged += _playSession_PropertyChanged;
         }
@@ -89,6 +80,9 @@ namespace Tomato.TomatoMusic.Shell.ViewModels.Playlist
                 case MusicsOrderRule.Album:
                     order = (x, y) => Comparer<string>.Default.Compare(x.Track.Album, y.Track.Album);
                     break;
+                case MusicsOrderRule.Artist:
+                    order = (x, y) => Comparer<string>.Default.Compare(x.Track.Artist, y.Track.Artist);
+                    break;
             }
             _tracks = PlaylistContentProvider.Tracks.CreateDerivedCollection(WrapTrackInfo, orderer: order);
 
@@ -108,10 +102,14 @@ namespace Tomato.TomatoMusic.Shell.ViewModels.Playlist
                     ItemsSource = new ObservableGroupingCollection<string, MusicsTrackViewModel>((IReadOnlyList<MusicsTrackViewModel>)_tracks, o => o.Track.Album,
                         Comparer<string>.Default, Comparer<MusicsTrackViewModel>.Default);
                     break;
+                case MusicsOrderRule.Artist:
+                    IsItemsSourceGrouped = true;
+                    ItemsSource = new ObservableGroupingCollection<string, MusicsTrackViewModel>((IReadOnlyList<MusicsTrackViewModel>)_tracks, o => o.Track.Artist,
+                        Comparer<string>.Default, Comparer<MusicsTrackViewModel>.Default);
+                    break;
                 default:
                     break;
             }
-
         }
 
         private void _playSession_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
@@ -138,9 +136,16 @@ namespace Tomato.TomatoMusic.Shell.ViewModels.Playlist
 
         private void TrackViewModel_PlayRequested(object sender, EventArgs e)
         {
+            if (_tracks == null) return;
+
             var trackVM = (MusicsTrackViewModel)sender;
-            PlaySession.SetPlaylist(PlaylistContentProvider.Tracks.ToList(), trackVM.Track);
+            PlaySession.SetPlaylist(_tracks.Select(o => o.Track).ToList(), trackVM.Track);
             PlaySession.PlayWhenOpened();
+        }
+
+        protected override void OnSelectedOrderRuleChanged()
+        {
+            UpdateTracksCollection();
         }
     }
 }

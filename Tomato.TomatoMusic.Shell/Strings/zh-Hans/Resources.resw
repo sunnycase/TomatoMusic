@@ -216,4 +216,7 @@
   <data name="MusicsOrderRule.Album" xml:space="preserve">
     <value>专辑</value>
   </data>
+  <data name="MusicsOrderRule.Artist" xml:space="preserve">
+    <value>歌手</value>
+  </data>
 </root>

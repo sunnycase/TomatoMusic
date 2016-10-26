@@ -8,6 +8,7 @@ using Tomato.TomatoMusic.Primitives;
 using Tomato.TomatoMusic.Services;
 using Tomato.TomatoMusic.Shell.ViewModels.Playlist;
 using Tomato.Mvvm;
+using Tomato.TomatoMusic.Configuration;
 
 namespace Tomato.TomatoMusic.Shell.ViewModels
 {
@@ -74,6 +75,8 @@ namespace Tomato.TomatoMusic.Shell.ViewModels
             }
         }
 
+        private PlaylistViewConfiguration _playlistViewConfig;
+
         public PlaylistViewModel()
         {
         }
@@ -108,12 +111,28 @@ namespace Tomato.TomatoMusic.Shell.ViewModels
             {
                 IsRefreshing = false;
             }
-            LoadMusicsViewSetting();
+            LoadPlaylistSetting();
         }
 
-        private void LoadMusicsViewSetting()
+        private void LoadPlaylistSetting()
         {
-            MusicsPresenterViewModel = new MusicsViewModel(Playlist);
+            var playlist = Playlist;
+            if (playlist == null)
+            {
+                _playlistViewConfig = null;
+                MusicsPresenterViewModel = null;
+            }
+            else
+            {
+                _playlistViewConfig = new PlaylistViewConfiguration(_playlist);
+                IoC.Get<IConfigurationService>().TryPopulate(_playlistViewConfig, true);
+
+                var viewType = _playlistViewConfig.ViewType;
+                if (SelectedMusicsViewType != viewType)
+                    SelectedMusicsViewType = viewType;
+                else
+                    OnSelectedMusicsViewType(viewType);
+            }
         }
 
         private void OnSelectedMusicsViewType(MusicsViewType value)
@@ -121,13 +140,24 @@ namespace Tomato.TomatoMusic.Shell.ViewModels
             switch (value)
             {
                 case MusicsViewType.Musics:
-                    MusicsPresenterViewModel = new MusicsViewModel(Playlist);
+                    MusicsPresenterViewModel = new MusicsViewModel(Playlist, _playlistViewConfig);
                     break;
                 case MusicsViewType.Albums:
                     MusicsPresenterViewModel = new AlbumsViewModel();
                     break;
                 default:
+                    MusicsPresenterViewModel = null;
                     break;
+            }
+            SavePlaylistSetting();
+        }
+
+        private void SavePlaylistSetting()
+        {
+            if (_playlistViewConfig != null)
+            {
+                _playlistViewConfig.ViewType = SelectedMusicsViewType;
+                _playlistViewConfig.Save();
             }
         }
 

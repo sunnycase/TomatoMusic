@@ -19,6 +19,8 @@ namespace Tomato.TomatoMusic.Shell.Services
         private readonly ApplicationDataContainer _configContainer;
         private const string _configContainerName = "Tomato.TomatoMusic.Config";
 
+        private readonly List<WeakReference> _attachedConfigs = new List<WeakReference>();
+
         public ConfigurationService()
         {
             _configContainer = ApplicationData.Current.RoamingSettings.CreateContainer(_configContainerName,
@@ -28,13 +30,9 @@ namespace Tomato.TomatoMusic.Shell.Services
 
         private void Load()
         {
-            TryLoad(Player);
-            TryLoad(Theme);
-            TryLoad(Metadata);
-
-            Player.OnSaved += Config_OnSaved;
-            Theme.OnSaved += Config_OnSaved;
-            Metadata.OnSaved += Config_OnSaved;
+            TryPopulate(Player);
+            TryPopulate(Theme);
+            TryPopulate(Metadata);
         }
 
         private void Config_OnSaved(object sender, EventArgs e)
@@ -46,7 +44,7 @@ namespace Tomato.TomatoMusic.Shell.Services
             }
         }
 
-        private void TryLoad<T>(T config) where T : ConfigurationBase
+        public void TryPopulate(ConfigurationBase config, bool attachSaveEvent = true)
         {
             try
             {
@@ -55,6 +53,15 @@ namespace Tomato.TomatoMusic.Shell.Services
                     JsonConvert.PopulateObject(obj?.ToString(), config);
             }
             catch (Exception) { }
+            if (attachSaveEvent)
+            {
+                _attachedConfigs.RemoveAll(o => !o.IsAlive);
+                if (!_attachedConfigs.Any(o => o.IsAlive && o.Target == config))
+                {
+                    config.OnSaved += Config_OnSaved;
+                    _attachedConfigs.Add(new WeakReference(config));
+                }
+            }
         }
     }
 }

@@ -186,7 +186,8 @@ namespace Tomato.TomatoMusic.Playlist.Providers
                             Album = metadata.Album,
                             Artist = metadata.Artist,
                             AlbumArtist = metadata.AlbumArtist,
-                            Duration = metadata.Duration
+                            Duration = metadata.Duration,
+                            AddTime = DateTime.UtcNow
                         };
                         tracks.Add(trackInfo);
                     }
