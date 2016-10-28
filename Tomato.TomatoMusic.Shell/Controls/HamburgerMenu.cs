@@ -36,26 +36,34 @@ namespace Tomato.TomatoMusic.Shell.Controls
 
         }
 
-        public void SelectMenuItem(object item)
+        public void SelectMenuItem(Func<object, bool> predicator)
         {
-            if (_buttonsListView.Items.Any(o => o == item))
+            if (TrySelectItem(_buttonsListView, predicator))
             {
-                _buttonsListView.SelectedItem = item;
                 _optionsListView.SelectedIndex = -1;
                 _playlistsButtonsListView.SelectedIndex = -1;
             }
-            if (_optionsListView.Items.Any(o => o == item))
+            if (TrySelectItem(_optionsListView, predicator))
             {
-                _optionsListView.SelectedItem = item;
                 _buttonsListView.SelectedIndex = -1;
                 _playlistsButtonsListView.SelectedIndex = -1;
             }
-            if (_playlistsButtonsListView.Items.Any(o => o == item))
+            if (TrySelectItem(_playlistsButtonsListView, predicator))
             {
-                _playlistsButtonsListView.SelectedItem = item;
                 _optionsListView.SelectedIndex = -1;
                 _buttonsListView.SelectedIndex = -1;
             }
+        }
+
+        private bool TrySelectItem(ListViewBase listView, Func<object, bool> predicator)
+        {
+            var item = listView.Items.FirstOrDefault(predicator);
+            if (item != null)
+            {
+                listView.SelectedItem = item;
+                return true;
+            }
+            return false;
         }
 
         private ListViewBase _buttonsListView;

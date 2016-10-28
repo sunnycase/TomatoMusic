@@ -20,7 +20,7 @@
     <PackageCertificateThumbprint>DAE213C80D5EE580150F4A545FFE5EB06C9C63FC</PackageCertificateThumbprint>
     <AppxAutoIncrementPackageRevision>False</AppxAutoIncrementPackageRevision>
     <AppxBundle>Always</AppxBundle>
-    <AppxBundlePlatforms>x86|x64|arm</AppxBundlePlatforms>
+    <AppxBundlePlatforms>x86|x64</AppxBundlePlatforms>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|ARM'">
     <DebugSymbols>true</DebugSymbols>
@@ -115,7 +115,7 @@
     <Compile Include="Converters\MusicsViewTypeToStringConverter.cs" />
     <Compile Include="Converters\OrderRuleToTrackTemplateConverter.cs" />
     <Compile Include="Converters\PlaylistToIconConverter.cs" />
-    <Compile Include="Models\ChangeCurrentMenuItemMessage.cs" />
+    <Compile Include="Models\NavigateMainMenuMessage.cs" />
     <Compile Include="Services\ConfigurationService.cs" />
     <Compile Include="ViewModels\AboutViewModel.cs" />
     <Compile Include="ViewModels\MainViewModel.Playing.cs" />

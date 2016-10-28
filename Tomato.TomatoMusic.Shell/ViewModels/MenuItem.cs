@@ -11,19 +11,18 @@ namespace Tomato.TomatoMusic.Shell.ViewModels
     {
         public string Glyph { get; set; }
         public string Text { get; set; }
+        public Uri Uri { get; set; }
+        public Type ViewModelType { get; set; }
 
-        private readonly Action<INavigationService> _action;
-
-        public MenuItem(Action<INavigationService> action)
+        public MenuItem(Type viewModelType, Uri uri)
         {
-            _action = action;
+            ViewModelType = viewModelType;
+            Uri = uri;
         }
 
         public void OnClick()
         {
-            var nav = IoC.Get<INavigationService>();
-            if (nav != null)
-                _action?.Invoke(nav);
+            IoC.Get<INavigationService>()?.NavigateToViewModel(ViewModelType, Uri.AbsoluteUri);
         }
     }
 }

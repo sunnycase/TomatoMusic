@@ -24,7 +24,7 @@ namespace Tomato.TomatoMusic.Shell.Views
     /// <summary>
     /// 可用于自身或导航至 Frame 内部的空白页。
     /// </summary>
-    public sealed partial class MainView : Page, IHandle<ChangeCurrentMenuItemMessage>
+    public sealed partial class MainView : Page, IHandle<NavigateMainMenuMessage>
     {
         internal MainViewModel ViewModel => (MainViewModel)DataContext;
 
@@ -44,10 +44,10 @@ namespace Tomato.TomatoMusic.Shell.Views
             ((OptionMenuItem)e.ClickedItem).OnClick();
         }
 
-        public void Handle(ChangeCurrentMenuItemMessage message)
+        public void Handle(NavigateMainMenuMessage message)
         {
-            hm_Menu.SelectMenuItem(message.MenuItem);
-            message.MenuItem.OnClick();
+            //hm_Menu.SelectMenuItem(message.MenuItem);
+            //message.MenuItem.OnClick();
         }
     }
 }

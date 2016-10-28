@@ -7,8 +7,9 @@ using Tomato.TomatoMusic.Shell.ViewModels;
 
 namespace Tomato.TomatoMusic.Shell.Models
 {
-    public class ChangeCurrentMenuItemMessage
+    public class NavigateMainMenuMessage
     {
-        internal MenuItem MenuItem { get; set; }
+        public Uri Uri { get; set; }
+        public Type ViewModelType { get; set; }
     }
 }

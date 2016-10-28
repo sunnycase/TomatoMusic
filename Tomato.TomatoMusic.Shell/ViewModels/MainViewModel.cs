@@ -56,10 +56,10 @@ namespace Tomato.TomatoMusic.Shell.ViewModels
 
         private void ResumeLastSession()
         {
-            _eventAggregator.BeginPublishOnUIThread(new ChangeCurrentMenuItemMessage
-            {
-                MenuItem = SolidMenuItems.First()
-            });
+            //_eventAggregator.BeginPublishOnUIThread(new NavigateMainMenuMessage
+            //{
+            //    MenuItem = SolidMenuItems.First()
+            //});
         }
 
         public void NavigateToSettings()

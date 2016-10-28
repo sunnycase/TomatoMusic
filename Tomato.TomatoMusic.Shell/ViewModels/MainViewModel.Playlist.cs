@@ -23,12 +23,12 @@ namespace Tomato.TomatoMusic.Shell.ViewModels
             var resourceLoader = IoC.Get<ResourceLoader>();
             return new List<MenuItem>
             {
-                new MenuItem(n => n.For<PlaylistViewModel>().WithParam(o => o.Key, PlaylistManager.MusicLibrary.Key).Navigate())
+                new MenuItem(typeof(PlaylistViewModel), new NavigateHelper<PlaylistViewModel>().WithParam(o => o.Key, PlaylistManager.MusicLibrary.Key).BuildUri())
                 {
                     Glyph = "\uE8F1",
                     Text = resourceLoader.GetString("MusicLibrary")
                 },
-                new MenuItem(n => n.For<Playing.PlayingViewModel>().Navigate())
+                new MenuItem(typeof(Playing.PlayingViewModel), new NavigateHelper<Playing.PlayingViewModel>().BuildUri())
                 {
                     Glyph = "\uE904",
                     Text = resourceLoader.GetString("Playing/Text")
