@@ -161,6 +161,6 @@
             </Grid>
         </localControls:HamburgerMenu>
         <!-- 音乐控制面板 -->
-        <local:PlayControlView Grid.Row="1" Padding="15"/>
+        <local:PlayControlView Grid.Row="1" Margin="0,0,10,0"/>
     </Grid>
 </Page>

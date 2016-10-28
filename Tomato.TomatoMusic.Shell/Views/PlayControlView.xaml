@@ -9,8 +9,8 @@
     xmlns:converters="using:Tomato.Mvvm.Converters"
     xmlns:controls="using:Tomato.Mvvm.Controls"
     mc:Ignorable="d"
-    d:DesignHeight="300"
-    d:DesignWidth="400">
+    d:DesignHeight="57"
+    d:DesignWidth="401.667">
     <UserControl.Resources>
         <ResourceDictionary>
             <cal:BooleanToVisibilityConverter x:Name="BooleanToVisibilityConverter"/>
@@ -21,73 +21,94 @@
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto"/>
-            <ColumnDefinition Width="Auto"/>
-            <ColumnDefinition Width="Auto"/>
             <ColumnDefinition Width="*"/>
-            <ColumnDefinition Width="Auto"/>
-            <ColumnDefinition Width="Auto"/>
-            <ColumnDefinition Width="Auto"/>
         </Grid.ColumnDefinitions>
-        <Button IsEnabled="{x:Bind PlaySession.CanPrevious, Mode=OneWay}"
-                                Click="{x:Bind PlaySession.RequestPrevious}"
-                                Style="{StaticResource TrackFunctionalButtonStyle}">
-            <SymbolIcon Symbol="Previous"/>
+        <Button Padding="0" Margin="0,0,5,0" Width="200" HorizontalContentAlignment="Left"
+                BorderThickness="0" Background="Transparent" Click="{x:Bind OnTrackTileClick}">
+            <Grid Padding="0,5,5,5">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <Image Grid.RowSpan="2" Margin="5,0,5,0" Source="{x:Bind TrackCover, Mode=OneWay}" Width="48" Height="48" Stretch="Uniform"/>
+                <TextBlock Grid.Column="1" Text="{x:Bind PlaySession.CurrentTrack.Title, Mode=OneWay}" VerticalAlignment="Center"/>
+                <TextBlock Grid.Column="1" Grid.Row="1" Text="{x:Bind PlaySession.CurrentTrack.Artist, Mode=OneWay}" VerticalAlignment="Center"/>
+            </Grid>
         </Button>
-        <Button Grid.Column="1" IsEnabled="{x:Bind PlaySession.CanPlay, Mode=OneWay}"
-                                Style="{StaticResource TrackFunctionalButtonStyle}"
+        <Grid Grid.Column="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <Button IsEnabled="{x:Bind PlaySession.CanPrevious, Mode=OneWay}"
+                                Click="{x:Bind PlaySession.RequestPrevious}"
+                                Style="{StaticResource PlayControlButtonStyle}">
+                <SymbolIcon Symbol="Previous"/>
+            </Button>
+            <Button Grid.Column="1" IsEnabled="{x:Bind PlaySession.CanPlay, Mode=OneWay}"
+                                Style="{StaticResource PlayControlButtonStyle}"
                                 Click="{x:Bind PlaySession.RequestPlay}"
                                 Visibility="{x:Bind PlaySession.ShowPlay, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
-            <SymbolIcon Symbol="Play"/>
-        </Button>
-        <Button Grid.Column="1" IsEnabled="{x:Bind PlaySession.CanPause, Mode=OneWay}"
-                                Style="{StaticResource TrackFunctionalButtonStyle}"
+                <SymbolIcon Symbol="Play"/>
+            </Button>
+            <Button Grid.Column="1" IsEnabled="{x:Bind PlaySession.CanPause, Mode=OneWay}"
+                                Style="{StaticResource PlayControlButtonStyle}"
                                 Click="{x:Bind PlaySession.RequestPause}"
                                 Visibility="{x:Bind PlaySession.ShowPause, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
-            <SymbolIcon Symbol="Pause"/>
-        </Button>
-        <Button Grid.Column="2" IsEnabled="{x:Bind PlaySession.CanNext, Mode=OneWay}"
+                <SymbolIcon Symbol="Pause"/>
+            </Button>
+            <Button Grid.Column="2" IsEnabled="{x:Bind PlaySession.CanNext, Mode=OneWay}"
                                 Click="{x:Bind PlaySession.RequestNext}"
-                                Style="{StaticResource TrackFunctionalButtonStyle}">
-            <SymbolIcon Symbol="Next"/>
-        </Button>
-        <Slider Grid.Column="3" Margin="5,5,5,0" Maximum="{x:Bind PlaySession.Duration, Converter={StaticResource TimeSpanToDoubleConverter}, Mode=OneWay}"
+                                Style="{StaticResource PlayControlButtonStyle}">
+                <SymbolIcon Symbol="Next"/>
+            </Button>
+            <Slider Grid.Column="3" Margin="5,5,5,0" Maximum="{x:Bind PlaySession.Duration, Converter={StaticResource TimeSpanToDoubleConverter}, Mode=OneWay}"
                                 Value="{x:Bind PlaySession.Position, Converter={StaticResource TimeSpanToDoubleConverter}, Mode=TwoWay}" Style="{StaticResource TrackPositionSliderStyle}"
                                 />
-        <StackPanel Grid.Column="4" Orientation="Horizontal">
-            <TextBlock Text="{x:Bind PlaySession.Position, Converter={StaticResource TimeSpanToStringConverter}, Mode=OneWay}"/>
-            <TextBlock>/</TextBlock>
-            <TextBlock Text="{x:Bind PlaySession.Duration, Converter={StaticResource TimeSpanToStringConverter}, Mode=OneWay}"/>
-            <StackPanel.Resources>
-                <Style TargetType="TextBlock">
-                    <Setter Property="VerticalAlignment" Value="Center"/>
-                    <Setter Property="Margin" Value="2,0"/>
-                </Style>
-            </StackPanel.Resources>
-        </StackPanel>
-        <!-- 音量控制 -->
-        <Button Grid.Column="5"
-                                Style="{StaticResource TrackFunctionalButtonStyle}">
-            <SymbolIcon Symbol="Volume"/>
-            <Button.Flyout>
-                <Flyout Placement="Top">
-                    <StackPanel Orientation="Horizontal">
-                        <SymbolIcon Symbol="Volume"/>
-                        <Slider Margin="15,5,15,0" Width="200" Maximum="100" Value="{x:Bind PlaySession.Volume, Mode=TwoWay}"/>
-                        <TextBlock Text="{x:Bind PlaySession.Volume, Mode=TwoWay}" VerticalAlignment="Center" Width="30"/>
-                    </StackPanel>
-                    <Flyout.FlyoutPresenterStyle>
-                        <Style TargetType="FlyoutPresenter">
-                            <Setter Property="Margin" Value="-10,0"/>
-                        </Style>
-                    </Flyout.FlyoutPresenterStyle>
-                </Flyout>
-            </Button.Flyout>
-        </Button>
-        <!-- 播放模式 -->
-        <Button Grid.Column="6"
+            <StackPanel Grid.Column="4" Orientation="Horizontal">
+                <TextBlock Text="{x:Bind PlaySession.Position, Converter={StaticResource TimeSpanToStringConverter}, Mode=OneWay}"/>
+                <TextBlock>/</TextBlock>
+                <TextBlock Text="{x:Bind PlaySession.Duration, Converter={StaticResource TimeSpanToStringConverter}, Mode=OneWay}"/>
+                <StackPanel.Resources>
+                    <Style TargetType="TextBlock">
+                        <Setter Property="VerticalAlignment" Value="Center"/>
+                        <Setter Property="Margin" Value="2,0"/>
+                    </Style>
+                </StackPanel.Resources>
+            </StackPanel>
+            <!-- 音量控制 -->
+            <Button Grid.Column="5" Style="{StaticResource PlayControlButtonStyle}">
+                <SymbolIcon Symbol="Volume"/>
+                <Button.Flyout>
+                    <Flyout Placement="Top">
+                        <StackPanel Orientation="Horizontal">
+                            <SymbolIcon Symbol="Volume"/>
+                            <Slider Margin="15,5,15,0" Width="200" Maximum="100" Value="{x:Bind PlaySession.Volume, Mode=TwoWay}"/>
+                            <TextBlock Text="{x:Bind PlaySession.Volume, Mode=OneWay}" VerticalAlignment="Center" Width="30"/>
+                        </StackPanel>
+                        <Flyout.FlyoutPresenterStyle>
+                            <Style TargetType="FlyoutPresenter">
+                                <Setter Property="Margin" Value="-10,0"/>
+                            </Style>
+                        </Flyout.FlyoutPresenterStyle>
+                    </Flyout>
+                </Button.Flyout>
+            </Button>
+            <!-- 播放模式 -->
+            <Button Grid.Column="6"
                                 Click="{x:Bind PlaySession.ScrollPlayMode}"
-                                Style="{StaticResource TrackFunctionalButtonStyle}">
-            <SymbolIcon Symbol="{x:Bind PlaySession.PlayMode.Icon, Mode=OneWay}"/>
-        </Button>
+                                Style="{StaticResource PlayControlButtonStyle}">
+                <SymbolIcon Symbol="{x:Bind PlaySession.PlayMode.Icon, Mode=OneWay}"/>
+            </Button>
+        </Grid>
     </Grid>
 </UserControl>
