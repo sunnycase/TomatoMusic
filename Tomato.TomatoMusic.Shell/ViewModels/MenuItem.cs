@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Tomato.TomatoMusic.Shell.Models;
 
 namespace Tomato.TomatoMusic.Shell.ViewModels
 {
@@ -22,7 +23,11 @@ namespace Tomato.TomatoMusic.Shell.ViewModels
 
         public void OnClick()
         {
-            IoC.Get<INavigationService>()?.NavigateToViewModel(ViewModelType, Uri.AbsoluteUri);
+            IoC.Get<IEventAggregator>().BeginPublishOnUIThread(new NavigateMainMenuMessage
+            {
+                Uri = Uri,
+                ViewModelType = ViewModelType
+            });
         }
     }
 }

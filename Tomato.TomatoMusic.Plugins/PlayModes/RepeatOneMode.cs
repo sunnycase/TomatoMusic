@@ -18,7 +18,7 @@ namespace Tomato.TomatoMusic.Plugins.PlayModes
 
         public Symbol Icon => Symbol.RepeatOne;
 
-        public TrackInfo SelectNextTrack(IList<TrackInfo> playlist, TrackInfo current)
+        public TrackInfo SelectNextTrack(IReadOnlyList<TrackInfo> playlist, TrackInfo current)
         {
             return current;
         }

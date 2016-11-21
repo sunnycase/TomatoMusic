@@ -111,50 +111,12 @@
     <Compile Include="AudioTask\App.cs" />
     <Compile Include="AudioTask\AudioController.cs" />
     <Compile Include="AudioTask\AudioTaskModule.cs" />
-    <Compile Include="AudioTask\AudioControllerDispatcher.cs" />
     <Compile Include="AudioTask\MinimalApplication.cs" />
     <Compile Include="AudioTask\MinimalPlatformProvider.cs" />
     <Compile Include="Config\AudioModuleConfig.cs" />
-    <Compile Include="RpcProxies\IAudioControllerCalledProxy.cs">
-      <DependentUpon>IAudioControllerCalledProxy.tt</DependentUpon>
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-    </Compile>
-    <Compile Include="RpcProxies\IAudioControllerCallingProxy.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>IAudioControllerCallingProxy.tt</DependentUpon>
-    </Compile>
-    <Compile Include="RpcProxies\IAudioControllerHandlerCalledProxy.cs">
-      <DependentUpon>IAudioControllerHandlerCalledProxy.tt</DependentUpon>
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-    </Compile>
-    <Compile Include="RpcProxies\IAudioControllerHandlerCallingProxy.cs">
-      <DependentUpon>IAudioControllerHandlerCallingProxy.tt</DependentUpon>
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-    </Compile>
-    <Compile Include="Services\AudioControllerHandlerDispatcher.cs" />
     <Compile Include="Services\PlaySessionService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Content Include="Properties\Tomato.TomatoMusic.AudioServices.rd.xml" />
-    <None Include="RpcProxies\IAudioControllerHandlerCallingProxy.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>IAudioControllerHandlerCallingProxy.cs</LastGenOutput>
-    </None>
-    <None Include="RpcProxies\IAudioControllerCalledProxy.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>IAudioControllerCalledProxy.cs</LastGenOutput>
-    </None>
-    <None Include="RpcProxies\IAudioControllerCallingProxy.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>IAudioControllerCallingProxy.cs</LastGenOutput>
-    </None>
-    <None Include="RpcProxies\IAudioControllerHandlerCalledProxy.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>IAudioControllerHandlerCalledProxy.cs</LastGenOutput>
-    </None>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Tomato.TomatoMusic.Core\Tomato.TomatoMusic.Core.csproj">
@@ -169,6 +131,7 @@
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
+  <ItemGroup />
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>
   </PropertyGroup>

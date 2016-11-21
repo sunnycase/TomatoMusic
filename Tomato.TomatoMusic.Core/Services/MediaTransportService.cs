@@ -7,6 +7,7 @@ using Tomato.TomatoMusic.Primitives;
 using Tomato.TomatoMusic.Services;
 using Tomato.Mvvm;
 using Windows.Media;
+using Windows.Media.Playback;
 
 namespace Tomato.TomatoMusic.Services
 {
@@ -35,7 +36,7 @@ namespace Tomato.TomatoMusic.Services
         public MediaPlaybackStatus PlaybackStatus
         {
             get { return _smtc.PlaybackStatus; }
-            set { _smtc.PlaybackStatus = value; }
+            private set { _smtc.PlaybackStatus = value; }
         }
 
         public bool CanNext
@@ -89,6 +90,30 @@ namespace Tomato.TomatoMusic.Services
                 PlaybackStatus = MediaPlaybackStatus.Closed;
             }
             updater.Update();
+        }
+
+        public void SetPlaybackState(MediaPlaybackState state)
+        {
+            switch (state)
+            {
+                case MediaPlaybackState.None:
+                    PlaybackStatus = MediaPlaybackStatus.Closed;
+                    break;
+                case MediaPlaybackState.Opening:
+                    PlaybackStatus = MediaPlaybackStatus.Changing;
+                    break;
+                case MediaPlaybackState.Buffering:
+                    PlaybackStatus = MediaPlaybackStatus.Changing;
+                    break;
+                case MediaPlaybackState.Playing:
+                    PlaybackStatus = MediaPlaybackStatus.Playing;
+                    break;
+                case MediaPlaybackState.Paused:
+                    PlaybackStatus = MediaPlaybackStatus.Paused;
+                    break;
+                default:
+                    break;
+            }
         }
 
         #region IDisposable Support

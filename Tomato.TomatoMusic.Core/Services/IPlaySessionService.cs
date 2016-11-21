@@ -17,6 +17,7 @@ namespace Tomato.TomatoMusic.Services
         bool ShowPause { get; }
         bool ShowPlay { get; }
         bool CanNext { get; }
+        IReadOnlyList<TrackInfo> Playlist { get; }
         TrackInfo CurrentTrack { get; }
         MediaPlaybackStatus PlaybackStatus { get; }
         TimeSpan? Duration { get; }
@@ -29,7 +30,7 @@ namespace Tomato.TomatoMusic.Services
         void RequestPause();
         void RequestPrevious();
         void RequestNext();
-        void SetPlaylist(IList<TrackInfo> tracks, TrackInfo current);
+        void SetPlaylist(IReadOnlyList<TrackInfo> tracks, TrackInfo current);
         void PlayWhenOpened();
         void ScrollPlayMode();
     }

@@ -5,7 +5,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Caliburn.Micro;
-using Tomato.Rpc.Json;
 using Tomato.TomatoMusic.Core;
 using Tomato.TomatoMusic.Plugins;
 using Tomato.TomatoMusic.Primitives;
@@ -15,241 +14,226 @@ using Windows.Media;
 using Tomato.Mvvm;
 using Windows.Media.Playback;
 using Tomato.Media.Toolkit;
+using Stateless;
+using MediaPlayerState = Tomato.TomatoMusic.Primitives.MediaPlayerState;
+using Tomato.TomatoMusic.Rpc;
+using Windows.Media.Core;
+using Windows.Storage.Streams;
+using Windows.Foundation;
+using System.Net.Http;
+using System.Threading;
 
 namespace Tomato.TomatoMusic.AudioTask
 {
     public class AudioController : BindableBase, IAudioController
     {
         private readonly MediaPlayer _mediaPlayer;
+        private readonly MediaPlaybackSession _playbackSession;
         private readonly IPlayModeManager _playModeManager;
         private readonly MediaEnvironment _mediaEnvironment = new MediaEnvironment();
         private IPlayModeProvider _currentPlayMode;
 
-        private IList<TrackInfo> _playlist;
+        private IReadOnlyList<TrackInfo> _playlist;
         private TrackInfo _currentTrack;
+        private IReadOnlyList<MediaPlaybackItem> _playbackItems;
 
         private bool _autoPlay;
         private readonly ILog _logger = LogManager.GetLog(typeof(AudioController));
         private readonly MediaTransportService _mtService;
+        private readonly StateMachine<MediaPlayerState, Triggers> _stateMachine;
+        private readonly IAudioControllerHandler _audioControllerHandler;
+        private MediaPlaybackList _mediaPlaybackList = new MediaPlaybackList();
+        private TaskCompletionSource<object> _seekTaskCompletion;
+        private int _ready = 0;
 
-        private readonly AudioControllerDispatcher _controllerDisp;
-        private readonly IAudioControllerHandler _controllerHandler;
+        #region Rpc
+        private readonly AudioControllerRpcServer _acRpcServer;
+        private readonly AudioControllerHandlerRpcClient _achRpcClient;
+        #endregion
 
         public AudioController()
         {
-            _controllerDisp = new AudioControllerDispatcher(this);
-            _controllerHandler = _controllerDisp.ControllerHandler;
+            App.Startup();
+
+            #region Rpc
+            _acRpcServer = new AudioControllerRpcServer(this);
+            _achRpcClient = new AudioControllerHandlerRpcClient();
+            _audioControllerHandler = _achRpcClient.Service;
+            #endregion
+
+            _stateMachine = BuildStateMachine();
             _mediaEnvironment.RegisterDefaultCodecs();
             _playModeManager = IoC.Get<IPlayModeManager>();
 
             _mediaPlayer = BackgroundMediaPlayer.Current;
-            _mediaPlayer.MediaOpened += MediaPlayer_MediaOpened;
-            _mediaPlayer.MediaEnded += MediaPlayer_MediaEnded;
-            _mediaPlayer.CurrentStateChanged += MediaPlayer_CurrentStateChanged;
-            _mediaPlayer.SeekCompleted += MediaPlayer_SeekCompleted;
-            _mediaPlayer.MediaFailed += MediaPlayer_MediaFailed;
+            _mediaPlayer.AutoPlay = false;
+            _mediaPlayer.MediaOpened += mediaPlayer_MediaOpened;
+            _mediaPlayer.MediaFailed += mediaPlayer_MediaFailed;
+            _mediaPlayer.MediaEnded += mediaPlayer_MediaEnded;
+            _playbackSession = _mediaPlayer.PlaybackSession;
+            _playbackSession.PlaybackStateChanged += playbackSession_PlaybackStateChanged;
+            _playbackSession.NaturalDurationChanged += playbackSession_NaturalDurationChanged;
+            _playbackSession.SeekCompleted += playbackSession_SeekCompleted;
+
             _mtService = new MediaTransportService(_mediaPlayer.SystemMediaTransportControls);
             _mtService.IsEnabled = _mtService.IsPauseEnabled = _mtService.IsPlayEnabled = true;
             _mtService.ButtonPressed += _mtService_ButtonPressed;
-            InitializeEffects();
+
+            NotifyReady();
         }
 
-        private void InitializeEffects()
+        private StateMachine<MediaPlayerState, Triggers> BuildStateMachine()
         {
-            //_equalizerEffect = new EqualizerEffectTransform();
+            var stateMachine = new StateMachine<MediaPlayerState, Triggers>(MediaPlayerState.Closed);
+            stateMachine.Configure(MediaPlayerState.Closed)
+                .Permit(Triggers.SetMediaPlaybackList, MediaPlayerState.PlaybackListSet);
+            stateMachine.Configure(MediaPlayerState.PlaybackListSet)
+                .PermitReentry(Triggers.SetMediaPlaybackList)
+                .Permit(Triggers.RaiseOpening, MediaPlayerState.MediaOpening);
+            stateMachine.Configure(MediaPlayerState.MediaOpening)
+                .Permit(Triggers.RaisePaused, MediaPlayerState.Paused)
+                .Permit(Triggers.RaiseMediaOpened, MediaPlayerState.MediaOpened)
+                .Permit(Triggers.RaiseError, MediaPlayerState.Error);
+            stateMachine.Configure(MediaPlayerState.MediaOpened)
+                .Permit(Triggers.RaisePaused, MediaPlayerState.Paused)
+                .Permit(Triggers.Play, MediaPlayerState.StartPlaying);
+            stateMachine.Configure(MediaPlayerState.StartPlaying)
+                .Permit(Triggers.RaisePlaying, MediaPlayerState.Playing)
+                .Permit(Triggers.RaiseBuffering, MediaPlayerState.Buffering)
+                .Permit(Triggers.RaiseError, MediaPlayerState.Error);
+            stateMachine.Configure(MediaPlayerState.Playing)
+                .Permit(Triggers.Pause, MediaPlayerState.Pausing)
+                .Permit(Triggers.SetMediaPlaybackList, MediaPlayerState.PlaybackListSet)
+                .Permit(Triggers.RaiseError, MediaPlayerState.Error);
+            stateMachine.Configure(MediaPlayerState.Pausing)
+                .Permit(Triggers.RaisePaused, MediaPlayerState.Paused)
+                .Permit(Triggers.SetMediaPlaybackList, MediaPlayerState.PlaybackListSet)
+                .Permit(Triggers.RaiseError, MediaPlayerState.Error);
+            stateMachine.Configure(MediaPlayerState.Paused)
+                .Permit(Triggers.RaiseMediaOpened, MediaPlayerState.MediaOpened)
+                .Permit(Triggers.Play, MediaPlayerState.StartPlaying)
+                .Permit(Triggers.SetMediaPlaybackList, MediaPlayerState.PlaybackListSet);
+            stateMachine.Configure(MediaPlayerState.Ended)
+                .Permit(Triggers.Play, MediaPlayerState.StartPlaying)
+                .Permit(Triggers.SetMediaPlaybackList, MediaPlayerState.MediaOpening);
+            stateMachine.Configure(MediaPlayerState.Error)
+                .Permit(Triggers.SetMediaPlaybackList, MediaPlayerState.MediaOpening);
+
+            return stateMachine;
         }
 
-        private void MediaPlayer_MediaFailed(MediaPlayer sender, Windows.Media.Playback.MediaPlayerFailedEventArgs args)
+        private void OnMediaEnded()
         {
-            _logger.Warn(args.Error.ToString());
-            _logger.Error(args.ExtendedErrorCode);
-            var currentTrack = _currentTrack;
-            var nextTrack = GetNextTrack();
-            if (nextTrack != currentTrack && nextTrack != null)
-            {
-                _autoPlay = true;
-                SetCurrentTrack(nextTrack);
-            }
+            _stateMachine.Fire(Triggers.RaiseEnded);
         }
 
-        private void MediaPlayer_SeekCompleted(MediaPlayer sender, object args)
+        private void OnMediaFailed(MediaPlayerError error)
         {
-            _controllerHandler.NotifySeekCompleted();
+            _stateMachine.Fire(Triggers.RaiseError);
+
+            var taskComp = Interlocked.Exchange(ref _seekTaskCompletion, null);
+            if (taskComp != null)
+                taskComp.SetException(new InvalidOperationException($"MediaPlayerError: {error}."));
         }
 
-        private void MediaPlayer_MediaEnded(MediaPlayer sender, object args)
+        private void OnMediaOpened()
         {
-            var currentTrack = _currentTrack;
-            var nextTrack = GetNextTrack();
-            if (nextTrack != null)
-            {
-                if (nextTrack != currentTrack)
-                {
-                    _autoPlay = true;
-                    SetCurrentTrack(nextTrack);
-                }
-                else
-                    Play();
-            }
-        }
-
-        TrackInfo GetNextTrack()
-        {
-            var playlist = _playlist;
-            var currentTrack = _currentTrack;
-            var playMode = _currentPlayMode;
-            if (playMode != null && playlist != null && currentTrack != null)
-            {
-                return playMode.SelectNextTrack(playlist, currentTrack);
-            }
-            return currentTrack;
-        }
-
-        private void MediaPlayer_CurrentStateChanged(MediaPlayer sender, object args)
-        {
-            _controllerHandler.NotifyControllerStateChanged(_mediaPlayer.CurrentState);
-
-            switch (_mediaPlayer.CurrentState)
-            {
-                case MediaPlayerState.Closed:
-                    CanPlay = CanPause = false;
-                    ShowPause = false;
-                    ShowPlay = true;
-                    PlaybackStatus = MediaPlaybackStatus.Closed;
-                    break;
-                case MediaPlayerState.Opening:
-                    CanPlay = CanPause = false;
-                    ShowPause = false;
-                    ShowPlay = true;
-                    PlaybackStatus = MediaPlaybackStatus.Changing;
-                    break;
-                case MediaPlayerState.Buffering:
-                    CanPlay = CanPause = false;
-                    ShowPause = false;
-                    ShowPlay = true;
-                    PlaybackStatus = MediaPlaybackStatus.Changing;
-                    break;
-                case MediaPlayerState.Playing:
-                    CanPause = true;
-                    CanPlay = false;
-                    ShowPause = true;
-                    ShowPlay = false;
-                    PlaybackStatus = MediaPlaybackStatus.Playing;
-                    break;
-                case MediaPlayerState.Paused:
-                    CanPause = false;
-                    CanPlay = true;
-                    ShowPause = false;
-                    ShowPlay = true;
-                    PlaybackStatus = MediaPlaybackStatus.Paused;
-                    break;
-                case MediaPlayerState.Stopped:
-                    PlaybackStatus = MediaPlaybackStatus.Stopped;
-                    break;
-                default:
-                    break;
-            }
-        }
-
-        private void MediaPlayer_MediaOpened(MediaPlayer sender, object args)
-        {
+            _stateMachine.Fire(Triggers.RaiseMediaOpened);
             if (_autoPlay)
             {
                 _autoPlay = false;
                 Play();
             }
-            _controllerHandler.NotifyMediaOpened();
-            _controllerHandler.NotifyDuration(_mediaPlayer.NaturalDuration);
+
+            _mtService.IsPauseEnabled = _playbackSession.CanPause;
         }
+
+        private void playbackSession_SeekCompleted(MediaPlaybackSession sender, object args)
+        {
+            var taskComp = Interlocked.Exchange(ref _seekTaskCompletion, null);
+            if (taskComp != null)
+                taskComp.SetResult(null);
+        }
+
+        private void playbackSession_NaturalDurationChanged(MediaPlaybackSession sender, object args)
+        {
+            _audioControllerHandler.OnNaturalDurationChanged(_playbackSession.NaturalDuration);
+        }
+
+        private void OnPlaybackStateChanged()
+        {
+            var state = _playbackSession.PlaybackState;
+            switch (state)
+            {
+                case MediaPlaybackState.None:
+                    break;
+                case MediaPlaybackState.Opening:
+                    _stateMachine.Fire(Triggers.RaiseOpening);
+                    break;
+                case MediaPlaybackState.Buffering:
+                    _stateMachine.Fire(Triggers.RaiseBuffering);
+                    break;
+                case MediaPlaybackState.Playing:
+                    _stateMachine.Fire(Triggers.RaisePlaying);
+                    break;
+                case MediaPlaybackState.Paused:
+                    _stateMachine.Fire(Triggers.RaisePaused);
+                    break;
+            }
+            _mtService.SetPlaybackState(state);
+            _audioControllerHandler.OnMediaPlaybackStateChanged(state);
+        }
+
+        #region Event Handlers
+
+        private void mediaPlayer_MediaEnded(MediaPlayer sender, object args)
+        {
+            Execute.BeginOnUIThread(OnMediaEnded);
+        }
+
+        private void mediaPlayer_MediaFailed(MediaPlayer sender, MediaPlayerFailedEventArgs args)
+        {
+            Execute.BeginOnUIThread(() => OnMediaFailed(args.Error));
+        }
+
+        private void mediaPlayer_MediaOpened(MediaPlayer sender, object args)
+        {
+            Execute.BeginOnUIThread(OnMediaOpened);
+        }
+
+        private void playbackSession_PlaybackStateChanged(MediaPlaybackSession sender, object args)
+        {
+            Execute.BeginOnUIThread(OnPlaybackStateChanged);
+        }
+
+        #endregion
 
         public void Play()
         {
-            _mediaPlayer.Play();
-        }
-
-        private async void SetMediaSource(Uri uri)
-        {
-            try
+            if (_stateMachine.CanFire(Triggers.Play))
             {
-                GC.Collect();
-                GC.WaitForPendingFinalizers();
-                GC.Collect();
-                StorageFile file;
-                if (uri.Scheme == "ms-appx")
-                    file = await StorageFile.GetFileFromApplicationUriAsync(uri);
-                else if (uri.IsFile)
-                    file = await StorageFile.GetFileFromPathAsync(uri.LocalPath);
-                else
-                    throw new NotSupportedException("Not supported uri.");
-                
-                _mediaPlayer.SetFileSource(file);
-            }
-            catch
-            {
-                PlaybackStatus = MediaPlaybackStatus.Closed;
+                _stateMachine.Fire(Triggers.Play);
+                _mediaPlayer.Play();
             }
         }
 
         public void Pause()
         {
-            _mediaPlayer.Pause();
-        }
-
-        public void SetPlaylist(IList<TrackInfo> tracks)
-        {
-            _playlist = tracks;
-        }
-
-        public void SetCurrentTrack(TrackInfo track)
-        {
-            if (_currentTrack != track)
+            if (_stateMachine.CanFire(Triggers.Pause))
             {
-                _currentTrack = track;
-                if (_currentTrack != null)
-                {
-                    SetMediaSource(track.Source);
-                    _controllerHandler.NotifyCurrentTrackChanged(track);
-                    OnCurrentTrackChanged();
-                }
-                _mtService.SetCurrentTrack(track);
+                _stateMachine.Fire(Triggers.Pause);
+                _mediaPlayer.Pause();
             }
         }
 
         public void MoveNext()
         {
-            var cntIdx = GetCurrentTrackIndex();
-            if (cntIdx != -1)
-            {
-                var nextIdx = cntIdx + 1;
-                if (nextIdx >= 0 && nextIdx < _playlist.Count)
-                {
-                    _autoPlay = true;
-                    SetCurrentTrack(_playlist[nextIdx]);
-                }
-            }
+            _mediaPlaybackList.MoveNext();
         }
 
         public void MovePrevious()
         {
-            var cntIdx = GetCurrentTrackIndex();
-            if (cntIdx != -1)
-            {
-                var prevIdx = cntIdx - 1;
-                if (prevIdx >= 0 && prevIdx < _playlist.Count)
-                {
-                    _autoPlay = true;
-                    SetCurrentTrack(_playlist[prevIdx]);
-                }
-            }
-        }
-
-        private int GetCurrentTrackIndex()
-        {
-            if (_playlist != null && _currentTrack != null)
-            {
-                return _playlist.IndexOf(_currentTrack);
-            }
-            return -1;
+            _mediaPlaybackList.MovePrevious();
         }
 
         public void SetPlayMode(Guid id)
@@ -257,15 +241,9 @@ namespace Tomato.TomatoMusic.AudioTask
             _currentPlayMode = _playModeManager.GetProvider(id);
         }
 
-        public void AskPosition()
-        {
-            _controllerHandler.NotifyPosition(_mediaPlayer.Position);
-        }
-
         public void SetPosition(TimeSpan position)
         {
-            _mediaPlayer.Position = position;
-            _logger.Info($"Set Position: {position}");
+            _playbackSession.Position = position;
         }
 
         public void SetVolume(double value)
@@ -273,187 +251,193 @@ namespace Tomato.TomatoMusic.AudioTask
             _mediaPlayer.Volume = value;
         }
 
-        #region SMTC
-
-        private bool _canPrevious;
-        public bool CanPrevious
-        {
-            get { return _canPrevious; }
-            private set
-            {
-                if (SetProperty(ref _canPrevious, value))
-                    _mtService.CanPrevious = value;
-            }
-        }
-
-        private bool _canPause;
-        public bool CanPause
-        {
-            get { return _canPause; }
-            private set { SetProperty(ref _canPause, value); }
-        }
-
-        private bool _canPlay;
-        public bool CanPlay
-        {
-            get { return _canPlay; }
-            private set { SetProperty(ref _canPlay, value); }
-        }
-
-        private bool _showPause;
-        public bool ShowPause
-        {
-            get { return _showPause; }
-            private set { SetProperty(ref _showPause, value); }
-        }
-
-        private bool _showPlay = true;
-        public bool ShowPlay
-        {
-            get { return _showPlay; }
-            private set { SetProperty(ref _showPlay, value); }
-        }
-        private bool _canNext;
-        public bool CanNext
-        {
-            get { return _canNext; }
-            private set
-            {
-                if (SetProperty(ref _canNext, value))
-                    _mtService.CanNext = value;
-            }
-        }
-
-        private MediaPlaybackStatus _playbackStatus = MediaPlaybackStatus.Closed;
-        public MediaPlaybackStatus PlaybackStatus
-        {
-            get { return _playbackStatus; }
-            private set
-            {
-                if (SetProperty(ref _playbackStatus, value))
-                {
-                    _mtService.PlaybackStatus = value;
-                    OnCurrentTrackChanged();
-                }
-            }
-        }
-
-        private void OnCurrentTrackChanged()
-        {
-            if (_currentTrack != null && _playlist != null)
-            {
-                var idx = _playlist.IndexOf(_currentTrack);
-                if (idx != -1)
-                {
-                    CanPrevious = idx > 0 && PlaybackStatus != MediaPlaybackStatus.Changing;
-                    CanNext = idx < _playlist.Count - 1 && PlaybackStatus != MediaPlaybackStatus.Changing;
-                }
-                else
-                    CanPrevious = CanNext = false;
-            }
-            else
-                CanPlay = CanPause = CanPrevious = CanNext = false;
-        }
-
-        public void RequestPlay()
-        {
-            if (CanPlay)
-                Play();
-        }
-
-        public void RequestPause()
-        {
-            if (CanPause)
-                Pause();
-        }
-
-        public void RequestNext()
-        {
-            if (CanNext)
-                MoveNext();
-        }
-
-        public void RequestPrevious()
-        {
-            if (CanPrevious)
-                MovePrevious();
-        }
-
         private void _mtService_ButtonPressed(object sender, Windows.Media.SystemMediaTransportControlsButtonPressedEventArgs e)
         {
-            switch (e.Button)
+            OnMediaTransportControlsButtonPressed(e.Button);
+        }
+
+        private void OnMediaTransportControlsButtonPressed(SystemMediaTransportControlsButton button)
+        {
+            switch (button)
             {
-                case Windows.Media.SystemMediaTransportControlsButton.Play:
-                    RequestPlay();
+                case SystemMediaTransportControlsButton.Play:
+                    Play();
                     break;
-                case Windows.Media.SystemMediaTransportControlsButton.Pause:
-                    RequestPause();
+                case SystemMediaTransportControlsButton.Pause:
+                    Pause();
                     break;
-                case Windows.Media.SystemMediaTransportControlsButton.Stop:
+                case SystemMediaTransportControlsButton.Stop:
                     break;
-                case Windows.Media.SystemMediaTransportControlsButton.Record:
+                case SystemMediaTransportControlsButton.Record:
                     break;
-                case Windows.Media.SystemMediaTransportControlsButton.FastForward:
+                case SystemMediaTransportControlsButton.FastForward:
                     break;
-                case Windows.Media.SystemMediaTransportControlsButton.Rewind:
+                case SystemMediaTransportControlsButton.Rewind:
                     break;
-                case Windows.Media.SystemMediaTransportControlsButton.Next:
-                    RequestNext();
+                case SystemMediaTransportControlsButton.Next:
+                    MoveNext();
                     break;
-                case Windows.Media.SystemMediaTransportControlsButton.Previous:
-                    RequestPrevious();
+                case SystemMediaTransportControlsButton.Previous:
+                    MovePrevious();
                     break;
-                case Windows.Media.SystemMediaTransportControlsButton.ChannelUp:
+                case SystemMediaTransportControlsButton.ChannelUp:
                     break;
-                case Windows.Media.SystemMediaTransportControlsButton.ChannelDown:
+                case SystemMediaTransportControlsButton.ChannelDown:
                     break;
                 default:
                     break;
             }
         }
 
-        #endregion
-
         public void OnCanceled()
         {
-            _controllerDisp.OnCanceled();
+            _achRpcClient.OnCanceled();
+            _acRpcServer.OnCanceled();
             _mtService.Dispose();
         }
 
-        public void AskPlaylist()
+        async void IAudioController.SetPlaylist(IReadOnlyList<TrackInfo> tracks, TrackInfo nextTrack, bool autoPlay)
         {
-            if (_playlist != null)
-                _controllerHandler.NotifyPlaylist(_playlist);
+            if (_stateMachine.CanFire(Triggers.SetMediaPlaybackList))
+            {
+                _stateMachine.Fire(Triggers.SetMediaPlaybackList);
+                var mediaPlaybackList = new MediaPlaybackList();
+                mediaPlaybackList.ItemOpened += MediaPlaybackList_ItemOpened;
+                mediaPlaybackList.ItemFailed += MediaPlaybackList_ItemFailed;
+                mediaPlaybackList.CurrentItemChanged += MediaPlaybackList_CurrentItemChanged;
+                var items = tracks.Select(o =>
+               {
+                   var streamRef = new UriRandomAccessStreamReference(o.Source);
+                   return new MediaPlaybackItem(MediaSource.CreateFromStreamReference(streamRef, "audio/mp3"));
+               }).ToList();
+                items.Sink(mediaPlaybackList.Items.Add);
+                mediaPlaybackList.StartingItem = items[tracks.IndexOf(nextTrack)];
+
+                _playlist = tracks;
+                _currentTrack = nextTrack;
+                _playbackItems = items;
+
+                _mediaPlaybackList = mediaPlaybackList;
+                _autoPlay = autoPlay;
+                _mediaPlayer.Source = mediaPlaybackList;
+            }
         }
 
-        public void AskCurrentTrack()
+        private void MediaPlaybackList_CurrentItemChanged(MediaPlaybackList sender, CurrentMediaPlaybackItemChangedEventArgs args)
         {
-            _controllerHandler.NotifyCurrentTrackChanged(_currentTrack);
+            int index;
+            if ((index = _playbackItems?.IndexOf(args.NewItem) ?? -1) != -1)
+            {
+                var playlist = _playlist;
+                if (index < playlist?.Count)
+                {
+                    _currentTrack = playlist[index];
+                    Execute.BeginOnUIThread(() => _audioControllerHandler.OnCurrentTrackChanged(_currentTrack));
+                }
+            }
         }
 
-        public void AskCurrentState()
+        private void MediaPlaybackList_ItemFailed(MediaPlaybackList sender, MediaPlaybackItemFailedEventArgs args)
         {
-            _controllerHandler.NotifyControllerStateChanged(_mediaPlayer?.CurrentState ?? MediaPlayerState.Closed);
+
         }
 
-        public void AskDuration()
+        private void MediaPlaybackList_ItemOpened(MediaPlaybackList sender, MediaPlaybackItemOpenedEventArgs args)
         {
-            _controllerHandler.NotifyDuration(_currentTrack?.Duration);
+
         }
 
-        public void SetEqualizerParameter(float frequency, float bandWidth, float gain)
+        private void NotifyReady()
         {
-            //_equalizerEffect.AddOrUpdateFilter(frequency, bandWidth, gain);
+            //if (Interlocked.CompareExchange(ref _ready, 1, 0) == 1))
+                _audioControllerHandler.NotifyReady();
         }
 
-        public void ClearEqualizerParameter(float frequency)
+        void IAudioController.SetCurrentTrack(TrackInfo track)
         {
-            //_equalizerEffect.RemoveFilter(frequency);
+            if (_playlist != null && _playbackItems != null)
+            {
+                var idx = _playlist.IndexOf(track);
+                if (idx != -1)
+                {
+                    _mediaPlaybackList.StartingItem = _playbackItems[idx];
+                    _currentTrack = track;
+                }
+            }
         }
-        
-        public void SetupHandler()
+
+        void IAudioController.OnMediaTransportControlsButtonPressed(SystemMediaTransportControlsButton button)
         {
-            _controllerHandler.NotifyControllerReady();
+            OnMediaTransportControlsButtonPressed(button);
+        }
+
+        Task<TimeSpan> IAudioController.GetPosition()
+        {
+            return Task.FromResult(_playbackSession.Position);
+        }
+
+        Task IAudioController.Seek(TimeSpan position)
+        {
+            if (_playbackSession.CanSeek)
+            {
+                var taskComp = new TaskCompletionSource<object>();
+                var oldTaskComp = Interlocked.CompareExchange(ref _seekTaskCompletion, taskComp, null);
+                if (oldTaskComp != null)
+                    taskComp = oldTaskComp;
+
+                _playbackSession.Position = position;
+                return taskComp.Task;
+            }
+            else
+                return Task.FromResult<object>(null);
+        }
+
+        void IAudioController.AskIfReady()
+        {
+            NotifyReady();
+        }
+
+        void IAudioController.SetVolume(double volume)
+        {
+            _mediaPlayer.Volume = volume;
+        }
+
+        private enum Triggers
+        {
+            SetMediaPlaybackList,
+            RaiseOpening,
+            Play,
+            RaiseMediaOpened,
+            RaiseBuffering,
+            RaisePlaying,
+            Pause,
+            RaisePaused,
+            RaiseEnded,
+            RaiseError
+        }
+
+        private class UriRandomAccessStreamReference : IRandomAccessStreamReference
+        {
+            private readonly Uri _uri;
+            public UriRandomAccessStreamReference(Uri uri)
+            {
+                _uri = uri;
+            }
+
+            public IAsyncOperation<IRandomAccessStreamWithContentType> OpenReadAsync() => OpenReadAsyncTask().AsAsyncOperation();
+
+            async Task<IRandomAccessStreamWithContentType> OpenReadAsyncTask()
+            {
+                if (_uri.IsFile)
+                {
+                    var file = await StorageFile.GetFileFromPathAsync(_uri.LocalPath);
+                    return await file.OpenReadAsync();
+                }
+                else
+                {
+                    return await RandomAccessStreamReference.CreateFromUri(_uri).OpenReadAsync();
+                }
+            }
         }
     }
 }

@@ -3,28 +3,21 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Tomato.Rpc;
 using Tomato.TomatoMusic.Primitives;
+using Windows.Media;
 
 namespace Tomato.TomatoMusic.Core
 {
+    [RpcPeer]
     public interface IAudioController
     {
-        void SetupHandler();
-        void Play();
-        void Pause();
-        void SetPlaylist(IList<TrackInfo> tracks);
+        void AskIfReady();
+        void SetPlaylist(IReadOnlyList<TrackInfo> tracks, TrackInfo nextTrack, bool autoPlay = true);
         void SetCurrentTrack(TrackInfo track);
-        void MoveNext();
-        void MovePrevious();
-        void SetPlayMode(Guid id);
-        void AskPosition();
-        void SetPosition(TimeSpan position);
-        void SetVolume(double value);
-        void AskPlaylist();
-        void AskCurrentTrack();
-        void AskCurrentState();
-        void AskDuration();
-        void SetEqualizerParameter(float frequency, float bandWidth, float gain);
-        void ClearEqualizerParameter(float frequency);
+        void OnMediaTransportControlsButtonPressed(SystemMediaTransportControlsButton button);
+        Task<TimeSpan> GetPosition();
+        Task Seek(TimeSpan position);
+        void SetVolume(double volume);
     }
 }

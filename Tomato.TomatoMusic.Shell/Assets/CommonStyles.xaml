@@ -310,7 +310,12 @@
                             <VisualStateGroup x:Name="CommonStates">
                                 <VisualState x:Name="Normal"/>
                                 <VisualState x:Name="Pressed">
-                                    <Storyboard/>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetName="ThumbScale" Storyboard.TargetProperty="ScaleX"
+                                                         Duration="0:0:0.1" To="1.2"/>
+                                        <DoubleAnimation Storyboard.TargetName="ThumbScale" Storyboard.TargetProperty="ScaleY"
+                                                         Duration="0:0:0.1" To="1.2"/>
+                                    </Storyboard>
                                 </VisualState>
                                 <VisualState x:Name="Disabled">
                                     <Storyboard>
@@ -379,7 +384,12 @@
                                 <TickBar x:Name="TopTickBar" Grid.ColumnSpan="3" Fill="{ThemeResource SystemControlForegroundBaseMediumLowBrush}" Height="{ThemeResource SliderOutsideTickBarThemeHeight}" Margin="0,0,0,4" Visibility="Collapsed" VerticalAlignment="Bottom"/>
                                 <TickBar x:Name="HorizontalInlineTickBar" Grid.ColumnSpan="3" Fill="{ThemeResource SystemControlBackgroundAltHighBrush}" Height="{ThemeResource SliderTrackThemeHeight}" Grid.Row="1" Visibility="Collapsed"/>
                                 <TickBar x:Name="BottomTickBar" Grid.ColumnSpan="3" Fill="{ThemeResource SystemControlForegroundBaseMediumLowBrush}" Height="{ThemeResource SliderOutsideTickBarThemeHeight}" Margin="0,4,0,0" Grid.Row="2" Visibility="Collapsed" VerticalAlignment="Top"/>
-                                <Thumb x:Name="HorizontalThumb" AutomationProperties.AccessibilityView="Raw" Background="{ThemeResource SystemControlForegroundAccentBrush}" Grid.Column="1" DataContext="{TemplateBinding Value}" Height="24" Grid.Row="0" Grid.RowSpan="3" Style="{StaticResource SliderThumbStyle}" Width="24"/>
+                                <Thumb x:Name="HorizontalThumb" AutomationProperties.AccessibilityView="Raw" Background="{ThemeResource SystemControlForegroundAccentBrush}" Grid.Column="1" DataContext="{TemplateBinding Value}" Height="24" Grid.Row="0" Grid.RowSpan="3" Style="{StaticResource SliderThumbStyle}" Width="24"
+                                       RenderTransformOrigin="0.5,0.5">
+                                    <Thumb.RenderTransform>
+                                        <ScaleTransform x:Name="ThumbScale" ScaleX="1" ScaleY="1"/>
+                                    </Thumb.RenderTransform>
+                                </Thumb>
                             </Grid>
                             <Grid x:Name="VerticalTemplate" MinWidth="44" Visibility="Collapsed">
                                 <Grid.ColumnDefinitions>

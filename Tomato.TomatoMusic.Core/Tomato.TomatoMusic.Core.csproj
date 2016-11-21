@@ -111,6 +111,11 @@
     <Compile Include="AudioRpc.cs" />
     <Compile Include="Configuration\ConfigurationBase.cs" />
     <Compile Include="Configuration\PlaylistViewConfiguration.cs" />
+    <Compile Include="IAudioController.RpcProxy.cs" />
+    <Compile Include="IAudioControllerHandler.RpcProxy.cs" />
+    <Compile Include="IReadOnlyListExtensions.cs" />
+    <Compile Include="Messages\ResumeStateMessage.cs" />
+    <Compile Include="Messages\SuspendStateMessage.cs" />
     <Compile Include="MetadataConfiguration.cs" />
     <Compile Include="Configuration\PlayerConfiguration.cs" />
     <Compile Include="Configuration\ThemeConfiguration.cs" />
@@ -121,24 +126,19 @@
     <Compile Include="MediaHelper.cs" />
     <Compile Include="ObservableGroupingCollection.cs" />
     <Compile Include="Primitives\IMediaMetadata.cs" />
+    <Compile Include="Primitives\MediaPlayerState.cs" />
     <Compile Include="Primitives\MusicsOrderRule.cs" />
     <Compile Include="Primitives\MusicsViewType.cs" />
-    <Compile Include="RpcPackets\IAudioControllerHandler.cs">
-      <DependentUpon>IAudioControllerHandler.tt</DependentUpon>
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-    </Compile>
-    <Compile Include="RpcPackets\IAudioController.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>IAudioController.tt</DependentUpon>
-    </Compile>
     <Compile Include="Primitives\IHasKey.cs" />
     <Compile Include="Primitives\IPlaylistContentProvider.cs" />
     <Compile Include="Primitives\Playlist.cs" />
     <Compile Include="Primitives\PlaylistPlaceholder.cs" />
     <Compile Include="Primitives\TrackInfo.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Rpc\AudioControllerHandlerRpcServer.cs" />
+    <Compile Include="Rpc\AudioControllerHandlerRpcClient.cs" />
+    <Compile Include="Rpc\AudioControllerRpcClient.cs" />
+    <Compile Include="Rpc\AudioControllerRpcServer.cs" />
     <Compile Include="Services\IConfigurationService.cs" />
     <Compile Include="Services\ILocalLyricsService.cs" />
     <Compile Include="Services\IMediaMetadataService.cs" />
@@ -149,19 +149,12 @@
     <Compile Include="Services\IThemeService.cs" />
     <Compile Include="Services\MediaTransportService.cs" />
     <Compile Include="WeakReferenceDictionary.cs" />
-    <None Include="RpcPackets\IAudioControllerHandler.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>IAudioControllerHandler.cs</LastGenOutput>
-    </None>
-    <None Include="RpcPackets\IAudioController.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>IAudioController.cs</LastGenOutput>
-    </None>
     <Content Include="Properties\Tomato.TomatoMusic.Core.rd.xml" />
   </ItemGroup>
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
+  <ItemGroup />
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>
   </PropertyGroup>

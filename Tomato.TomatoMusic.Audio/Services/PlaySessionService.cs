@@ -6,7 +6,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Tomato.Media;
-using Tomato.Rpc.Json;
 using Tomato.TomatoMusic.AudioTask;
 using Tomato.TomatoMusic.Core;
 using Tomato.TomatoMusic.Services;
@@ -18,10 +17,14 @@ using Tomato.TomatoMusic.Plugins;
 using System.Threading;
 using Tomato.TomatoMusic.Configuration;
 using Tomato.TomatoMusic.Audio.Config;
+using Tomato.TomatoMusic.Messages;
+using Windows.Storage;
+using Newtonsoft.Json;
+using Tomato.TomatoMusic.Rpc;
 
 namespace Tomato.TomatoMusic.Audio.Services
 {
-    class PlaySessionService : BindableBase, IAudioControllerHandler, IPlaySessionService
+    class PlaySessionService : BindableBase, IAudioControllerHandler, IPlaySessionService, IHandle<SuspendStateMessage>, IHandle<ResumeStateMessage>
     {
         private bool _canPrevious;
         public bool CanPrevious
@@ -61,6 +64,7 @@ namespace Tomato.TomatoMusic.Audio.Services
             get { return _showPlay; }
             private set { SetProperty(ref _showPlay, value); }
         }
+
         private bool _canNext;
         public bool CanNext
         {
@@ -72,29 +76,13 @@ namespace Tomato.TomatoMusic.Audio.Services
             }
         }
 
-        private MediaPlaybackStatus _playbackStatus = MediaPlaybackStatus.Closed;
-        public MediaPlaybackStatus PlaybackStatus
-        {
-            get { return _playbackStatus; }
-            private set
-            {
-                if (SetProperty(ref _playbackStatus, value))
-                {
-                    _mtService.PlaybackStatus = value;
-                    Execute.BeginOnUIThread(OnCurrentTrackChanged);
-                }
-            }
-        }
+        public MediaPlaybackStatus PlaybackStatus => _mtService.PlaybackStatus;
 
-        private IList<TrackInfo> _playlist = new List<TrackInfo>();
-        public IList<TrackInfo> Playlist
+        private IReadOnlyList<TrackInfo> _playlist = new List<TrackInfo>();
+        public IReadOnlyList<TrackInfo> Playlist
         {
             get { return _playlist; }
-            private set
-            {
-                if (SetProperty(ref _playlist, value ?? new List<TrackInfo>()))
-                    _audioController.SetPlaylist(_playlist);
-            }
+            private set { SetProperty(ref _playlist, value); }
         }
 
         private TrackInfo _currentTrack;
@@ -105,7 +93,6 @@ namespace Tomato.TomatoMusic.Audio.Services
             {
                 if (SetProperty(ref _currentTrack, value))
                 {
-                    _audioController.SetCurrentTrack(value);
                     _mtService.SetCurrentTrack(value);
                     OnCurrentTrackChanged();
                 }
@@ -125,9 +112,8 @@ namespace Tomato.TomatoMusic.Audio.Services
             get { return _position; }
             set
             {
-                var oldValue = _position;
                 if (SetProperty(ref _position, value))
-                    OnPositionChanged(oldValue, value);
+                    OnPositionChanged(value);
             }
         }
 
@@ -160,22 +146,28 @@ namespace Tomato.TomatoMusic.Audio.Services
             }
         }
 
-        private bool _autoPlay = false;
-        
         private readonly IMediaTransportService _mtService;
         private readonly IPlayModeManager _playModeManager;
         private readonly Timer _askPositionTimer;
         private static readonly TimeSpan _askPositionPeriod = TimeSpan.FromSeconds(0.25);
         private PlayerConfiguration _playerConfig;
         private readonly ILog _logger;
-        private readonly AudioControllerHandlerDispatcher _audioHandlerDisp;
         private readonly IAudioController _audioController;
 
-        public PlaySessionService(AudioModuleConfig config)
+        #region Rpc
+        private readonly AudioControllerHandlerRpcServer _achRpcServer;
+        private readonly AudioControllerRpcClient _acRpcClient;
+        #endregion
+
+        public PlaySessionService(AudioModuleConfig config, IEventAggregator eventAggregator)
         {
+            #region Rpc
+            _achRpcServer = new AudioControllerHandlerRpcServer(this);
+            _acRpcClient = new AudioControllerRpcClient();
+            _audioController = _acRpcClient.Service;
+            #endregion
+            eventAggregator.Subscribe(this);
             _logger = LogManager.GetLog(typeof(PlaySessionService));
-            _audioHandlerDisp = new AudioControllerHandlerDispatcher(this);
-            _audioController = _audioHandlerDisp.AudioController;
             _playModeManager = IoC.Get<IPlayModeManager>();
 
             _mtService = new MediaTransportService();
@@ -183,25 +175,15 @@ namespace Tomato.TomatoMusic.Audio.Services
             _mtService.ButtonPressed += _mtService_ButtonPressed;
             _askPositionTimer = new Timer(OnAskPosition, null, Timeout.InfiniteTimeSpan, _askPositionPeriod);
 
-            LoadState();
-            TryAskPreviousStates();
+            _audioController.AskIfReady();
         }
 
         private void TryAskPreviousStates()
         {
             try
             {
-                _audioController.AskPlaylist();
-                _audioController.AskCurrentTrack();
-                _audioController.AskDuration();
-                _audioController.AskCurrentState();
             }
             catch { }
-        }
-
-        private void OnAskPosition(object state)
-        {
-            _audioController.AskPosition();
         }
 
         private void LoadState()
@@ -211,76 +193,62 @@ namespace Tomato.TomatoMusic.Audio.Services
             PlayMode = _playModeManager.GetProvider(_playerConfig.PlayMode);
             Volume = _playerConfig.Volume;
             //_playerConfig.EqualizerParameters.CollectionChanged += EqualizerParameters_CollectionChanged;
+
+            ResumeState();
         }
 
         public void RequestPlay()
         {
-            if (CanPlay)
-                Play();
+            _audioController.OnMediaTransportControlsButtonPressed(SystemMediaTransportControlsButton.Play);
         }
 
         public void RequestPause()
         {
-            if (CanPause)
-                Pause();
+            _audioController.OnMediaTransportControlsButtonPressed(SystemMediaTransportControlsButton.Pause);
         }
 
         public void RequestNext()
         {
-            if (CanNext)
-                MoveNext();
+            _audioController.OnMediaTransportControlsButtonPressed(SystemMediaTransportControlsButton.Next);
         }
 
         public void RequestPrevious()
         {
-            if (CanPrevious)
-                MovePrevious();
+            _audioController.OnMediaTransportControlsButtonPressed(SystemMediaTransportControlsButton.Previous);
         }
 
-        public void SetPlaylist(IList<TrackInfo> tracks, TrackInfo current)
+        public void SetPlaylist(IReadOnlyList<TrackInfo> tracks, TrackInfo current)
         {
             Playlist = tracks;
-            CurrentTrack = current;
+            _currentTrack = current;
+            OnPropertyChanged(nameof(CurrentTrack));
+            _audioController.SetPlaylist(tracks, current);
         }
 
-        private void Play()
+        private async void OnPositionChanged(TimeSpan value)
         {
-            PlaybackStatus = MediaPlaybackStatus.Changing;
-            _audioController.Play();
+            if (PlaybackStatus != MediaPlaybackStatus.Changing)
+            {
+                SuspendAskPosition();
+                await _audioController.Seek(value);
+                ResumeAskPosition();
+            }
         }
 
-        private void Pause()
+        private void OnAskPosition(object state)
         {
-            PlaybackStatus = MediaPlaybackStatus.Changing;
-            _audioController.Pause();
-        }
-
-        private void MoveNext()
-        {
-            PlaybackStatus = MediaPlaybackStatus.Changing;
-            _autoPlay = true;
-            _audioController.MoveNext();
-        }
-
-        private void MovePrevious()
-        {
-            PlaybackStatus = MediaPlaybackStatus.Changing;
-            _autoPlay = true;
-            _audioController.MovePrevious();
+            Execute.OnUIThread(async () =>
+            {
+                _position = await _audioController.GetPosition();
+                OnPropertyChanged(nameof(Position));
+            });
         }
 
         private void OnCurrentTrackChanged()
         {
             if (CurrentTrack != null)
             {
-                var idx = Playlist.IndexOf(CurrentTrack);
-                if (idx != -1)
-                {
-                    CanPrevious = idx > 0 && PlaybackStatus != MediaPlaybackStatus.Changing;
-                    CanNext = idx < Playlist.Count - 1 && PlaybackStatus != MediaPlaybackStatus.Changing;
-                }
-                else
-                    CanPrevious = CanNext = false;
+                CanPrevious = CanNext = true;
             }
             else
                 CanPlay = CanPause = CanPrevious = CanNext = false;
@@ -288,203 +256,17 @@ namespace Tomato.TomatoMusic.Audio.Services
 
         private void _mtService_ButtonPressed(object sender, Windows.Media.SystemMediaTransportControlsButtonPressedEventArgs e)
         {
-            switch (e.Button)
-            {
-                case Windows.Media.SystemMediaTransportControlsButton.Play:
-                    RequestPlay();
-                    break;
-                case Windows.Media.SystemMediaTransportControlsButton.Pause:
-                    RequestPause();
-                    break;
-                case Windows.Media.SystemMediaTransportControlsButton.Stop:
-                    break;
-                case Windows.Media.SystemMediaTransportControlsButton.Record:
-                    break;
-                case Windows.Media.SystemMediaTransportControlsButton.FastForward:
-                    break;
-                case Windows.Media.SystemMediaTransportControlsButton.Rewind:
-                    break;
-                case Windows.Media.SystemMediaTransportControlsButton.Next:
-                    RequestNext();
-                    break;
-                case Windows.Media.SystemMediaTransportControlsButton.Previous:
-                    RequestPrevious();
-                    break;
-                case Windows.Media.SystemMediaTransportControlsButton.ChannelUp:
-                    break;
-                case Windows.Media.SystemMediaTransportControlsButton.ChannelDown:
-                    break;
-                default:
-                    break;
-            }
-        }
-
-        private void _client_PlayerActivated(object sender, object e)
-        {
-            PlatformProvider.Current.BeginOnUIThread(() =>
-            {
-                _audioController.SetupHandler();
-            });
-        }
-
-        void IAudioControllerHandler.NotifyControllerReady()
-        {
-            _logger.Info($"Player Received: Controller Ready.");
-            PlatformProvider.Current.BeginOnUIThread(() =>
-            {
-                OnPlayModeChanged();
-                OnVolumeChanged();
-                SendAllEqualizerParams();
-            });
-        }
-
-        private void SendAllEqualizerParams()
-        {
-            foreach (var param in _playerConfig.EqualizerParameters)
-            {
-                _audioController.SetEqualizerParameter(param.Frequency, param.BandWidth, param.Gain);
-            }
-        }
-
-        void IAudioControllerHandler.NotifyMediaOpened()
-        {
-            PlatformProvider.Current.BeginOnUIThread(() =>
-            {
-                if (_autoPlay)
-                {
-                    Play();
-                    _autoPlay = false;
-                }
-            });
-        }
-
-        void IAudioControllerHandler.NotifyControllerStateChanged(MediaPlayerState state)
-        {
-            Execute.BeginOnUIThread(() =>
-            {
-                switch (state)
-                {
-                    case MediaPlayerState.Closed:
-                        CanPlay = CanPause = false;
-                        ShowPause = false;
-                        ShowPlay = true;
-                        PlaybackStatus = MediaPlaybackStatus.Closed;
-                        SuspendAskPosition();
-                        break;
-                    case MediaPlayerState.Opening:
-                        CanPlay = CanPause = false;
-                        ShowPause = false;
-                        ShowPlay = true;
-                        PlaybackStatus = MediaPlaybackStatus.Changing;
-                        break;
-                    case MediaPlayerState.Buffering:
-                        CanPlay = CanPause = false;
-                        ShowPause = false;
-                        ShowPlay = true;
-                        PlaybackStatus = MediaPlaybackStatus.Changing;
-                        break;
-                    case MediaPlayerState.Playing:
-                        CanPause = true;
-                        CanPlay = false;
-                        ShowPause = true;
-                        ShowPlay = false;
-                        PlaybackStatus = MediaPlaybackStatus.Playing;
-                        ResumeAskPosition();
-                        break;
-                    case MediaPlayerState.Paused:
-                        CanPause = false;
-                        CanPlay = true;
-                        ShowPause = false;
-                        ShowPlay = true;
-                        PlaybackStatus = MediaPlaybackStatus.Paused;
-                        SuspendAskPosition();
-                        break;
-                    case MediaPlayerState.Stopped:
-                        PlaybackStatus = MediaPlaybackStatus.Stopped;
-                        SuspendAskPosition();
-                        break;
-                    default:
-                        break;
-                }
-            });
-            _logger.Info($"Player State Changed To: {state}.");
+            _audioController.OnMediaTransportControlsButtonPressed(e.Button);
         }
 
         public void PlayWhenOpened()
         {
-            _autoPlay = true;
-            if (CanPlay)
-                Play();
+
         }
 
         private void EqualizerParameters_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
         {
-            switch (e.Action)
-            {
-                case System.Collections.Specialized.NotifyCollectionChangedAction.Add:
-                    e.NewItems.Cast<EqualizerParam>().Apply(o => _audioController.SetEqualizerParameter(o.Frequency, o.BandWidth, o.Gain));
-                    break;
-                case System.Collections.Specialized.NotifyCollectionChangedAction.Move:
-                    break;
-                case System.Collections.Specialized.NotifyCollectionChangedAction.Remove:
-                    e.OldItems.Cast<EqualizerParam>().Apply(o => _audioController.ClearEqualizerParameter(o.Frequency));
-                    break;
-                case System.Collections.Specialized.NotifyCollectionChangedAction.Replace:
-                    var param = _playerConfig.EqualizerParameters[e.OldStartingIndex];
-                    _audioController.SetEqualizerParameter(param.Frequency, param.BandWidth, param.Gain);
-                    break;
-                case System.Collections.Specialized.NotifyCollectionChangedAction.Reset:
-                    break;
-                default:
-                    break;
-            }
-        }
 
-        void IAudioControllerHandler.NotifyCurrentTrackChanged(TrackInfo track)
-        {
-            if (_playlist != null)
-            {
-                var currentTrack = _playlist.FirstOrDefault(o => o == track);
-                Execute.BeginOnUIThread(() =>
-                {
-                    if (SetProperty(ref _currentTrack, track, nameof(CurrentTrack)))
-                    {
-                        _mtService.SetCurrentTrack(track);
-                        OnCurrentTrackChanged();
-                    }
-                    _position = TimeSpan.Zero;
-                    OnPropertyChanged(nameof(Position));
-                });
-            }
-        }
-
-        void IAudioControllerHandler.NotifyDuration(TimeSpan? duration)
-        {
-            Execute.BeginOnUIThread(() => Duration = duration);
-        }
-
-        void IAudioControllerHandler.NotifyPosition(TimeSpan position)
-        {
-            Execute.BeginOnUIThread(() =>
-            {
-                if (PlaybackStatus == MediaPlaybackStatus.Playing)
-                {
-                    _position = position;
-                    OnPropertyChanged(nameof(Position));
-                }
-            });
-        }
-
-        private void OnPositionChanged(TimeSpan oldValue, TimeSpan value)
-        {
-            if (PlaybackStatus != MediaPlaybackStatus.Changing)
-            {
-                if (Math.Abs(oldValue.Subtract(value).TotalMilliseconds) > 100)
-                {
-                    SuspendAskPosition();
-                    _audioController.SetPosition(value);
-                }
-            }
         }
 
         private void SuspendAskPosition()
@@ -495,11 +277,6 @@ namespace Tomato.TomatoMusic.Audio.Services
         private void ResumeAskPosition()
         {
             _askPositionTimer.Change(TimeSpan.Zero, _askPositionPeriod);
-        }
-
-        void IAudioControllerHandler.NotifySeekCompleted()
-        {
-            ResumeAskPosition();
         }
 
         public void ScrollPlayMode()
@@ -513,7 +290,7 @@ namespace Tomato.TomatoMusic.Audio.Services
 
         private void OnPlayModeChanged()
         {
-            _audioController.SetPlayMode(PlayMode.Id);
+            // _audioController.SetPlayMode(PlayMode.Id);
             _playerConfig.PlayMode = PlayMode.Id;
             _playerConfig.Save();
         }
@@ -525,11 +302,111 @@ namespace Tomato.TomatoMusic.Audio.Services
             _playerConfig.Save();
         }
 
-        public void NotifyPlaylist(IList<TrackInfo> playlist)
+        public void NotifyPlaylist(IReadOnlyList<TrackInfo> playlist)
         {
             Execute.BeginOnUIThread(() =>
             {
-                SetProperty(ref _playlist, playlist ?? new List<TrackInfo>(), nameof(Playlist));
+                //SetProperty(ref _playlist, playlist ?? new List<TrackInfo>(), nameof(Playlist));
+            });
+        }
+
+        private void OnMediaPlaybackStateChanged(MediaPlaybackState state)
+        {
+            switch (state)
+            {
+                case MediaPlaybackState.None:
+                    break;
+                case MediaPlaybackState.Opening:
+                    ShowPause = CanPause = true;
+                    ShowPlay = CanPlay = false;
+                    break;
+                case MediaPlaybackState.Buffering:
+                    break;
+                case MediaPlaybackState.Playing:
+                    ShowPause = CanPause = true;
+                    ShowPlay = CanPlay = false;
+                    ResumeAskPosition();
+                    break;
+                case MediaPlaybackState.Paused:
+                    ShowPause = CanPause = false;
+                    ShowPlay = CanPlay = true;
+                    SuspendAskPosition();
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        private void ResumeState()
+        {
+            try
+            {
+                if (BackgroundMediaPlayer.IsMediaPlaying()) return;
+                object stateObj;
+                if (_stateContainer.Value.Values.TryGetValue("State", out stateObj))
+                {
+                    var state = JsonConvert.DeserializeObject<State>(stateObj.ToString());
+                    Playlist = state.Playlist;
+                    CurrentTrack = state.CurrentTrack;
+                    _audioController.SetPlaylist(Playlist, CurrentTrack, false);
+                    Position = state.Position;
+                }
+            }
+            catch { }
+        }
+
+        private void SuspendState()
+        {
+            _stateContainer.Value.Values["State"] = JsonConvert.SerializeObject(new State
+            {
+                Playlist = Playlist,
+                CurrentTrack = CurrentTrack,
+                Position = Position
+            });
+        }
+
+        private class State
+        {
+            public IReadOnlyList<TrackInfo> Playlist { get; set; }
+            public TrackInfo CurrentTrack { get; set; }
+            public TimeSpan Position { get; set; }
+        }
+
+        private Lazy<ApplicationDataContainer> _stateContainer = new Lazy<ApplicationDataContainer>(() =>
+            ApplicationData.Current.LocalSettings.CreateContainer("Tomato.TomatoMusic.PlaySession", ApplicationDataCreateDisposition.Always));
+
+        void IHandle<SuspendStateMessage>.Handle(SuspendStateMessage message)
+        {
+            SuspendState();
+        }
+
+        void IHandle<ResumeStateMessage>.Handle(ResumeStateMessage message)
+        {
+            ResumeState();
+        }
+
+        void IAudioControllerHandler.OnMediaPlaybackStateChanged(MediaPlaybackState state)
+        {
+            _mtService.SetPlaybackState(state);
+            Execute.BeginOnUIThread(() => OnMediaPlaybackStateChanged(state));
+        }
+
+        void IAudioControllerHandler.OnCurrentTrackChanged(TrackInfo track)
+        {
+            Execute.BeginOnUIThread(() => CurrentTrack = track);
+        }
+
+        void IAudioControllerHandler.OnNaturalDurationChanged(TimeSpan duration)
+        {
+            Execute.BeginOnUIThread(() => Duration = duration);
+        }
+
+        void IAudioControllerHandler.NotifyReady()
+        {
+            Execute.BeginOnUIThread(() =>
+            {
+                LoadState();
+                TryAskPreviousStates();
             });
         }
     }

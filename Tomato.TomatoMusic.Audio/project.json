@@ -2,8 +2,9 @@
   "dependencies": {
     "Caliburn.Micro.Core": "3.0.1",
     "Microsoft.NETCore.UniversalWindowsPlatform": "5.2.2",
-    "Tomato.Rpc.Core": "0.0.1-alpha1-2",
-    "Tomato.Rpc.Json": "0.0.1-alpha1-2"
+    "Stateless": "2.5.84",
+    "Tomato.Rpc.Core": "1.0.0",
+    "Tomato.Threading": "0.0.2-alpha3"
   },
   "frameworks": {
     "uap10.0": {}

@@ -8,6 +8,8 @@ using System.IO;
 using Newtonsoft.Json;
 using Tomato.TomatoMusic.AudioTask;
 using Microsoft.HockeyApp;
+using Tomato.TomatoMusic.Messages;
+using Windows.ApplicationModel;
 
 namespace Tomato.TomatoMusic.Shell
 {
@@ -96,8 +98,20 @@ namespace Tomato.TomatoMusic.Shell
             DisplayRootViewFor<ViewModels.MainViewModel>();
             if (args.PreviousExecutionState == ApplicationExecutionState.Terminated)
             {
-                //_eventAggregator.PublishOnUIThread(new ResumeStateMessage());
+                _eventAggregator.PublishOnUIThread(new ResumeStateMessage());
             }
+        }
+
+        protected override void OnResuming(object sender, object e)
+        {
+            _eventAggregator.PublishOnUIThread(new ResumeStateMessage());
+        }
+
+        protected override async void OnSuspending(object sender, SuspendingEventArgs e)
+        {
+            var deferral = e.SuspendingOperation.GetDeferral();
+            await _eventAggregator.PublishOnUIThreadAsync(new SuspendStateMessage());
+            deferral.Complete();
         }
 
         static Config LoadConfig()

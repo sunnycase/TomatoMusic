@@ -16,6 +16,6 @@ namespace Tomato.TomatoMusic.Services
 
         Symbol Icon { get; }
 
-        TrackInfo SelectNextTrack(IList<TrackInfo> playlist, TrackInfo current);
+        TrackInfo SelectNextTrack(IReadOnlyList<TrackInfo> playlist, TrackInfo current);
     }
 }

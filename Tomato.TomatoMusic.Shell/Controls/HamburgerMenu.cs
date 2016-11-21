@@ -43,11 +43,6 @@ namespace Tomato.TomatoMusic.Shell.Controls
                 _optionsListView.SelectedIndex = -1;
                 _playlistsButtonsListView.SelectedIndex = -1;
             }
-            if (TrySelectItem(_optionsListView, predicator))
-            {
-                _buttonsListView.SelectedIndex = -1;
-                _playlistsButtonsListView.SelectedIndex = -1;
-            }
             if (TrySelectItem(_playlistsButtonsListView, predicator))
             {
                 _optionsListView.SelectedIndex = -1;

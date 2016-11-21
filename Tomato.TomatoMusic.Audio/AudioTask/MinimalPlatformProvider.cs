@@ -3,16 +3,25 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Tomato.Threading;
 
 namespace Caliburn.Micro
 {
     class MinimalPlatformProvider : IPlatformProvider
     {
         public bool InDesignMode => false;
+        private readonly TaskScheduler _taskScheduler;
+        private readonly TaskFactory _taskFactory;
+
+        public MinimalPlatformProvider()
+        {
+            _taskScheduler = new LimitedConcurrencyLevelTaskScheduler(1);
+            _taskFactory = new TaskFactory(_taskScheduler);
+        }
 
         public void BeginOnUIThread(System.Action action)
         {
-            Task.Run(action);
+            _taskFactory.StartNew(action);
         }
 
         public void ExecuteOnFirstLoad(object view, Action<object> handler)
@@ -37,12 +46,12 @@ namespace Caliburn.Micro
 
         public void OnUIThread(System.Action action)
         {
-            action();
+            _taskFactory.StartNew(action).ConfigureAwait(false).GetAwaiter().GetResult();
         }
 
         public Task OnUIThreadAsync(System.Action action)
         {
-            return Task.Run(action);
+            return _taskFactory.StartNew(action);
         }
     }
 }

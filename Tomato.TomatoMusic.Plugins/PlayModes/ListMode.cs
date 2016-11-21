@@ -18,7 +18,7 @@ namespace Tomato.TomatoMusic.Plugins.PlayModes
 
         public Symbol Icon => Symbol.List;
 
-        public TrackInfo SelectNextTrack(IList<TrackInfo> playlist, TrackInfo current)
+        public TrackInfo SelectNextTrack(IReadOnlyList<TrackInfo> playlist, TrackInfo current)
         {
             var idx = playlist.IndexOf(current);
             if(idx != -1)

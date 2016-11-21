@@ -19,7 +19,7 @@ namespace Tomato.TomatoMusic.Plugins.PlayModes
         public Symbol Icon => Symbol.Shuffle;
         private readonly Random _rand = new Random();
 
-        public TrackInfo SelectNextTrack(IList<TrackInfo> playlist, TrackInfo current)
+        public TrackInfo SelectNextTrack(IReadOnlyList<TrackInfo> playlist, TrackInfo current)
         {
             if (playlist.Count == 0)
                 return playlist.FirstOrDefault();

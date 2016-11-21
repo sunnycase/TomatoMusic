@@ -19,6 +19,7 @@ using Caliburn.Micro;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using Tomato.TomatoMusic.Shell.ViewModels.Playing;
+using Tomato.TomatoMusic.Shell.Models;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
@@ -83,7 +84,12 @@ namespace Tomato.TomatoMusic.Shell.Views
 
         public void OnTrackTileClick()
         {
-            IoC.Get<INavigationService>()?.For<PlayingViewModel>().Navigate();
+            IoC.Get<IEventAggregator>().BeginPublishOnUIThread(NavigationConstants.Playing);
+        }
+
+        private void PositionSlider_ValueCommited(object sender, EventArgs e)
+        {
+            PlaySession.Position = TimeSpan.FromSeconds(((Slider)sender).Value);
         }
     }
 }
