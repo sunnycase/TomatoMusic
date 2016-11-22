@@ -290,7 +290,7 @@ namespace Tomato.TomatoMusic.Audio.Services
 
         private void OnPlayModeChanged()
         {
-            // _audioController.SetPlayMode(PlayMode.Id);
+            _audioController.SetPlayMode(PlayMode.Id);
             _playerConfig.PlayMode = PlayMode.Id;
             _playerConfig.Save();
         }

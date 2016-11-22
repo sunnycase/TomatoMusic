@@ -103,6 +103,8 @@ namespace Tomato.TomatoMusic.AudioTask
                 .Permit(Triggers.RaiseError, MediaPlayerState.Error);
             stateMachine.Configure(MediaPlayerState.Playing)
                 .Permit(Triggers.Pause, MediaPlayerState.Pausing)
+                .Permit(Triggers.RaisePaused, MediaPlayerState.Paused)
+                .Permit(Triggers.RaiseEnded, MediaPlayerState.Ended)
                 .Permit(Triggers.SetMediaPlaybackList, MediaPlayerState.PlaybackListSet)
                 .Permit(Triggers.RaiseError, MediaPlayerState.Error);
             stateMachine.Configure(MediaPlayerState.Pausing)
@@ -110,6 +112,7 @@ namespace Tomato.TomatoMusic.AudioTask
                 .Permit(Triggers.SetMediaPlaybackList, MediaPlayerState.PlaybackListSet)
                 .Permit(Triggers.RaiseError, MediaPlayerState.Error);
             stateMachine.Configure(MediaPlayerState.Paused)
+                .Permit(Triggers.RaiseEnded, MediaPlayerState.Ended)
                 .Permit(Triggers.RaiseMediaOpened, MediaPlayerState.MediaOpened)
                 .Permit(Triggers.Play, MediaPlayerState.StartPlaying)
                 .Permit(Triggers.SetMediaPlaybackList, MediaPlayerState.PlaybackListSet);
@@ -228,17 +231,22 @@ namespace Tomato.TomatoMusic.AudioTask
 
         public void MoveNext()
         {
-            _mediaPlaybackList.MoveNext();
+            if (_mediaPlaybackList != null)
+                _mediaPlaybackList.MoveNext();
         }
 
         public void MovePrevious()
         {
-            _mediaPlaybackList.MovePrevious();
+            if (_mediaPlaybackList != null)
+                _mediaPlaybackList.MovePrevious();
         }
 
-        public void SetPlayMode(Guid id)
+        void IAudioController.SetPlayMode(Guid id)
         {
+            _currentPlayMode?.Detach();
             _currentPlayMode = _playModeManager.GetProvider(id);
+            if (_mediaPlaybackList != null)
+                _currentPlayMode.Attach(_mediaPlaybackList);
         }
 
         public void SetPosition(TimeSpan position)
@@ -312,6 +320,8 @@ namespace Tomato.TomatoMusic.AudioTask
                }).ToList();
                 items.Sink(mediaPlaybackList.Items.Add);
                 mediaPlaybackList.StartingItem = items[tracks.IndexOf(nextTrack)];
+                _currentPlayMode?.Detach();
+                _currentPlayMode?.Attach(mediaPlaybackList);
 
                 _playlist = tracks;
                 _currentTrack = nextTrack;
@@ -350,7 +360,7 @@ namespace Tomato.TomatoMusic.AudioTask
         private void NotifyReady()
         {
             //if (Interlocked.CompareExchange(ref _ready, 1, 0) == 1))
-                _audioControllerHandler.NotifyReady();
+            _audioControllerHandler.NotifyReady();
         }
 
         void IAudioController.SetCurrentTrack(TrackInfo track)

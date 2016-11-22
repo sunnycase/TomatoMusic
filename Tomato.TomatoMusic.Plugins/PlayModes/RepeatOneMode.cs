@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Tomato.TomatoMusic.Primitives;
 using Tomato.TomatoMusic.Services;
+using Windows.Media.Playback;
 using Windows.UI.Xaml.Controls;
 
 namespace Tomato.TomatoMusic.Plugins.PlayModes
@@ -18,9 +19,28 @@ namespace Tomato.TomatoMusic.Plugins.PlayModes
 
         public Symbol Icon => Symbol.RepeatOne;
 
-        public TrackInfo SelectNextTrack(IReadOnlyList<TrackInfo> playlist, TrackInfo current)
+        private MediaPlaybackList _playbackList;
+
+        public void Attach(MediaPlaybackList playbackList)
         {
-            return current;
+            Detach();
+            playbackList.SetShuffledItems(Enumerable.Repeat(playbackList.CurrentItem, playbackList.Items.Count));
+            playbackList.AutoRepeatEnabled = true;
+            playbackList.ShuffleEnabled = true;
+        }
+
+        public void Detach()
+        {
+            if (_playbackList != null)
+            {
+                _playbackList.CurrentItemChanged -= playbackList_CurrentItemChanged;
+                _playbackList = null;
+            }
+        }
+
+        private void playbackList_CurrentItemChanged(MediaPlaybackList sender, CurrentMediaPlaybackItemChangedEventArgs args)
+        {
+            sender.SetShuffledItems(new[] { args.NewItem });
         }
     }
 }

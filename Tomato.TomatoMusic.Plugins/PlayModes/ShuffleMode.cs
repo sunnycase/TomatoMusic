@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Tomato.TomatoMusic.Primitives;
 using Tomato.TomatoMusic.Services;
+using Windows.Media.Playback;
 using Windows.UI.Xaml.Controls;
 
 namespace Tomato.TomatoMusic.Plugins.PlayModes
@@ -17,13 +18,20 @@ namespace Tomato.TomatoMusic.Plugins.PlayModes
         public Guid Id => _id;
 
         public Symbol Icon => Symbol.Shuffle;
-        private readonly Random _rand = new Random();
+        private readonly Random _random = new Random();
 
-        public TrackInfo SelectNextTrack(IReadOnlyList<TrackInfo> playlist, TrackInfo current)
+        public void Attach(MediaPlaybackList playbackList)
         {
-            if (playlist.Count == 0)
-                return playlist.FirstOrDefault();
-            return playlist[_rand.Next(playlist.Count)];
+            playbackList.SetShuffledItems((from i in playbackList.Items
+                                           orderby _random.Next()
+                                           select i).ToList());
+            playbackList.ShuffleEnabled = true;
+            playbackList.AutoRepeatEnabled = true;
+        }
+
+        public void Detach()
+        {
+
         }
     }
 }

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Tomato.TomatoMusic.Primitives;
+using Windows.Media.Playback;
 using Windows.UI.Xaml.Controls;
 
 namespace Tomato.TomatoMusic.Services
@@ -16,6 +17,8 @@ namespace Tomato.TomatoMusic.Services
 
         Symbol Icon { get; }
 
-        TrackInfo SelectNextTrack(IReadOnlyList<TrackInfo> playlist, TrackInfo current);
+        void Attach(MediaPlaybackList playbackList);
+
+        void Detach();
     }
 }

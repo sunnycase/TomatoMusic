@@ -5,7 +5,7 @@
     "Newtonsoft.Json": "9.0.1",
     "Tomato.Mvvm.Core": "0.0.1-alpha2",
     "Tomato.Rpc.Core": "1.0.0",
-    "Tomato.Rpc.Proxy.DesignTime": "1.0.1"
+    "Tomato.Rpc.Proxy.DesignTime": "1.0.2"
   },
   "frameworks": {
     "uap10.0": {}

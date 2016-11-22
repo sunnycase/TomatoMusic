@@ -23,7 +23,7 @@ namespace Tomato.TomatoMusic.Plugins.Services
         {
             get
             {
-                if(_providersCache == null)
+                if (_providersCache == null)
                     _providersCache = new ReadOnlyCollection<IPlayModeProvider>(_providers.ToList());
                 return _providersCache;
             }
@@ -46,7 +46,7 @@ namespace Tomato.TomatoMusic.Plugins.Services
 
         public IPlayModeProvider GetProvider(Guid id)
         {
-            return _providers.Single(o => o.Id == id);
+            return _providers.SingleOrDefault(o => o.Id == id) ?? _providers.First();
         }
     }
 }

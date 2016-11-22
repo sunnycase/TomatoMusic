@@ -19,5 +19,6 @@ namespace Tomato.TomatoMusic.Core
         Task<TimeSpan> GetPosition();
         Task Seek(TimeSpan position);
         void SetVolume(double volume);
+        void SetPlayMode(Guid id);
     }
 }

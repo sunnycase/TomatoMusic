@@ -4,6 +4,6 @@
     <NuGetPackageRoot>$(UserProfile)\.nuget\packages\</NuGetPackageRoot>
   </PropertyGroup>
   <ImportGroup>
-    <Import Project="$(NuGetPackageRoot)\Tomato.Rpc.Proxy.DesignTime\1.0.1\build\Tomato.Rpc.Proxy.DesignTime.targets" Condition="Exists('$(NuGetPackageRoot)\Tomato.Rpc.Proxy.DesignTime\1.0.1\build\Tomato.Rpc.Proxy.DesignTime.targets')" />
+    <Import Project="$(NuGetPackageRoot)\Tomato.Rpc.Proxy.DesignTime\1.0.2\build\Tomato.Rpc.Proxy.DesignTime.targets" Condition="Exists('$(NuGetPackageRoot)\Tomato.Rpc.Proxy.DesignTime\1.0.2\build\Tomato.Rpc.Proxy.DesignTime.targets')" />
   </ImportGroup>
 </Project>
