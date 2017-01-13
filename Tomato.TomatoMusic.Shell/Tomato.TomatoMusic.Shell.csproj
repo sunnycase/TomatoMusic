@@ -16,11 +16,11 @@
     <MinimumVisualStudioVersion>14</MinimumVisualStudioVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{A5A43C5B-DE2A-4C0C-9213-0A381AF9435A};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
-    <PackageCertificateKeyFile>Tomato.TomatoMusic.Shell_StoreKey.pfx</PackageCertificateKeyFile>
-    <PackageCertificateThumbprint>DAE213C80D5EE580150F4A545FFE5EB06C9C63FC</PackageCertificateThumbprint>
     <AppxAutoIncrementPackageRevision>False</AppxAutoIncrementPackageRevision>
     <AppxBundle>Always</AppxBundle>
     <AppxBundlePlatforms>x86|x64</AppxBundlePlatforms>
+    <PackageCertificateThumbprint>694C821DCCF5A1821D1B7C2C2DCAD1EFFB8D116C</PackageCertificateThumbprint>
+    <PackageCertificateKeyFile>Tomato.TomatoMusic.Shell_StoreKey.pfx</PackageCertificateKeyFile>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|ARM'">
     <DebugSymbols>true</DebugSymbols>
@@ -100,7 +100,6 @@
     <!-- A reference to the entire .Net Framework and Windows SDK are automatically included -->
     <None Include="project.json" />
     <None Include="Tomato.TomatoMusic.Shell_StoreKey.pfx" />
-    <None Include="Tomato.TomatoMusic.Shell_TemporaryKey.pfx" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App.xaml.cs">
@@ -125,6 +124,7 @@
     <Compile Include="ViewModels\MenuItem.cs" />
     <Compile Include="ViewModels\NavigationConstants.cs" />
     <Compile Include="ViewModels\OptionMenuItem.cs" />
+    <Compile Include="ViewModels\Playing\CoverViewModel.cs" />
     <Compile Include="ViewModels\Playing\EffectsViewModel.cs" />
     <Compile Include="ViewModels\Playing\LyricsViewModel.cs" />
     <Compile Include="ViewModels\Playing\PlayingViewModel.cs" />
@@ -147,6 +147,9 @@
     <Compile Include="ViewModels\MainViewModel.cs" />
     <Compile Include="Views\PlayControlView.xaml.cs">
       <DependentUpon>PlayControlView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Playing\CoverView.xaml.cs">
+      <DependentUpon>CoverView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Playing\EffectsView.xaml.cs">
       <DependentUpon>EffectsView.xaml</DependentUpon>
@@ -213,7 +216,15 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="Views\PlayControlView.DeviceFamily-Mobile.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\PlayControlView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\Playing\CoverView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

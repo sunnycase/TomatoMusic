@@ -16,17 +16,56 @@
         </StackPanel>
         <ScrollViewer Grid.Row="1" Margin="0,15,0,0" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
             <StackPanel>
-                <TextBlock x:Uid="SettingOnUpdateBackgroundPerByteBasis" TextWrapping="WrapWholeWords">Update background even my internet connection is costed on a per-byte basis</TextBlock>
-                <ToggleSwitch IsOn="{x:Bind ViewModel.ThemeConfiguration.UpdateBackgroundEvenByteBasis, Mode=TwoWay}"/>
-                <TextBlock x:Uid="SettingOnUpdateAlbumCoverPerByteBasis" TextWrapping="WrapWholeWords">Update album images even my internet connection is costed on a per-byte basis</TextBlock>
-                <ToggleSwitch IsOn="{x:Bind ViewModel.MetadataConfiguration.UpdateAlbumCoverEvenByteBasis, Mode=TwoWay}"/>
-                <TextBlock x:Uid="SettingOnUpdateLyricsPerByteBasis" TextWrapping="WrapWholeWords">Update lyrics even my internet connection is costed on a per-byte basis</TextBlock>
-                <ToggleSwitch IsOn="{x:Bind ViewModel.MetadataConfiguration.UpdateLyricsEvenByteBasis, Mode=TwoWay}"/>
-                <Button HorizontalAlignment="Center" Click="{x:Bind ViewModel.NavigateToAbout}">
-                    <TextBlock x:Uid="About">About</TextBlock>
+                <StackPanel.Resources>
+                    <Style TargetType="TextBlock">
+                        <Setter Property="VerticalAlignment" Value="Center"/>
+                        <Setter Property="FontSize" Value="17"/>
+                        <Setter Property="Padding" Value="0,5"/>
+                    </Style>
+                    <Style TargetType="Button">
+                        <Setter Property="HorizontalAlignment" Value="Stretch"/>
+                        <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                        <Setter Property="BorderThickness" Value="0"/>
+                        <Setter Property="Background" Value="Transparent"/>
+                    </Style>
+                </StackPanel.Resources>
+                <TextBlock x:Uid="UsingPerByteBasisConnection">Using Per-Byte basis Connection</TextBlock>
+                <Grid Margin="45,0,0,0">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock x:Uid="SettingOnUpdateBackground" TextWrapping="WrapWholeWords">Update background</TextBlock>
+                    <ToggleSwitch Grid.Column="1" IsOn="{x:Bind ViewModel.ThemeConfiguration.UpdateBackgroundEvenByteBasis, Mode=TwoWay}"/>
+                    <TextBlock Grid.Row="1" x:Uid="SettingOnUpdateAlbumCover" TextWrapping="WrapWholeWords">Update album images</TextBlock>
+                    <ToggleSwitch Grid.Row="1" Grid.Column="1" IsOn="{x:Bind ViewModel.MetadataConfiguration.UpdateAlbumCoverEvenByteBasis, Mode=TwoWay}"/>
+                    <TextBlock Grid.Row="2" x:Uid="SettingOnUpdateLyrics" TextWrapping="WrapWholeWords">Update lyrics</TextBlock>
+                    <ToggleSwitch Grid.Row="2" Grid.Column="1" IsOn="{x:Bind ViewModel.MetadataConfiguration.UpdateLyricsEvenByteBasis, Mode=TwoWay}"/>
+                </Grid>
+                <Button Click="{x:Bind ViewModel.NavigateToAbout}">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock x:Uid="About">About</TextBlock>
+                        <TextBlock Grid.Column="1" Foreground="{ThemeResource SystemControlForegroundAccentBrush}">></TextBlock>
+                    </Grid>
                 </Button>
-                <Button Margin="0,5" HorizontalAlignment="Center" Click="{x:Bind ViewModel.LaunchReview}">
-                    <TextBlock x:Uid="Review">Review</TextBlock>
+                <Button Click="{x:Bind ViewModel.LaunchReview}">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock x:Uid="Review">Review</TextBlock>
+                        <TextBlock Grid.Column="1" Foreground="{ThemeResource SystemControlForegroundAccentBrush}">></TextBlock>
+                    </Grid>
                 </Button>
             </StackPanel>
         </ScrollViewer>

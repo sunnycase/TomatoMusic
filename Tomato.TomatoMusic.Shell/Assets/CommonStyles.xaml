@@ -3,6 +3,8 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
     xmlns:Controls="using:Tomato.TomatoMusic.Shell.Controls">
 
+    <!--<SolidColorBrush x:Key="SystemControlForegroundAccentBrush" Color="#6BCCAD"/>-->
+
     <Style x:Key="HamburgerButtonStyle" TargetType="Button">
         <Setter Property="HorizontalAlignment" Value="Stretch"/>
         <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
@@ -268,9 +270,9 @@
         <Setter Property="VerticalAlignment" Value="Center"/>
         <Setter Property="Margin" Value="5,0"/>
     </Style>
-    
-    
-    
+
+
+
     <Style x:Key="TrackPositionSliderStyle" TargetType="Slider">
         <Setter Property="Background" Value="{ThemeResource SystemControlForegroundBaseMediumLowBrush}"/>
         <Setter Property="BorderThickness" Value="{ThemeResource SliderBorderThemeThickness}"/>
@@ -467,12 +469,83 @@
                 </SplitView.Pane>
                 <ContentPresenter Content="{TemplateBinding Content}" x:Name="ContentPart" />
             </SplitView>
-            <Button Name="HamburgerButton" Padding="0" Width="{TemplateBinding HamburgerWidth}" Height="{TemplateBinding HamburgerHeight}" BorderThickness="0" VerticalAlignment="Top" Background="Transparent">
+            <Button Name="HamburgerButton" Padding="0" Width="{TemplateBinding HamburgerWidth}" Height="{TemplateBinding HamburgerHeight}" BorderThickness="0" VerticalAlignment="Top" Background="Transparent"
+                    >
                 <ContentControl ContentTemplate="{TemplateBinding HamburgerMenuTemplate}"
                                             Margin="{TemplateBinding HamburgerMargin}"
                                             Foreground="{TemplateBinding Foreground}"/>
             </Button>
         </Grid>
+    </ControlTemplate>
+    <ControlTemplate x:Key="DesktopAppHamburgerMenuControlTemplate" TargetType="Controls:HamburgerMenu">
+        <Border BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}"
+                Background="{TemplateBinding Background}">
+            <Grid>
+                <SplitView x:Name="MainSplitView" OpenPaneLength="{TemplateBinding OpenPaneLength}" 
+                               PanePlacement="{TemplateBinding PanePlacement}" DisplayMode="{TemplateBinding DisplayMode}" 
+                               CompactPaneLength="{TemplateBinding CompactPaneLength}" PaneBackground="{TemplateBinding PaneBackground}" 
+                               IsPaneOpen="{TemplateBinding IsPaneOpen}">
+                    <SplitView.Pane>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <ContentPresenter Content="{TemplateBinding Content}" x:Name="ContentPart" />
+                            <Border Grid.Column="1" Width="{TemplateBinding CompactPaneLength}" BorderThickness="1,0,0,0" BorderBrush="Gray">
+                                <Grid x:Name="PaneGrid">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition />
+                                        <RowDefinition Height="Auto" />
+                                    </Grid.RowDefinitions>
+                                    <Grid Grid.Row="0" Height="{TemplateBinding HamburgerHeight}" />
+                                    <ListView Grid.Row="1" SelectionMode="Single" Name="ButtonsListView" ItemsSource="{TemplateBinding ItemsSource}" ItemTemplate="{TemplateBinding ItemTemplate}" IsItemClickEnabled="True"
+                                      Width="{TemplateBinding OpenPaneLength}">
+                                        <ListView.ItemContainerStyle>
+                                            <Style TargetType="ListViewItem">
+                                                <Setter Property="Padding" Value="0" />
+                                            </Style>
+                                        </ListView.ItemContainerStyle>
+                                    </ListView>
+                                    <ListView Grid.Row="2" SelectionMode="Single" Name="PlaylistsButtonsListView" ItemsSource="{TemplateBinding PlaylistsItemsSource}" ItemTemplate="{TemplateBinding PlaylistsItemTemplate}" IsItemClickEnabled="True"
+                                              Width="{TemplateBinding OpenPaneLength}">
+                                        <ListView.ItemContainerStyle>
+                                            <Style TargetType="ListViewItem">
+                                                <Setter Property="Padding" Value="0" />
+                                            </Style>
+                                        </ListView.ItemContainerStyle>
+                                    </ListView>
+
+                                    <Grid Grid.Row="3" Visibility="{TemplateBinding OptionsVisibility}">
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="Auto" />
+                                            <RowDefinition />
+                                        </Grid.RowDefinitions>
+
+                                        <ListView Grid.Row="1" Name="OptionsListView" ItemsSource="{TemplateBinding OptionsItemsSource}" ItemTemplate="{TemplateBinding OptionsItemTemplate}" IsItemClickEnabled="True"
+                                              Width="{TemplateBinding OpenPaneLength}" VerticalAlignment="Bottom">
+                                            <ListView.ItemContainerStyle>
+                                                <Style TargetType="ListViewItem">
+                                                    <Setter Property="Padding" Value="0" />
+                                                </Style>
+                                            </ListView.ItemContainerStyle>
+                                        </ListView>
+                                    </Grid>
+                                </Grid>
+                            </Border>
+                        </Grid>
+                    </SplitView.Pane>
+                </SplitView>
+                <Button Name="HamburgerButton" Padding="0" Width="{TemplateBinding HamburgerWidth}" Height="{TemplateBinding HamburgerHeight}" BorderThickness="0" VerticalAlignment="Top" Background="Transparent"
+                    Visibility="Collapsed">
+                    <ContentControl ContentTemplate="{TemplateBinding HamburgerMenuTemplate}"
+                                            Margin="{TemplateBinding HamburgerMargin}"
+                                            Foreground="{TemplateBinding Foreground}"/>
+                </Button>
+            </Grid>
+        </Border>
     </ControlTemplate>
     <Style x:Key="PlaylistToolbarComboboxStyle" TargetType="ComboBox">
         <Setter Property="Padding" Value="12,5,0,7"/>

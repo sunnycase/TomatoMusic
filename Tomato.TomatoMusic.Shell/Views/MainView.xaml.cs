@@ -16,6 +16,8 @@ using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 using System.Reflection.Emit;
 using Tomato.TomatoMusic.Shell.Models;
+using Tomato.TomatoMusic.Shell.ViewModels.Playing;
+using Windows.System.Profile;
 
 //“空白页”项模板在 http://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409 上有介绍
 
@@ -44,13 +46,18 @@ namespace Tomato.TomatoMusic.Shell.Views
             ((OptionMenuItem)e.ClickedItem).OnClick();
         }
 
+        private void SwitchMenuOpen()
+        {
+            hm_Menu.Visibility = hm_Menu.Visibility == Visibility.Collapsed ? Visibility.Visible : Visibility.Collapsed;
+        }
+
         void IHandle<MainMenuNavigatedMessage>.Handle(MainMenuNavigatedMessage message)
         {
-            hm_Menu.SelectMenuItem(o =>
-            {
-                var item = (MenuItem)o;
-                return item.Uri.AbsoluteUri == message.AbsoluteUri;
-            });
+            //hm_Menu.SelectMenuItem(o =>
+            //{
+            //    var item = (MenuItem)o;
+            //    return item.Uri.AbsoluteUri == message.AbsoluteUri;
+            //});
         }
     }
 }

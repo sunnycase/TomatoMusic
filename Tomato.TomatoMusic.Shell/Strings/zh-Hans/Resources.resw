@@ -177,14 +177,14 @@
   <data name="Review.Text" xml:space="preserve">
     <value>评分</value>
   </data>
-  <data name="SettingOnUpdateAlbumCoverPerByteBasis.Text" xml:space="preserve">
-    <value>即便使用流量计费网络时也更新专辑图片</value>
+  <data name="SettingOnUpdateAlbumCover.Text" xml:space="preserve">
+    <value>更新专辑图片</value>
   </data>
-  <data name="SettingOnUpdateBackgroundPerByteBasis.Text" xml:space="preserve">
-    <value>即便使用流量计费网络时也更新背景</value>
+  <data name="SettingOnUpdateBackground.Text" xml:space="preserve">
+    <value>更新背景</value>
   </data>
-  <data name="SettingOnUpdateLyricsPerByteBasis.Text" xml:space="preserve">
-    <value>即便使用流量计费网络时也更新歌词</value>
+  <data name="SettingOnUpdateLyrics.Text" xml:space="preserve">
+    <value>更新歌词</value>
   </data>
   <data name="Settings.Text" xml:space="preserve">
     <value>设置</value>
@@ -218,5 +218,8 @@
   </data>
   <data name="MusicsOrderRule.Artist" xml:space="preserve">
     <value>歌手</value>
+  </data>
+  <data name="UsingPerByteBasisConnection.Text" xml:space="preserve">
+    <value>使用流量时</value>
   </data>
 </root>

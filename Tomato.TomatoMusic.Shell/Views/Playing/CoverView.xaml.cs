@@ -19,14 +19,13 @@ using Windows.UI.Xaml.Navigation;
 
 namespace Tomato.TomatoMusic.Shell.Views.Playing
 {
-    public sealed partial class LyricsView : UserControl
+    public sealed partial class CoverView : UserControl
     {
-        internal LyricsViewModel ViewModel { get; } = IoC.Get<LyricsViewModel>();
+        internal CoverViewModel ViewModel { get; } = IoC.Get<CoverViewModel>();
 
-        public LyricsView()
+        public CoverView()
         {
             this.InitializeComponent();
-            ViewModel.SetLyricsListBox(lb_Lyrics);
         }
     }
 }

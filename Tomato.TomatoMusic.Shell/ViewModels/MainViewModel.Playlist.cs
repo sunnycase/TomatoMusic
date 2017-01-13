@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Caliburn.Micro;
 using Windows.UI.Xaml.Controls;
 using Windows.ApplicationModel.Resources;
+using Windows.System.Profile;
 
 namespace Tomato.TomatoMusic.Shell.ViewModels
 {
@@ -21,19 +22,22 @@ namespace Tomato.TomatoMusic.Shell.ViewModels
         private IReadOnlyList<MenuItem> LoadSolidMenuItems()
         {
             var resourceLoader = IoC.Get<ResourceLoader>();
-            return new List<MenuItem>
+            var list = new List<MenuItem>
             {
                 new MenuItem(typeof(PlaylistViewModel), new NavigateHelper<PlaylistViewModel>().WithParam(o => o.Key, PlaylistManager.MusicLibrary.Key).BuildUri())
                 {
                     Glyph = "\uE8F1",
                     Text = resourceLoader.GetString("MusicLibrary")
-                },
-                new MenuItem(typeof(Playing.PlayingViewModel), new NavigateHelper<Playing.PlayingViewModel>().BuildUri())
+                }
+            };
+            if (AnalyticsInfo.VersionInfo.DeviceFamily == "Windows.Mobile")
+                list.Add(new MenuItem(typeof(Playing.PlayingViewModel), new NavigateHelper<Playing.PlayingViewModel>().BuildUri())
                 {
                     Glyph = "\uE904",
                     Text = resourceLoader.GetString("Playing/Text")
-                }
-            };
+                });
+
+            return list;
         }
 
         private Button _addPlaylistButton;

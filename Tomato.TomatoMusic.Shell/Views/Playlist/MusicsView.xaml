@@ -28,24 +28,29 @@
                 <DataTemplate x:DataType="localViewModels:MusicsTrackViewModel">
                     <Grid>
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="1.5*"/>
-                            <ColumnDefinition Width="80"/>
-                            <ColumnDefinition Width="2*"/>
-                            <ColumnDefinition Width="1.5*"/>
-                            <ColumnDefinition Width="80"/>
+                            <ColumnDefinition Width="40"/>
+                            <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
-                        <TextBlock Text="{x:Bind Track.Title}" Style="{StaticResource TrackInfoTextStyle}"/>
-                        <StackPanel Grid.Column="1" Orientation="Horizontal" Visibility="{x:Bind IsSelected, Converter={StaticResource BooleanToVisibilityConverter}, Mode=OneWay}">
+                        <StackPanel Orientation="Horizontal" Visibility="{x:Bind IsSelected, Converter={StaticResource BooleanToVisibilityConverter}, Mode=OneWay}">
                             <Button Click="{x:Bind Play}" Style="{StaticResource TrackFunctionalButtonStyle}">
                                 <SymbolIcon Symbol="Play"/>
                             </Button>
-                            <!--<Button Style="{StaticResource TrackFunctionalButtonStyle}">
-                        <SymbolIcon Symbol="More"/>
-                    </Button>-->
                         </StackPanel>
-                        <TextBlock Grid.Column="2" Margin="15,0,0,0" Text="{x:Bind Track.Album}" Style="{StaticResource TrackInfoTextStyle}"/>
-                        <TextBlock Grid.Column="3" Margin="15,0,0,0" Text="{x:Bind Track.Artist}" Style="{StaticResource TrackInfoTextStyle}"/>
-                        <TextBlock Grid.Column="4" Margin="15,0,0,0" Text="{x:Bind Track.Duration, Converter={StaticResource TimeSpanToStringConverter}}" Style="{StaticResource TrackInfoTextStyle}"/>
+                        <Grid Grid.Column="1">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Text="{x:Bind Track.Title}" FontSize="17" Grid.ColumnSpan="3" FontWeight="Bold" Style="{StaticResource TrackInfoTextStyle}"/>
+                            <TextBlock Grid.Row="1" Text="{x:Bind Track.Album}" Style="{StaticResource TrackInfoTextStyle}"/>
+                            <TextBlock Grid.Row="1" Grid.Column="1" Margin="5,0">/</TextBlock>
+                            <TextBlock Grid.Row="1" Grid.Column="2" Text="{x:Bind Track.Artist}" Style="{StaticResource TrackInfoTextStyle}"/>
+                        </Grid>
                     </Grid>
                 </DataTemplate>
             </localConverters:OrderRuleToTrackTemplateConverter.Default>
@@ -53,43 +58,43 @@
                 <DataTemplate x:Key="Album" x:DataType="localViewModels:MusicsTrackViewModel">
                     <Grid>
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="1.5*"/>
-                            <ColumnDefinition Width="80"/>
-                            <ColumnDefinition Width="1.5*"/>
-                            <ColumnDefinition Width="80"/>
+                            <ColumnDefinition Width="40"/>
+                            <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
-                        <TextBlock Text="{x:Bind Track.Title}" Style="{StaticResource TrackInfoTextStyle}"/>
-                        <StackPanel Grid.Column="1" Orientation="Horizontal" Visibility="{x:Bind IsSelected, Converter={StaticResource BooleanToVisibilityConverter}, Mode=OneWay}">
+                        <StackPanel Orientation="Horizontal" Visibility="{x:Bind IsSelected, Converter={StaticResource BooleanToVisibilityConverter}, Mode=OneWay}">
                             <Button Click="{x:Bind Play}" Style="{StaticResource TrackFunctionalButtonStyle}">
                                 <SymbolIcon Symbol="Play"/>
                             </Button>
-                            <!--<Button Style="{StaticResource TrackFunctionalButtonStyle}">
-                        <SymbolIcon Symbol="More"/>
-                    </Button>-->
                         </StackPanel>
-                        <TextBlock Grid.Column="2" Margin="15,0,0,0" Text="{x:Bind Track.Artist}" Style="{StaticResource TrackInfoTextStyle}"/>
-                        <TextBlock Grid.Column="3" Margin="15,0,0,0" Text="{x:Bind Track.Duration, Converter={StaticResource TimeSpanToStringConverter}}" Style="{StaticResource TrackInfoTextStyle}"/>
+                        <Grid Grid.Column="1">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            <TextBlock Text="{x:Bind Track.Title}" FontSize="17" Grid.ColumnSpan="3" FontWeight="Bold" Style="{StaticResource TrackInfoTextStyle}"/>
+                            <TextBlock Grid.Row="1" Text="{x:Bind Track.Artist}" Style="{StaticResource TrackInfoTextStyle}"/>
+                        </Grid>
                     </Grid>
                 </DataTemplate>
                 <DataTemplate x:Key="Artist" x:DataType="localViewModels:MusicsTrackViewModel">
                     <Grid>
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="1.5*"/>
-                            <ColumnDefinition Width="80"/>
-                            <ColumnDefinition Width="1.5*"/>
-                            <ColumnDefinition Width="80"/>
+                            <ColumnDefinition Width="40"/>
+                            <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
-                        <TextBlock Text="{x:Bind Track.Title}" Style="{StaticResource TrackInfoTextStyle}"/>
-                        <StackPanel Grid.Column="1" Orientation="Horizontal" Visibility="{x:Bind IsSelected, Converter={StaticResource BooleanToVisibilityConverter}, Mode=OneWay}">
+                        <StackPanel Orientation="Horizontal" Visibility="{x:Bind IsSelected, Converter={StaticResource BooleanToVisibilityConverter}, Mode=OneWay}">
                             <Button Click="{x:Bind Play}" Style="{StaticResource TrackFunctionalButtonStyle}">
                                 <SymbolIcon Symbol="Play"/>
                             </Button>
-                            <!--<Button Style="{StaticResource TrackFunctionalButtonStyle}">
-                        <SymbolIcon Symbol="More"/>
-                    </Button>-->
                         </StackPanel>
-                        <TextBlock Grid.Column="2" Margin="15,0,0,0" Text="{x:Bind Track.Album}" Style="{StaticResource TrackInfoTextStyle}"/>
-                        <TextBlock Grid.Column="3" Margin="15,0,0,0" Text="{x:Bind Track.Duration, Converter={StaticResource TimeSpanToStringConverter}}" Style="{StaticResource TrackInfoTextStyle}"/>
+                        <Grid Grid.Column="1">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            <TextBlock Text="{x:Bind Track.Title}" FontSize="17" Grid.ColumnSpan="3" FontWeight="Bold" Style="{StaticResource TrackInfoTextStyle}"/>
+                            <TextBlock Grid.Row="1" Text="{x:Bind Track.Album}" Style="{StaticResource TrackInfoTextStyle}"/>
+                        </Grid>
                     </Grid>
                 </DataTemplate>
             </localConverters:OrderRuleToTrackTemplateConverter.Entries>
@@ -101,8 +106,7 @@
                                   PrepareContainerForItem="lv_Tracks_PrepareContainerForItem">
             <i:Interaction.Behaviors>
                 <localBehaviors:BindItemBackgroundWithIndexBehavior>
-                    <SolidColorBrush Color="{ThemeResource SystemListLowColor}"/>
-                    <SolidColorBrush Color="{ThemeResource SystemListMediumColor}"/>
+                    <SolidColorBrush Color="Transparent"/>
                 </localBehaviors:BindItemBackgroundWithIndexBehavior>
                 <behaviors:SelectorIsSelectedToSourceBindingBehavior Setter="{x:Bind TrackViewModelIsSelectedSetter}"/>
             </i:Interaction.Behaviors>

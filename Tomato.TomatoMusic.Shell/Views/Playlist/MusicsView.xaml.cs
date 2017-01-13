@@ -31,7 +31,9 @@ namespace Tomato.TomatoMusic.Shell.Views.Playlist
 
         public void TrackViewModelIsSelectedSetter(object model, bool value)
         {
-            //((MusicsTrackViewModel)model).IsSelected = value;
+            var track = model as MusicsTrackViewModel;
+            if(track != null)
+                track.IsSelected = value;
         }
 
         private void lv_Tracks_PrepareContainerForItem(object sender, Controls.PrepareContainerForItemEventArgs e)

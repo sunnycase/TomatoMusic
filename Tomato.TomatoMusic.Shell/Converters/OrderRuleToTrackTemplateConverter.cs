@@ -13,7 +13,7 @@ namespace Tomato.TomatoMusic.Shell.Converters
     [ContentProperty(Name = nameof(Entries))]
     class OrderRuleToTrackTemplateConverter : IValueConverter
     {
-        public Dictionary<string, DataTemplate> Entries { get; } = new Dictionary<string, DataTemplate>();
+        public OrderRuleDictionary Entries { get; } = new OrderRuleDictionary();
         public DataTemplate Default { get; set; }
 
         public object Convert(object value, Type targetType, object parameter, string language)
@@ -28,5 +28,10 @@ namespace Tomato.TomatoMusic.Shell.Converters
         {
             throw new NotImplementedException();
         }
+    }
+
+    public class OrderRuleDictionary : Dictionary<string, DataTemplate>
+    {
+
     }
 }

@@ -177,14 +177,14 @@
   <data name="Review.Text" xml:space="preserve">
     <value>Review</value>
   </data>
-  <data name="SettingOnUpdateAlbumCoverPerByteBasis.Text" xml:space="preserve">
-    <value>Update album images even my internet connection is costed on a per-byte basis</value>
+  <data name="SettingOnUpdateAlbumCover.Text" xml:space="preserve">
+    <value>Update album images</value>
   </data>
-  <data name="SettingOnUpdateBackgroundPerByteBasis.Text" xml:space="preserve">
-    <value>Update background even my internet connection is costed on a per-byte basis</value>
+  <data name="SettingOnUpdateBackground.Text" xml:space="preserve">
+    <value>Update background</value>
   </data>
-  <data name="SettingOnUpdateLyricsPerByteBasis.Text" xml:space="preserve">
-    <value>Update lyrics even my internet connection is costed on a per-byte basis</value>
+  <data name="SettingOnUpdateLyrics.Text" xml:space="preserve">
+    <value>Update lyrics</value>
   </data>
   <data name="Settings.Text" xml:space="preserve">
     <value>Settings</value>
@@ -218,5 +218,8 @@
   </data>
   <data name="MusicsOrderRule.Artist" xml:space="preserve">
     <value>Artist</value>
+  </data>
+  <data name="UsingPerByteBasisConnection.Text" xml:space="preserve">
+    <value>Using Per-Byte basis connection</value>
   </data>
 </root>

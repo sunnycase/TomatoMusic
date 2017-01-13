@@ -70,116 +70,105 @@ namespace Tomato.TomatoMusic.Shell.ViewModels.Playing
         {
             _lyricsListBox = listBox;
         }
-    }
 
-    class TrackMetadataViewModel : BindableBase
-    {
-        private ImageSource _cover;
-        public ImageSource Cover
+        internal class TrackMetadataViewModel : BindableBase
         {
-            get { return _cover; }
-            private set { SetProperty(ref _cover, value); }
-        }
-
-        private ILrcFile _lyricModel;
-        public ILrcFile LyricModel
-        {
-            get { return _lyricModel; }
-            private set
+            private ILrcFile _lyricModel;
+            public ILrcFile LyricModel
             {
-                if (SetProperty(ref _lyricModel, value))
-                    OnPropertyChanged(nameof(Lyrics));
-            }
-        }
-
-        public IList<IOneLineLyric> Lyrics => _lyricModel?.Lyrics;
-
-        private readonly TrackInfo _track;
-
-        public TrackMetadataViewModel(TrackInfo track)
-        {
-            _track = track;
-            LoadMetadata(track);
-        }
-
-        private async void LoadMetadata(TrackInfo track)
-        {
-            var metaService = IoC.Get<IMediaMetadataService>();
-            var meta = await metaService.GetMetadata(track);
-            meta.PropertyChanged += Meta_PropertyChanged;
-            Cover = meta.Cover;
-            if (LyricModel == null)
-                TryAnalyzeLyrics(meta.Lyrics);
-        }
-
-        public async void SetupLocalLyric()
-        {
-            var picker = new FileOpenPicker() { ViewMode = PickerViewMode.List };
-            picker.FileTypeFilter.Add(".lrc");
-            var file = await picker.PickSingleFileAsync();
-            if (file != null)
-            {
-                try
+                get { return _lyricModel; }
+                private set
                 {
-                    var content = await FileIO.ReadTextAsync(file);
-                    TryAnalyzeLyrics(content);
+                    if (SetProperty(ref _lyricModel, value))
+                        OnPropertyChanged(nameof(Lyrics));
+                }
+            }
+
+            public IList<IOneLineLyric> Lyrics => _lyricModel?.Lyrics;
+
+            private readonly TrackInfo _track;
+
+            public TrackMetadataViewModel(TrackInfo track)
+            {
+                _track = track;
+                LoadMetadata(track);
+            }
+
+            private async void LoadMetadata(TrackInfo track)
+            {
+                var metaService = IoC.Get<IMediaMetadataService>();
+                var meta = await metaService.GetMetadata(track);
+                meta.PropertyChanged += Meta_PropertyChanged;
+                if (LyricModel == null)
+                    TryAnalyzeLyrics(meta.Lyrics);
+            }
+
+            public async void SetupLocalLyric()
+            {
+                var picker = new FileOpenPicker() { ViewMode = PickerViewMode.List };
+                picker.FileTypeFilter.Add(".lrc");
+                var file = await picker.PickSingleFileAsync();
+                if (file != null)
+                {
+                    try
+                    {
+                        var content = await FileIO.ReadTextAsync(file);
+                        TryAnalyzeLyrics(content);
+                        var service = IoC.Get<ILocalLyricsService>();
+                        service.SetLocalLyrics(_track, file);
+                    }
+                    catch { }
+                }
+            }
+
+            public async void ResetLyricSetting()
+            {
+                await Task.Run(() =>
+                {
                     var service = IoC.Get<ILocalLyricsService>();
-                    service.SetLocalLyrics(_track, file);
-                }
-                catch { }
+                    service.ClearLocalLyricsPath(_track);
+                });
             }
-        }
 
-        public async void ResetLyricSetting()
-        {
-            await Task.Run(() =>
+            private void Meta_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
             {
-                var service = IoC.Get<ILocalLyricsService>();
-                service.ClearLocalLyricsPath(_track);
-            });
-        }
-
-        private void Meta_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
-        {
-            switch (e.PropertyName)
-            {
-                case nameof(ITrackMediaMetadata.Cover):
-                    Cover = ((ITrackMediaMetadata)sender).Cover;
-                    break;
-                case nameof(ITrackMediaMetadata.Lyrics):
-                    TryAnalyzeLyrics(((ITrackMediaMetadata)sender).Lyrics);
-                    break;
-                default:
-                    break;
-            }
-        }
-
-        private void TryAnalyzeLyrics(string lyrics)
-        {
-            if (!string.IsNullOrEmpty(lyrics))
-            {
-                try
+                switch (e.PropertyName)
                 {
-                    LyricModel = LrcFile.FromText(lyrics);
+                    case nameof(ITrackMediaMetadata.Lyrics):
+                        TryAnalyzeLyrics(((ITrackMediaMetadata)sender).Lyrics);
+                        break;
+                    default:
+                        break;
                 }
-                catch { }
             }
-        }
 
-        public void OnPositionChanged(ListBox listBox, TimeSpan position)
-        {
-            var lyrics = LyricModel;
-            if (lyrics != null && lyrics.Lyrics != null)
+            private void TryAnalyzeLyrics(string lyrics)
             {
-                var selected = lyrics.BeforeOrAt(position);
-                if (selected != null)
+                if (!string.IsNullOrEmpty(lyrics))
                 {
-                    listBox.SelectedItem = selected;
-                    var display = lyrics.Lyrics.SkipWhile(o => o != selected).Skip(3).FirstOrDefault();
-                    if (display != null)
-                        listBox.ScrollIntoView(display);
-                    else
-                        listBox.ScrollIntoView(selected);
+                    try
+                    {
+                        LyricModel = LrcFile.FromText(lyrics);
+                    }
+                    catch { }
+                }
+            }
+
+            public void OnPositionChanged(ListBox listBox, TimeSpan position)
+            {
+                var lyrics = LyricModel;
+                if (lyrics != null && lyrics.Lyrics != null)
+                {
+                    var selected = lyrics.BeforeOrAt(position);
+                    if (selected != null)
+                    {
+                        listBox.SelectedItem = selected;
+                        var display = lyrics.Lyrics.SkipWhile(o => o != selected).Skip(3).FirstOrDefault();
+                        if (display != null)
+                            listBox.ScrollIntoView(display);
+                        else
+                            listBox.ScrollIntoView(selected);
+                    }
                 }
             }
         }

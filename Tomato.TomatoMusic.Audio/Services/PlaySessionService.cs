@@ -188,13 +188,12 @@ namespace Tomato.TomatoMusic.Audio.Services
 
         private void LoadState()
         {
+            ResumeState();
+
             var configService = IoC.Get<IConfigurationService>();
             _playerConfig = configService.Player;
             PlayMode = _playModeManager.GetProvider(_playerConfig.PlayMode);
             Volume = _playerConfig.Volume;
-            //_playerConfig.EqualizerParameters.CollectionChanged += EqualizerParameters_CollectionChanged;
-
-            ResumeState();
         }
 
         public void RequestPlay()

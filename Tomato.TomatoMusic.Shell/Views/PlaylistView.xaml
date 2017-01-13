@@ -23,7 +23,7 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
-        <StackPanel Orientation="Horizontal">
+        <StackPanel Orientation="Horizontal" Visibility="Collapsed">
             <TextBlock x:Name="tb_Title" Text="{x:Bind ViewModel.Playlist.Name}" FontSize="25" Padding="0,5"/>
             <Button Style="{StaticResource TrackFunctionalButtonStyle}"
                     Visibility="{x:Bind ViewModel.CanEditName, Converter={StaticResource BooleanToVisibilityConverter}, Mode=OneWay}">

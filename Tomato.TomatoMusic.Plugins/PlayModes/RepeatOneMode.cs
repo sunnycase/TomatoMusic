@@ -24,7 +24,7 @@ namespace Tomato.TomatoMusic.Plugins.PlayModes
         public void Attach(MediaPlaybackList playbackList)
         {
             Detach();
-            playbackList.SetShuffledItems(Enumerable.Repeat(playbackList.CurrentItem, playbackList.Items.Count));
+            SetShuffledItems(playbackList, playbackList.CurrentItem);
             playbackList.AutoRepeatEnabled = true;
             playbackList.ShuffleEnabled = true;
         }
@@ -40,7 +40,13 @@ namespace Tomato.TomatoMusic.Plugins.PlayModes
 
         private void playbackList_CurrentItemChanged(MediaPlaybackList sender, CurrentMediaPlaybackItemChangedEventArgs args)
         {
-            sender.SetShuffledItems(new[] { args.NewItem });
+            SetShuffledItems(sender, args.NewItem);
+        }
+
+        private static void SetShuffledItems(MediaPlaybackList playbackList, MediaPlaybackItem newItem = null)
+        {
+            if (playbackList.Items.Any())
+                playbackList.SetShuffledItems(Enumerable.Repeat(newItem ?? playbackList.Items.First(), playbackList.Items.Count));
         }
     }
 }

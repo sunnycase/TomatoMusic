@@ -14,6 +14,7 @@ using Windows.UI.Core;
 using Windows.UI.Xaml;
 using Tomato.TomatoMusic.Messages;
 using System.Reflection;
+using Tomato.TomatoMusic.Shell.ViewModels.Playing;
 
 namespace Tomato.TomatoMusic.Shell.ViewModels
 {
@@ -42,7 +43,7 @@ namespace Tomato.TomatoMusic.Shell.ViewModels
             PlaylistManager = playlistManager;
             ThemeService = themeService;
             SolidMenuItems = LoadSolidMenuItems();
-            SetupStatusBar();
+            SetupStatusBarOrTitleBar();
         }
 
         protected override void OnActivate()
@@ -107,7 +108,7 @@ namespace Tomato.TomatoMusic.Shell.ViewModels
             _eventAggregator.BeginPublishOnUIThread(NavigationConstants.Settings);
         }
 
-        private async void SetupStatusBar()
+        private async void SetupStatusBarOrTitleBar()
         {
             if (Windows.Foundation.Metadata.ApiInformation.IsTypePresent("Windows.UI.ViewManagement.StatusBar"))
             {
@@ -116,6 +117,17 @@ namespace Tomato.TomatoMusic.Shell.ViewModels
                 statusBar.ForegroundColor = Colors.White;
                 statusBar.BackgroundOpacity = 1.0;
                 await statusBar.ShowAsync();
+            }
+            if (Windows.Foundation.Metadata.ApiInformation.IsTypePresent("Windows.UI.ViewManagement.ApplicationView"))
+            {
+                var titleBar = ApplicationView.GetForCurrentView().TitleBar;
+                if (titleBar != null)
+                {
+                    titleBar.ButtonBackgroundColor = Color.FromArgb(255, 0x6B, 0xCC, 0xAD);
+                    titleBar.ButtonForegroundColor = Colors.White;
+                    titleBar.BackgroundColor = Color.FromArgb(255, 0x6B, 0xCC, 0xAD);
+                    titleBar.ForegroundColor = Colors.White;
+                }
             }
         }
 

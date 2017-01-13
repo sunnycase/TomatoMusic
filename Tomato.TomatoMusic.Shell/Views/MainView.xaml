@@ -4,6 +4,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:Tomato.TomatoMusic.Shell.Views"
     xmlns:localViewModels="using:Tomato.TomatoMusic.Shell.ViewModels"
+    xmlns:playingViews="using:Tomato.TomatoMusic.Shell.Views.Playing"
     xmlns:primitives="using:Tomato.TomatoMusic.Primitives"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -23,19 +24,19 @@
                         <ColumnDefinition Width="48" />
                         <ColumnDefinition />
                     </Grid.ColumnDefinitions>
-                    <FontIcon Grid.Column="0" Margin="12,12,11,12" FontFamily="Segoe MDL2 Assets" Glyph="{x:Bind Glyph}" Foreground="White" />
-                    <TextBlock Grid.Column="1" Text="{x:Bind Text}" Foreground="White" FontSize="16" VerticalAlignment="Center" />
+                    <FontIcon Grid.Column="0" Margin="12,12,11,12" FontFamily="Segoe MDL2 Assets" Glyph="{x:Bind Glyph}"/>
+                    <TextBlock Grid.Column="1" Text="{x:Bind Text}" FontSize="16" VerticalAlignment="Center" />
                 </Grid>
             </DataTemplate>
-            
+
             <DataTemplate x:Key="MenuItemTemplate" x:DataType="localViewModels:MenuItem">
                 <Grid Width="240" Height="48">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="48" />
                         <ColumnDefinition />
                     </Grid.ColumnDefinitions>
-                    <FontIcon Grid.Column="0" Margin="12,12,11,12" FontFamily="Segoe MDL2 Assets" Glyph="{x:Bind Glyph}" Foreground="White" />
-                    <TextBlock Grid.Column="1" Text="{x:Bind Text}" Foreground="White" FontSize="16" VerticalAlignment="Center" />
+                    <FontIcon Grid.Column="0" Margin="12,12,11,12" FontFamily="Segoe MDL2 Assets" Glyph="{x:Bind Glyph}"/>
+                    <TextBlock Grid.Column="1" Text="{x:Bind Text}" FontSize="16" VerticalAlignment="Center" />
                 </Grid>
             </DataTemplate>
 
@@ -50,117 +51,39 @@
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
-        <localControls:HamburgerMenu x:Name="hm_Menu"
-                                     OptionsItemTemplate="{StaticResource OptionTemplate}" OptionsItemsSource="{StaticResource OptionMenuItems}"
-                                     ItemsSource="{x:Bind ViewModel.SolidMenuItems}" ItemTemplate="{StaticResource MenuItemTemplate}"
-                                     ItemClick="hm_Menu_ItemClick" OptionsItemClick="hm_Menu_OptionsItemClick" 
-                                     Template="{StaticResource AppHamburgerMenuControlTemplate}">
-            <!--<controls:HamburgerMenu.ItemsSource>
-                <Grid Margin="0,5">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="*"/>
-                        <RowDefinition Height="Auto"/>
-                    </Grid.RowDefinitions>
-                    <Grid.Resources>
-                        <DataTemplate x:Key="PlaylistLabelTemplate" x:DataType="primitives:IPlaylistAnchor">
-                            <Border>
-                                <RadioButton Background="Transparent" GroupName="Playlist" Style="{StaticResource PlaylistLabelStyle}"
-                                         IsChecked="{x:Bind IsSelected, Mode=TwoWay}"
-                                         Click="{x:Bind ResetViewToMe}">
-                                    <StackPanel Orientation="Horizontal">
-                                        <SymbolIcon Width="40" Height="48" Margin="0,0,8,0" Symbol="{x:Bind Converter={StaticResource PlaylistToIconConverter}}"/>
-                                        <TextBlock VerticalAlignment="Center" Text="{x:Bind Placeholder.Name}"/>
-                                    </StackPanel>
-                                </RadioButton>
-                            </Border>
-                        </DataTemplate>
-                    </Grid.Resources>
-                    <StackPanel>
-                        <ContentPresenter Content="{x:Bind ViewModel.PlaylistManager.MusicLibrary}"
-                                          ContentTemplate="{StaticResource PlaylistLabelTemplate}"/>
-                        <RadioButton Background="Transparent" GroupName="Playlist" Style="{StaticResource PlaylistLabelStyle}"
-                                     IsChecked="{x:Bind ViewModel.IsPlayingViewSelected, Mode=TwoWay}"
-                                     Click="{x:Bind ViewModel.NavigateToPlayingView}">
-                            <StackPanel Orientation="Horizontal">
-                                <SymbolIcon Width="40" Height="48" Margin="0,0,8,0" Symbol="FourBars"/>
-                                <TextBlock x:Uid="Playing" VerticalAlignment="Center" Text="Playing"/>
-                            </StackPanel>
-                        </RadioButton>
-                        <Border Margin="5" BorderBrush="#777" BorderThickness="0,1,0,0"/>
-                    </StackPanel>
-                    <StackPanel Grid.Row="1">
-                        <Button Loaded="{x:Bind ViewModel.SetupAddPlaylistButton}" Style="{StaticResource HamburgerButtonStyle}"
-                                Visibility="Collapsed">
-                            <StackPanel Orientation="Horizontal">
-                                <SymbolIcon Width="40" Height="48" Margin="0,0,8,0" Symbol="Add"/>
-                                <TextBlock VerticalAlignment="Center">添加播放列表</TextBlock>
-                            </StackPanel>
-                            <Button.Flyout>
-                                <Flyout Placement="Right">
-                                    <Grid>
-                                        <Grid.RowDefinitions>
-                                            <RowDefinition Height="Auto"/>
-                                            <RowDefinition Height="Auto"/>
-                                            <RowDefinition Height="Auto"/>
-                                        </Grid.RowDefinitions>
-                                        <TextBlock>请输入播放列表名称</TextBlock>
-                                        <TextBox Margin="0,5" Grid.Row="1" Width="200" Text="{x:Bind ViewModel.NewPlaylistName, Mode=TwoWay}"/>
-                                        <StackPanel Grid.Row="2" HorizontalAlignment="Right" Orientation="Horizontal"
-                                                    Margin="0,5,0,0">
-                                            <StackPanel.Resources>
-                                                <Style TargetType="Button">
-                                                    <Setter Property="Padding" Value="10,3"/>
-                                                </Style>
-                                            </StackPanel.Resources>
-                                            <Button Click="{x:Bind ViewModel.OnSubmitNewPlaylist}" 
-                                                    IsEnabled="{x:Bind ViewModel.CanSubmitNewPlaylist, Mode=OneWay}">确定</Button>
-                                            <Button Click="{x:Bind ViewModel.OnCancelNewPlaylist}" Margin="5,0,0,0">取消</Button>
-                                        </StackPanel>
-                                    </Grid>
-                                </Flyout>
-                            </Button.Flyout>
-                        </Button>
-                        <ListBox ItemsSource="{x:Bind ViewModel.PlaylistManager.CustomPlaylists}"
-                                 ItemTemplate="{StaticResource PlaylistLabelTemplate}"
-                                 Background="Transparent" BorderThickness="0">
-                            <ListBox.ItemContainerStyle>
-                                <Style TargetType="ListBoxItem">
-                                    <Setter Property="Template">
-                                        <Setter.Value>
-                                            <ControlTemplate>
-                                                <ContentPresenter/>
-                                            </ControlTemplate>
-                                        </Setter.Value>
-                                    </Setter>
-                                </Style>
-                            </ListBox.ItemContainerStyle>
-                        </ListBox>
-                    </StackPanel>
-                    <StackPanel Grid.Row="2">
-                        <Border Margin="5" BorderBrush="#777" BorderThickness="0,1,0,0"/>
-
-                        <Button Click="{x:Bind ViewModel.NavigateToSettings}" Style="{StaticResource HamburgerButtonStyle}">
-                            <StackPanel Orientation="Horizontal">
-                                <SymbolIcon Width="40" Height="48" Margin="0,0,8,0" Symbol="Setting"/>
-                                <TextBlock x:Uid="Settings" VerticalAlignment="Center">Settings</TextBlock>
-                            </StackPanel>
-                        </Button>
-                    </StackPanel>
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <!-- 正在播放界面 -->
+            <playingViews:PlayingView Grid.ColumnSpan="2" />
+            <!-- 菜单 -->
+            <localControls:HamburgerMenu x:Name="hm_Menu" Grid.Column="1" PanePlacement="Left" Background="White"
+                                         IsPaneOpen="True" Visibility="Collapsed" OpenPaneLength="500"
+                                         OptionsItemTemplate="{StaticResource OptionTemplate}" OptionsItemsSource="{StaticResource OptionMenuItems}"
+                                         ItemsSource="{x:Bind ViewModel.SolidMenuItems}" ItemTemplate="{StaticResource MenuItemTemplate}"
+                                         ItemClick="hm_Menu_ItemClick" OptionsItemClick="hm_Menu_OptionsItemClick" 
+                                         Template="{StaticResource DesktopAppHamburgerMenuControlTemplate}"
+                                         BorderThickness="1,0,0,0" BorderBrush="Gray">
+                <Grid>
+                    <Frame DataContext="{x:Null}" Loaded="{x:Bind ViewModel.SetupNavigationService}" Padding="10"/>
                 </Grid>
-            </controls:HamburgerMenu.ItemsSource>-->
-            <Grid>
-                <Grid.Background>
-                    <ImageBrush ImageSource="{x:Bind ViewModel.ThemeService.Background, Mode=OneWay}" Opacity="0.2" Stretch="UniformToFill"/>
-                </Grid.Background>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="*"/>
-                    <RowDefinition Height="Auto"/>
-                </Grid.RowDefinitions>
-                <Frame x:Name="ContentFrame" Loaded="{x:Bind ViewModel.SetupNavigationService}" Padding="10" DataContext="{x:Null}"/>
-            </Grid>
-        </localControls:HamburgerMenu>
+            </localControls:HamburgerMenu>
+        </Grid>
         <!-- 音乐控制面板 -->
-        <local:PlayControlView Grid.Row="1" Margin="0,0,10,0"/>
+        <Border Grid.Row="1" BorderBrush="Gray" BorderThickness="0,1,0,0">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <local:PlayControlView/>
+                <Button Grid.Column="1" Padding="25" Margin="0,0,10,0" BorderThickness="0" Background="Transparent"
+                        Click="{x:Bind SwitchMenuOpen}">
+                    <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE700;"/>
+                </Button>
+            </Grid>
+        </Border>
     </Grid>
 </Page>
