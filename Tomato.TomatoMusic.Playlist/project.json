@@ -1,6 +1,6 @@
 ﻿{
   "dependencies": {
-    "Caliburn.Micro.Core": "3.0.1",
+    "Caliburn.Micro.Core": "3.0.3",
     "Microsoft.NETCore.UniversalWindowsPlatform": "5.2.2",
     "Newtonsoft.Json": "9.0.1",
     "Tomato.Media.Toolkit": "1.0.0",

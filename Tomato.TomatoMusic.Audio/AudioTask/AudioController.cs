@@ -86,15 +86,19 @@ namespace Tomato.TomatoMusic.AudioTask
         {
             var stateMachine = new StateMachine<MediaPlayerState, Triggers>(MediaPlayerState.Closed);
             stateMachine.Configure(MediaPlayerState.Closed)
-                .Permit(Triggers.SetMediaPlaybackList, MediaPlayerState.PlaybackListSet);
+                .Permit(Triggers.SetMediaPlaybackList, MediaPlayerState.PlaybackListSet)
+                .Permit(Triggers.RaiseError, MediaPlayerState.Error);
             stateMachine.Configure(MediaPlayerState.PlaybackListSet)
                 .PermitReentry(Triggers.SetMediaPlaybackList)
-                .Permit(Triggers.RaiseOpening, MediaPlayerState.MediaOpening);
+                .Permit(Triggers.RaiseOpening, MediaPlayerState.MediaOpening)
+                .Permit(Triggers.RaisePaused, MediaPlayerState.Paused)
+                .Permit(Triggers.RaiseError, MediaPlayerState.Error);
             stateMachine.Configure(MediaPlayerState.MediaOpening)
                 .Permit(Triggers.RaisePaused, MediaPlayerState.Paused)
                 .Permit(Triggers.RaiseMediaOpened, MediaPlayerState.MediaOpened)
                 .Permit(Triggers.RaiseError, MediaPlayerState.Error);
             stateMachine.Configure(MediaPlayerState.MediaOpened)
+                .Permit(Triggers.SetMediaPlaybackList, MediaPlayerState.PlaybackListSet)
                 .Permit(Triggers.RaisePaused, MediaPlayerState.Paused)
                 .Permit(Triggers.Play, MediaPlayerState.StartPlaying);
             stateMachine.Configure(MediaPlayerState.StartPlaying)
@@ -112,15 +116,19 @@ namespace Tomato.TomatoMusic.AudioTask
                 .Permit(Triggers.SetMediaPlaybackList, MediaPlayerState.PlaybackListSet)
                 .Permit(Triggers.RaiseError, MediaPlayerState.Error);
             stateMachine.Configure(MediaPlayerState.Paused)
+                .PermitReentry(Triggers.RaisePaused)
                 .Permit(Triggers.RaiseEnded, MediaPlayerState.Ended)
                 .Permit(Triggers.RaiseMediaOpened, MediaPlayerState.MediaOpened)
                 .Permit(Triggers.Play, MediaPlayerState.StartPlaying)
-                .Permit(Triggers.SetMediaPlaybackList, MediaPlayerState.PlaybackListSet);
+                .Permit(Triggers.SetMediaPlaybackList, MediaPlayerState.PlaybackListSet)
+                .Permit(Triggers.RaiseError, MediaPlayerState.Error);
             stateMachine.Configure(MediaPlayerState.Ended)
                 .Permit(Triggers.Play, MediaPlayerState.StartPlaying)
-                .Permit(Triggers.SetMediaPlaybackList, MediaPlayerState.MediaOpening);
+                .Permit(Triggers.SetMediaPlaybackList, MediaPlayerState.MediaOpening)
+                .Permit(Triggers.RaiseError, MediaPlayerState.Error);
             stateMachine.Configure(MediaPlayerState.Error)
-                .Permit(Triggers.SetMediaPlaybackList, MediaPlayerState.MediaOpening);
+                .Permit(Triggers.SetMediaPlaybackList, MediaPlayerState.MediaOpening)
+                .PermitReentry(Triggers.RaiseError);
 
             return stateMachine;
         }
@@ -131,6 +139,15 @@ namespace Tomato.TomatoMusic.AudioTask
         }
 
         private void OnMediaFailed(MediaPlayerError error)
+        {
+            _stateMachine.Fire(Triggers.RaiseError);
+
+            var taskComp = Interlocked.Exchange(ref _seekTaskCompletion, null);
+            if (taskComp != null)
+                taskComp.SetException(new InvalidOperationException($"MediaPlayerError: {error}."));
+        }
+
+        private void OnMediaFailed(MediaPlaybackItemError error)
         {
             _stateMachine.Fire(Triggers.RaiseError);
 
@@ -316,7 +333,7 @@ namespace Tomato.TomatoMusic.AudioTask
                 var items = tracks.Select(o =>
                {
                    var streamRef = new UriRandomAccessStreamReference(o.Source);
-                   return new MediaPlaybackItem(MediaSource.CreateFromStreamReference(streamRef, "audio/mp3"));
+                   return new MediaPlaybackItem(MediaSource.CreateFromStreamReference(streamRef, string.Empty));
                }).ToList();
                 items.Sink(mediaPlaybackList.Items.Add);
                 mediaPlaybackList.StartingItem = items[tracks.IndexOf(nextTrack)];
@@ -331,6 +348,8 @@ namespace Tomato.TomatoMusic.AudioTask
                 _autoPlay = autoPlay;
                 _mediaPlayer.Source = mediaPlaybackList;
             }
+            else if (autoPlay)
+                Play();
         }
 
         private void MediaPlaybackList_CurrentItemChanged(MediaPlaybackList sender, CurrentMediaPlaybackItemChangedEventArgs args)
@@ -349,7 +368,7 @@ namespace Tomato.TomatoMusic.AudioTask
 
         private void MediaPlaybackList_ItemFailed(MediaPlaybackList sender, MediaPlaybackItemFailedEventArgs args)
         {
-
+            Execute.BeginOnUIThread(() => OnMediaFailed(args.Error));
         }
 
         private void MediaPlaybackList_ItemOpened(MediaPlaybackList sender, MediaPlaybackItemOpenedEventArgs args)
