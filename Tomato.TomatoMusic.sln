@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.24720.0
+# Visual Studio 15
+VisualStudioVersion = 15.0.27004.2005
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tomato.TomatoMusic.Shell", "Tomato.TomatoMusic.Shell\Tomato.TomatoMusic.Shell.csproj", "{D9F0542F-8CF5-4D9D-BF85-783531B98F54}"
 EndProject
@@ -12,8 +12,6 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tomato.TomatoMusic.Playlist", "Tomato.TomatoMusic.Playlist\Tomato.TomatoMusic.Playlist.csproj", "{0800F918-99F4-4ED0-BB86-DC738F0095B5}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tomato.TomatoMusic.Plugins", "Tomato.TomatoMusic.Plugins\Tomato.TomatoMusic.Plugins.csproj", "{9168235F-9D85-4053-8386-535114C68355}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tomato.TomatoMusic.AudioTask", "Tomato.TomatoMusic.AudioTask\Tomato.TomatoMusic.AudioTask.csproj", "{BBC0E494-65F4-4666-B91F-5C8A02B9A88C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -111,24 +109,11 @@ Global
 		{9168235F-9D85-4053-8386-535114C68355}.Release|x64.Build.0 = Release|x64
 		{9168235F-9D85-4053-8386-535114C68355}.Release|x86.ActiveCfg = Release|x86
 		{9168235F-9D85-4053-8386-535114C68355}.Release|x86.Build.0 = Release|x86
-		{BBC0E494-65F4-4666-B91F-5C8A02B9A88C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{BBC0E494-65F4-4666-B91F-5C8A02B9A88C}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{BBC0E494-65F4-4666-B91F-5C8A02B9A88C}.Debug|ARM.ActiveCfg = Debug|ARM
-		{BBC0E494-65F4-4666-B91F-5C8A02B9A88C}.Debug|ARM.Build.0 = Debug|ARM
-		{BBC0E494-65F4-4666-B91F-5C8A02B9A88C}.Debug|x64.ActiveCfg = Debug|x64
-		{BBC0E494-65F4-4666-B91F-5C8A02B9A88C}.Debug|x64.Build.0 = Debug|x64
-		{BBC0E494-65F4-4666-B91F-5C8A02B9A88C}.Debug|x86.ActiveCfg = Debug|x86
-		{BBC0E494-65F4-4666-B91F-5C8A02B9A88C}.Debug|x86.Build.0 = Debug|x86
-		{BBC0E494-65F4-4666-B91F-5C8A02B9A88C}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{BBC0E494-65F4-4666-B91F-5C8A02B9A88C}.Release|Any CPU.Build.0 = Release|Any CPU
-		{BBC0E494-65F4-4666-B91F-5C8A02B9A88C}.Release|ARM.ActiveCfg = Release|ARM
-		{BBC0E494-65F4-4666-B91F-5C8A02B9A88C}.Release|ARM.Build.0 = Release|ARM
-		{BBC0E494-65F4-4666-B91F-5C8A02B9A88C}.Release|x64.ActiveCfg = Release|x64
-		{BBC0E494-65F4-4666-B91F-5C8A02B9A88C}.Release|x64.Build.0 = Release|x64
-		{BBC0E494-65F4-4666-B91F-5C8A02B9A88C}.Release|x86.ActiveCfg = Release|x86
-		{BBC0E494-65F4-4666-B91F-5C8A02B9A88C}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {486BB2B2-DAB7-46C5-AC1C-E07D894D5A80}
 	EndGlobalSection
 EndGlobal

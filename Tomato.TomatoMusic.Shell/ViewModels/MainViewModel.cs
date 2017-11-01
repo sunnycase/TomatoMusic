@@ -110,14 +110,6 @@ namespace Tomato.TomatoMusic.Shell.ViewModels
 
         private async void SetupStatusBarOrTitleBar()
         {
-            if (Windows.Foundation.Metadata.ApiInformation.IsTypePresent("Windows.UI.ViewManagement.StatusBar"))
-            {
-                var statusBar = StatusBar.GetForCurrentView();
-                statusBar.BackgroundColor = Colors.Black;
-                statusBar.ForegroundColor = Colors.White;
-                statusBar.BackgroundOpacity = 1.0;
-                await statusBar.ShowAsync();
-            }
             if (Windows.Foundation.Metadata.ApiInformation.IsTypePresent("Windows.UI.ViewManagement.ApplicationView"))
             {
                 var titleBar = ApplicationView.GetForCurrentView().TitleBar;

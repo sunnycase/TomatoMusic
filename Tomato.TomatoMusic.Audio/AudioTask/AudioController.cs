@@ -53,8 +53,6 @@ namespace Tomato.TomatoMusic.AudioTask
 
         public AudioController()
         {
-            App.Startup();
-
             #region Rpc
             _acRpcServer = new AudioControllerRpcServer(this);
             _achRpcClient = new AudioControllerHandlerRpcClient();

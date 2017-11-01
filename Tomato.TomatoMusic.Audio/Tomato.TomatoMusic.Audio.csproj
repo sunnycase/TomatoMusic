@@ -11,8 +11,8 @@
     <AssemblyName>Tomato.TomatoMusic.Audio</AssemblyName>
     <DefaultLanguage>zh-CN</DefaultLanguage>
     <TargetPlatformIdentifier>UAP</TargetPlatformIdentifier>
-    <TargetPlatformVersion>10.0.14393.0</TargetPlatformVersion>
-    <TargetPlatformMinVersion>10.0.10240.0</TargetPlatformMinVersion>
+    <TargetPlatformVersion>10.0.15063.0</TargetPlatformVersion>
+    <TargetPlatformMinVersion>10.0.15063.0</TargetPlatformMinVersion>
     <MinimumVisualStudioVersion>14</MinimumVisualStudioVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{A5A43C5B-DE2A-4C0C-9213-0A381AF9435A};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
@@ -108,11 +108,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AudioModule.cs" />
-    <Compile Include="AudioTask\App.cs" />
     <Compile Include="AudioTask\AudioController.cs" />
-    <Compile Include="AudioTask\AudioTaskModule.cs" />
-    <Compile Include="AudioTask\MinimalApplication.cs" />
-    <Compile Include="AudioTask\MinimalPlatformProvider.cs" />
     <Compile Include="Config\AudioModuleConfig.cs" />
     <Compile Include="Services\PlaySessionService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

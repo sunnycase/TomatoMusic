@@ -11,8 +11,8 @@
     <AssemblyName>Tomato.TomatoMusic.Shell</AssemblyName>
     <DefaultLanguage>en</DefaultLanguage>
     <TargetPlatformIdentifier>UAP</TargetPlatformIdentifier>
-    <TargetPlatformVersion>10.0.14393.0</TargetPlatformVersion>
-    <TargetPlatformMinVersion>10.0.10586.0</TargetPlatformMinVersion>
+    <TargetPlatformVersion>10.0.15063.0</TargetPlatformVersion>
+    <TargetPlatformMinVersion>10.0.15063.0</TargetPlatformMinVersion>
     <MinimumVisualStudioVersion>14</MinimumVisualStudioVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{A5A43C5B-DE2A-4C0C-9213-0A381AF9435A};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
@@ -266,15 +266,6 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
-    <SDKReference Include="WindowsMobile, Version=10.0.14393.0">
-      <Name>Windows Mobile Extensions for the UWP</Name>
-    </SDKReference>
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Tomato.TomatoMusic.AudioTask\Tomato.TomatoMusic.AudioTask.csproj">
-      <Project>{bbc0e494-65f4-4666-b91f-5c8a02b9a88c}</Project>
-      <Name>Tomato.TomatoMusic.AudioTask</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Tomato.TomatoMusic.Audio\Tomato.TomatoMusic.Audio.csproj">
       <Project>{0b7bee46-ad1b-4dd4-9ba2-7698bd30ed87}</Project>
       <Name>Tomato.TomatoMusic.Audio</Name>

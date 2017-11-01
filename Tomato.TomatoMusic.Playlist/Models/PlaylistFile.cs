@@ -6,9 +6,9 @@ using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Tomato.TomatoMusic.Primitives;
-using Tomato.Threading;
 using Windows.Storage;
 using Windows.Storage.Streams;
+using System.Threading.Tasks.Dataflow;
 
 namespace Tomato.TomatoMusic.Playlist.Models
 {
@@ -21,13 +21,12 @@ namespace Tomato.TomatoMusic.Playlist.Models
             get { return _playlist; }
         }
 
-        private readonly OperationQueue _operationQueue = new OperationQueue(1);
+        private readonly ActionBlock<object> _saveActionBlock;
 
         public PlaylistFile(Primitives.Playlist value)
         {
-            if (value == null)
-                throw new ArgumentNullException(nameof(value));
-            _playlist = value;
+            _playlist = value ?? throw new ArgumentNullException(nameof(value));
+            _saveActionBlock = new ActionBlock<object>(ProcessSave);
         }
 
         private static async Task<StorageFile> OpenPlaylistFile(PlaylistPlaceholder placeholder)
@@ -97,22 +96,24 @@ namespace Tomato.TomatoMusic.Playlist.Models
 
         private async Task Save()
         {
-            await _operationQueue.Queue((async () =>
+            await _saveActionBlock.SendAsync(null);
+        }
+
+        private async Task ProcessSave(object e)
+        {
+            string content = JsonConvert.SerializeObject(_playlist);
+            using (var writer = await (await OpenFile()).OpenTransactedWriteAsync())
             {
-                string content = JsonConvert.SerializeObject(_playlist);
-                using (var writer = await (await OpenFile()).OpenTransactedWriteAsync())
-                {
-                    var stream = writer.Stream;
-                    stream.Size = 0;
-                    stream.Seek(0);
-                    var dw = new DataWriter(stream);
-                    dw.WriteString(content);
-                    await dw.StoreAsync();
-                    await dw.FlushAsync();
-                    dw.DetachStream();
-                    await writer.CommitAsync();
-                }
-            }));
+                var stream = writer.Stream;
+                stream.Size = 0;
+                stream.Seek(0);
+                var dw = new DataWriter(stream);
+                dw.WriteString(content);
+                await dw.StoreAsync();
+                await dw.FlushAsync();
+                dw.DetachStream();
+                await writer.CommitAsync();
+            }
         }
 
         public async void SetFolders(IEnumerable<StorageFolder> folders)

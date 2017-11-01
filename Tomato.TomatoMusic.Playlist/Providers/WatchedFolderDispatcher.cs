@@ -11,13 +11,13 @@ using Caliburn.Micro;
 using Tomato.Media;
 using Tomato.TomatoMusic.Primitives;
 using Tomato.Mvvm;
-using Tomato.Threading;
 using Windows.Foundation;
 using Windows.Storage;
 using Windows.System.Threading;
 using Windows.System.Threading.Core;
 using Windows.UI.Core;
 using Tomato.Media.Toolkit;
+using System.Threading.Tasks.Dataflow;
 
 namespace Tomato.TomatoMusic.Playlist.Providers
 {
@@ -30,7 +30,7 @@ namespace Tomato.TomatoMusic.Playlist.Providers
         private static readonly TimeSpan CountdownTime = new TimeSpan(0, 0, 3);
         private CancellationTokenSource _updateWorkerCancelSource;
         private readonly object _updateWorkerCancelSourceLocker = new object();
-        private readonly TaskFactory _updateWorkerFactory;
+        private readonly ActionBlock<CancellationToken> _updateActionBlock;
 
         private IReadOnlyDictionary<WatchedFolder, IReadOnlyCollection<TrackInfo>> _folderContents =
             new ReadOnlyDictionary<WatchedFolder, IReadOnlyCollection<TrackInfo>>(new Dictionary<WatchedFolder, IReadOnlyCollection<TrackInfo>>());
@@ -51,7 +51,7 @@ namespace Tomato.TomatoMusic.Playlist.Providers
 
         public WatchedFolderDispatcher()
         {
-            _updateWorkerFactory = new TaskFactory(new CancellationToken(), TaskCreationOptions.LongRunning, TaskContinuationOptions.LongRunning, new LimitedConcurrencyLevelTaskScheduler(1));
+            _updateActionBlock = new ActionBlock<CancellationToken>(UpdateWorkerMain);
         }
 
         public void RequestFileUpdate(WatchedFolder folder)
@@ -108,12 +108,11 @@ namespace Tomato.TomatoMusic.Playlist.Providers
                 _updateWorkerCancelSource = new CancellationTokenSource();
                 token = _updateWorkerCancelSource.Token;
             }
-            await _updateWorkerFactory.StartNew(UpdateWorkerMain, token, token);
+            await _updateActionBlock.SendAsync(token, token);
         }
 
-        private async Task UpdateWorkerMain(object state)
+        private async Task UpdateWorkerMain(CancellationToken token)
         {
-            var token = (CancellationToken)state;
             try
             {
                 var folders = ConsumeAllWantUpdateFolders();

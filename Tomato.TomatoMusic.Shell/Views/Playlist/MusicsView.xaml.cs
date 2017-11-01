@@ -29,11 +29,11 @@ namespace Tomato.TomatoMusic.Shell.Views.Playlist
             this.InitializeComponent();
         }
 
-        public void TrackViewModelIsSelectedSetter(object model, bool value)
+        public void TrackViewModelIsSelectedSetter(object arg1, bool arg2)
         {
-            var track = model as MusicsTrackViewModel;
+            var track = arg1 as MusicsTrackViewModel;
             if(track != null)
-                track.IsSelected = value;
+                track.IsSelected = arg2;
         }
 
         private void lv_Tracks_PrepareContainerForItem(object sender, Controls.PrepareContainerForItemEventArgs e)
