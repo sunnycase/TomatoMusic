@@ -1,0 +1,29 @@
+﻿<Page
+    x:Class="TomatoMusic.Shell.Views.ShellView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:TomatoMusic.Shell.Views"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:controls="using:Microsoft.Toolkit.Uwp.UI.Controls"
+    xmlns:widgets="using:TomatoMusic.Widgets"
+    mc:Ignorable="d">
+
+    <Grid Background="{ThemeResource SystemControlAcrylicElementBrush}">
+        <NavigationView x:Name="ContentFrame" MenuItemsSource="{x:Bind ViewModel.NavigationMenuItems}"
+                        ItemInvoked="{x:Bind ViewModel.OnNavigationMenuItemInvoked}" AlwaysShowHeader="False">
+            <NavigationView.HeaderTemplate>
+                <DataTemplate>
+                    <TextBlock></TextBlock>
+                </DataTemplate>
+            </NavigationView.HeaderTemplate>
+            <Frame Loaded="{x:Bind ViewModel.SetupNavigationFrame}" DataContext="{x:Null}">
+                <Frame.ContentTransitions>
+                    <TransitionCollection>
+                        <NavigationThemeTransition/>
+                    </TransitionCollection>
+                </Frame.ContentTransitions>
+            </Frame>
+        </NavigationView>
+    </Grid>
+</Page>

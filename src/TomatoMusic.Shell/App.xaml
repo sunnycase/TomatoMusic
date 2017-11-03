@@ -1,0 +1,9 @@
+﻿<cal:CaliburnApplication
+    x:Class="TomatoMusic.Shell.App"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:TomatoMusic.Shell"
+    xmlns:cal="using:Caliburn.Micro"
+    RequestedTheme="Light">
+
+</cal:CaliburnApplication>
